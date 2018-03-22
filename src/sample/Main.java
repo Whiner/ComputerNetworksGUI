@@ -50,7 +50,7 @@ public class Main extends Application {
         }
         drawer.SaveImage("E:/Projects/JavaProjects/ComputerNetworksGUI/1.png");
 
-        Desktop desktop = null;
+        /*Desktop desktop = null;
         if (Desktop.isDesktopSupported()) {
             desktop = Desktop.getDesktop();
         }
@@ -58,8 +58,8 @@ public class Main extends Application {
             desktop.open(new File("E:/Projects/JavaProjects/ComputerNetworksGUI/1.png"));
         } catch (IOException ioe) {
             ioe.printStackTrace();
-        }
-        networks = t.getNetworks();
+        }*/
+        /*networks = t.getNetworks();
         for (Network _t: networks){
             System.out.println("--------------------------------------------------------");
             System.out.println("Сеть " + _t.getType());
@@ -75,6 +75,6 @@ public class Main extends Application {
             }
 
         }
-
+*/
     }
 }

@@ -101,69 +101,72 @@ public class Network {
     }
 
     /**между соедияемыми не должно быть других узлов. Иначе соединение проигнорируется*/
-    public boolean AddNode(Direction direction, int ParentNodeID, List<Integer> ConnectWith) throws Exception {
+    public boolean AddNode(Direction direction, int parentNodeID, List<Integer> connectWith) throws Exception {
         if(Nodes.isEmpty())
             throw new Exception("You must create parent node firstly");
         if(direction == Direction.None)
             throw new Exception("Node must have direction");
         if(Nodes.size() + 1 > MaxNodeCount)
             throw new NodeRelationsCountException("Max node counts");
-        if(!CheckID(ParentNodeID))
-            throw new Exception("Node with ID " + ParentNodeID + " are not exist in this network");
+        if(!CheckID(parentNodeID))
+            throw new Exception("Node with ID " + parentNodeID + " are not exist in this network");
 
-        boolean NewNode = true;
-        Node ParentNode = GetNodeByID(ParentNodeID);
+        boolean newNode = true;
+        Node parentNode = GetNodeByID(parentNodeID);
 
         int ID;
-        Node Node_By_Direction = ParentNode.GetNodeByDirection(direction);
-        if(Node_By_Direction == null)
+        Node nodeByDirection = parentNode.GetNodeByDirection(direction);
+        int cell_X = Direction.Check_X_by_Direction(parentNode, direction);
+        if(cell_X < 0 || cell_X >= Field.GetInstance().getCells_Count())
+            throw new OutOfFieldException("Out from field borders. Horizontal cell index is " + cell_X);
+        int cell_Y = Direction.Check_Y_by_Direction(parentNode, direction);
+        if(cell_Y < 0 || cell_Y >= Field.GetInstance().getCells_Count())
+            throw new OutOfFieldException("Out from field borders. Vertical cell index is " + cell_Y);
+
+        if(nodeByDirection == null)
         {
-            int Cell_X = Direction.Check_X_by_Direction(ParentNode, direction);
-            if(Cell_X < 0 || Cell_X >= Field.GetInstance().getCells_Count())
-                throw new OutOfFieldException("Out from field borders. Horizontal cell index is " + Cell_X);
-            int Cell_Y = Direction.Check_Y_by_Direction(ParentNode, direction);
-            if(Cell_Y < 0 || Cell_Y >= Field.GetInstance().getCells_Count())
-                throw new OutOfFieldException("Out from field borders. Vertical cell index is " + Cell_Y);
             ID = Nodes.get(Nodes.size() - 1).getID() + 1;
-            Nodes.add(new Node(Type, Cell_X, Cell_Y, ID));
+            Nodes.add(new Node(Type, cell_X, cell_Y, ID));
         }
         else
         {
-            ID = Node_By_Direction.getID();
-            NewNode = false;
+            ID = nodeByDirection.getID();
+            newNode = false;
         }
 
-        Node LastAdded = Nodes.get(ID);
+        Node lastAdded = Nodes.get(ID);
+
         try {
-            ParentNode.ConnectNode(LastAdded, direction);
+            parentNode.ConnectNode(lastAdded, direction);
         }
         catch (NodeRelationsCountException e){
-            Nodes.remove(LastAdded);
+            if(newNode)
+                Nodes.remove(lastAdded);
+            connectWith = null;
         }
         catch(Exception e){
             throw e;
         }
-        if(ConnectWith != null)
-        for (int t: ConnectWith) {
-            Node ConnectingNode = GetNodeByID(t);
-            if(ConnectingNode != null) {
-                if(CheckIntersection(LastAdded, ConnectingNode))
-                    continue;
-                Direction t_direction = Direction.CheckDirection(LastAdded, ConnectingNode);
-                try {
-                    if(t_direction != null)
-                    {
-                        LastAdded.ConnectNode(ConnectingNode, t_direction);
+        if(connectWith != null) {
+            for (int t : connectWith) {
+                Node ConnectingNode = GetNodeByID(t);
+                if (ConnectingNode != null) {
+                    if (CheckIntersection(lastAdded, ConnectingNode))
+                        continue;
+                    Direction t_direction = Direction.CheckDirection(lastAdded, ConnectingNode);
+                    try {
+                        if (t_direction != null) {
+                            lastAdded.ConnectNode(ConnectingNode, t_direction);
+                        }
+                    } catch (Exception e) {
+                        if (e.getClass() != NodeRelationsCountException.class)
+                            throw e;
                     }
-                } catch (Exception e){
-                    if(e.getClass() != NodeRelationsCountException.class)
-                        throw e;
                 }
             }
         }
 
-
-        return NewNode;
+        return newNode;
     }
 
 

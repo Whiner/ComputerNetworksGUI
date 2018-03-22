@@ -120,12 +120,7 @@ public class Drawer {
                 NodeGenerator.Field.GetInstance().getNodeSize(),
                 NodeGenerator.Field.GetInstance().getNodeSize(),
                 true, false);
-        /*BufferedImage bufferedImage;
-        try
-        {
-            bufferedImage = ImageIO.read(new File("images-fx/1.png"));
-        } catch (IOException e){e.printStackTrace();}
-        */
+
 
 
         PixelReader reader = node_img.getPixelReader();
