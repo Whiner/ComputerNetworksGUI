@@ -1,6 +1,7 @@
 package NodeGenerator;
 
 import NodeGenerator.GeneratorException.NodeRelationsCountException;
+import NodeGenerator.GeneratorException.OneselfConnection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class Node {
         if(node == null)
             throw new NullPointerException("Node is null");
         if(node.equals(this))
-            throw new Exception("Comparison of oneself node");
+            throw new OneselfConnection("Comparison of oneself node");
         if(this.MaxRelationsCount <= RelationsCount
                 || node.MaxRelationsCount <= node.RelationsCount)
             throw new NodeRelationsCountException("Max relations count");

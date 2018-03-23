@@ -32,25 +32,17 @@ public class TopologyGenerator {
 
         try {
             network.CreateParentNode( // создает родительский элемент
-                    section.getBeginCell_X()
-                            + r.nextInt(section.getCells_Count_X()),
-                    section.getBeginCell_Y());
+                    section.getBeginCell_X() + r.nextInt(section.getCells_Count_X()),
+                    section.getBeginCell_Y() + r.nextInt(section.getCells_Count_Y()));
             network.GetLastNode().setMaxRelationsCount(maxNodeRelationsCount);
         } catch (Exception e){
             throw e;
         }
         int i = 0;
         BufferedWriter writer = new BufferedWriter(new FileWriter(new File("log.txt")));
-        int first = 0;
-        int snd = 0;
-        int trd = 0;
-        int f = 0;
-        int fives = 0;
         while(i < t_NodeCount - 1 && !network.isAllHaveMaxRelations()){
             // генерация остальных
 
-            writer.write("-----------------------------------------------------------\n");
-            writer.write("Generate step: " + i + "\n");
 
             int additionally_Connect_Count;
             if(i < maxNodeRelationsCount) { //до того как будет достаточно узлов для максимального количества связей будет i
@@ -60,41 +52,33 @@ public class TopologyGenerator {
                 additionally_Connect_Count = r.nextInt(maxNodeRelationsCount);
             }
 
-            writer.write("Max Rel Count: " + additionally_Connect_Count + "\n");
+            //writer.write("Max Rel Count: " + additionally_Connect_Count + "\n");
 
             Direction t_direction = Direction.RandomDirection();  // направление
             int parentID = r.nextInt(i + 1); //рандомный родительский узел
             Node current_parent_node = network.GetNodeByID(parentID);
 
-            writer.write("Direction: " + t_direction + "\n");
-            writer.write("ParentID: " + parentID + "\n");
-            writer.write("ParentNodeID : " + current_parent_node.getID() + "\n");
-
             if(current_parent_node != null) {
                 if(current_parent_node.getMaxRelationsCount() <= current_parent_node.getRelationsCount()) {
-                    System.out.println("Зациклено в 1. " + ++first);
                     continue;
                 }
                 int X = Direction.Check_X_by_Direction(current_parent_node, t_direction);
                 int Y = Direction.Check_Y_by_Direction(current_parent_node, t_direction);
 
-                writer.write("X = " + X + " Y = " + Y + "\n");
+
 
                 if(X >= section.getBeginCell_X() + section.getCells_Count_X() ||
                         X < section.getBeginCell_X() ||
                         Y >= section.getBeginCell_Y() + section.getCells_Count_Y() ||
                         Y < section.getBeginCell_Y()) {
-                    System.out.println("Зациклено во 2. " + ++snd);
                     continue;
                 }
                 Node node_by_coord = network.GetByCoord(X, Y);
                 if(node_by_coord != null) {
-                    System.out.println("Зациклено в 3. "+ ++trd);
                     continue;
                 }
             }
             else {
-                System.out.println("Зациклено в 4. " + ++f);
                 continue;
             }
 
@@ -105,16 +89,16 @@ public class TopologyGenerator {
                 for (int j = 0; j < additionally_Connect_Count; j++) {
                     do {
                         randomConnectNode = r.nextInt(i + 1);
-                    } while (randomConnectNode == parentID || additionally_Connect_ID.contains(randomConnectNode));
+
+                    } while (randomConnectNode == parentID
+                            || additionally_Connect_ID.contains(randomConnectNode));
                     additionally_Connect_ID.add(randomConnectNode);
                 }
             }
             boolean newNode;
             try {
                 newNode = network.AddNode(t_direction, parentID, additionally_Connect_ID);
-                writer.write("NewNode ?: " + newNode + "\n");
                 if(!newNode) {
-                    System.out.println("Зациклено в 5. "  + ++fives);
                     continue;
                 }
                 network.GetLastNode().setMaxRelationsCount(maxNodeRelationsCount); // ловить

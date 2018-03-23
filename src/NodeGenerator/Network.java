@@ -2,6 +2,7 @@ package NodeGenerator;
 
 import NodeGenerator.GeneratorException.NodeExistException;
 import NodeGenerator.GeneratorException.NodeRelationsCountException;
+import NodeGenerator.GeneratorException.OneselfConnection;
 import NodeGenerator.GeneratorException.OutOfFieldException;
 
 import java.util.ArrayList;
@@ -158,9 +159,13 @@ public class Network {
                         if (t_direction != null) {
                             lastAdded.ConnectNode(ConnectingNode, t_direction);
                         }
+                    }
+                    catch(OneselfConnection e) {
+                        continue;
+                    } catch (NodeRelationsCountException e){
+                        continue;
                     } catch (Exception e) {
-                        if (e.getClass() != NodeRelationsCountException.class)
-                            throw e;
+                        throw e;
                     }
                 }
             }
