@@ -18,15 +18,15 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setScene(new Scene(root, 800, 550));
         primaryStage.show();
-        primaryStage.close();
+        //primaryStage.close();
     }
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         launch(args);
-        Field.GetInstance().setCells_Count(8);
+        /*Field.GetInstance().setCells_Count(8);
         Field.GetInstance().setSizeBorderInPx(1000);
         Field.GetInstance().setMaxSectionsCount(3);
         Field.GetInstance().AddWAN_Section();
@@ -49,7 +49,7 @@ public class Main extends Application {
             drawer.DrawNetwork(_t);
         }
         drawer.SaveImage("E:/Projects/JavaProjects/ComputerNetworksGUI/1.png");
-
+*/
         /*Desktop desktop = null;
         if (Desktop.isDesktopSupported()) {
             desktop = Desktop.getDesktop();

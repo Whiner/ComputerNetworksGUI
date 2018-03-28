@@ -12,7 +12,8 @@ import javafx.scene.paint.Color;
 
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,9 +24,15 @@ public class Drawer {
     private WritableImage writableImage;
     private PixelWriter pixelWriter;
 
-    public Drawer() {
+    public Image GetImage(){
+        BufferedImage bi = SwingFXUtils.fromFXImage((Image)writableImage, null);
+        return SwingFXUtils.toFXImage(bi, writableImage);
+    }
+    Drawer() {
         writableImage = new WritableImage(NodeGenerator.Field.GetInstance().getSizeBorderInPx(),
                 NodeGenerator.Field.GetInstance().getSizeBorderInPx());
+
+
         pixelWriter = writableImage.getPixelWriter();
         FillWhite();
         DrawGrid();
@@ -145,7 +152,7 @@ public class Drawer {
     }
 
 
-    public void DrawNetwork(NodeGenerator.Network network) throws IOException {
+    public void DrawNetwork(NodeGenerator.Network network) {
 
         pixelWriter = writableImage.getPixelWriter();
 

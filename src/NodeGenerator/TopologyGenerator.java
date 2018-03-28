@@ -16,15 +16,15 @@ import java.util.Random;
 public class TopologyGenerator {
     /** бутлупы бывают. генерирует слишком много**/
 //скобки и имена с мал
-    private static Network GenerateNodes(int NodeCount, int maxNodeRelationsCount, Section section) throws Exception {
-        if(NodeCount <= 0)
+    private static Network GenerateNodes(int nodeCount, int maxNodeRelationsCount, Section section) throws Exception {
+        if(nodeCount <= 0)
             throw new Exception("Node count must be greater 0");
         if(maxNodeRelationsCount <= 0 || maxNodeRelationsCount > 5)
             throw new Exception("Max node relations count must be greater 0 and less 5");
         if(section == null)
             throw new Exception("Null section");
-        int t_NodeCount = NodeCount;
-        if(section.getCells_Count_X() * section.getCells_Count_Y() < NodeCount)
+        int t_NodeCount = nodeCount;
+        if(section.getCells_Count_X() * section.getCells_Count_Y() < nodeCount)
             t_NodeCount = section.getCells_Count_X()*section.getCells_Count_Y();
 
         Random r = new Random();
@@ -39,11 +39,9 @@ public class TopologyGenerator {
             throw e;
         }
         int i = 0;
-        BufferedWriter writer = new BufferedWriter(new FileWriter(new File("log.txt")));
+
         while(i < t_NodeCount - 1 && !network.isAllHaveMaxRelations()){
             // генерация остальных
-
-
             int additionally_Connect_Count;
             if(i < maxNodeRelationsCount) { //до того как будет достаточно узлов для максимального количества связей будет i
                 additionally_Connect_Count = r.nextInt(i + 1);
@@ -51,8 +49,6 @@ public class TopologyGenerator {
             else {
                 additionally_Connect_Count = r.nextInt(maxNodeRelationsCount);
             }
-
-            //writer.write("Max Rel Count: " + additionally_Connect_Count + "\n");
 
             Direction t_direction = Direction.RandomDirection();  // направление
             int parentID = r.nextInt(i + 1); //рандомный родительский узел
@@ -113,15 +109,14 @@ public class TopologyGenerator {
             i++;
         }
         section.setFill();
-        writer.close();
         return network;
     }
 
-    public static Network GenerateWAN(int NodeCount, int MaxNodeRelationsCount) throws Exception {
-        if(NodeCount <= 0) {
+    public static Network GenerateWAN(int nodeCount, int maxNodeRelationsCount) throws Exception {
+        if(nodeCount <= 0) {
             throw new Exception("Node count must be greater 0");
         }
-        if(MaxNodeRelationsCount <= 0 || MaxNodeRelationsCount > 5) {
+        if(maxNodeRelationsCount <= 0 || maxNodeRelationsCount > 5) {
             throw new NodeRelationsCountException("Max node relations count must be greater 0 and less 5");
         }
         if(Field.GetInstance().getWAN_Section() == null) {
@@ -132,8 +127,8 @@ public class TopologyGenerator {
         Field.GetInstance().getWAN_Section().setFill();
 
         Network network = GenerateNodes(
-                NodeCount,
-                MaxNodeRelationsCount,
+                nodeCount,
+                maxNodeRelationsCount,
                 Field.GetInstance().getWAN_Section());
             network.setType(NetworkType.WAN);
         return network;
@@ -141,11 +136,11 @@ public class TopologyGenerator {
 
     }
 
-    public static Network GenerateLAN(int NodeCount, int MaxNodeRelationsCount) throws Exception {
-        if(NodeCount <= 0){
+    public static Network GenerateLAN(int nodeCount, int maxNodeRelationsCount) throws Exception {
+        if(nodeCount <= 0){
             throw new Exception("Node count must be greater 0");
         }
-        if(MaxNodeRelationsCount <= 0 || MaxNodeRelationsCount > 5) {
+        if(maxNodeRelationsCount <= 0 || maxNodeRelationsCount > 5) {
             throw new NodeRelationsCountException("Max node relations count must be greater 0 and less 5");
         }
         if(Field.GetInstance().getLAN_Sections().isEmpty()) {
@@ -165,8 +160,8 @@ public class TopologyGenerator {
         }
 
         Network network = GenerateNodes(
-                NodeCount,
-                MaxNodeRelationsCount,
+                nodeCount,
+                maxNodeRelationsCount,
                 t_Section);
         network.setType(NetworkType.LAN);
         return network;
