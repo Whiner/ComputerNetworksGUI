@@ -1,4 +1,4 @@
-package NodeGenerator.GeneratorException;
+package nodeGenerator.generatorException;
 
 public class OneselfConnection extends Exception {
     public OneselfConnection(String message) {

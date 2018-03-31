@@ -1,9 +1,10 @@
-package NodeGenerator;
+package nodeGenerator;
 
-import NodeGenerator.GeneratorException.NodeExistException;
-import NodeGenerator.GeneratorException.NodeRelationsCountException;
-import NodeGenerator.GeneratorException.OneselfConnection;
-import NodeGenerator.GeneratorException.OutOfFieldException;
+import nodeGenerator.drawer.Field;
+import nodeGenerator.generatorException.NodeExistException;
+import nodeGenerator.generatorException.NodeRelationsCountException;
+import nodeGenerator.generatorException.OneselfConnection;
+import nodeGenerator.generatorException.OutOfFieldException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,9 @@ public class Network {
     private NetworkType Type;
     private List<Node> Nodes;
     private int MaxNodeCount;
+
+
+
     public Node GetLastNode(){
         return Nodes.get(Nodes.size() - 1);
     }
@@ -44,7 +48,7 @@ public class Network {
        return entered;
     }
 
-    public NodeGenerator.Node GetNodeByID(int ID){
+    public nodeGenerator.Node GetNodeByID(int ID){
         for(Node t: Nodes)
             if(t.getID() == ID)
                 return t;
@@ -94,8 +98,8 @@ public class Network {
         if(!Nodes.isEmpty())
             throw new NodeExistException("Parent Node is already exist");
         if(CellNumber_X < 0 || CellNumber_Y < 0
-                || CellNumber_X >= Field.GetInstance().getCells_Count()
-                || CellNumber_Y >= Field.GetInstance().getCells_Count())
+                || CellNumber_X >= Field.getInstance().getCellsCount()
+                || CellNumber_Y >= Field.getInstance().getCellsCount())
             throw new OutOfFieldException("Out from field borders", CellNumber_X , CellNumber_Y);
         Nodes.add(new Node(Type, CellNumber_X, CellNumber_Y, 0));
 
@@ -118,10 +122,10 @@ public class Network {
         int ID;
         Node nodeByDirection = parentNode.GetNodeByDirection(direction);
         int cell_X = Direction.Check_X_by_Direction(parentNode, direction);
-        if(cell_X < 0 || cell_X >= Field.GetInstance().getCells_Count())
+        if(cell_X < 0 || cell_X >= Field.getInstance().getCellsCount())
             throw new OutOfFieldException("Out from field borders. Horizontal cell index is " + cell_X);
         int cell_Y = Direction.Check_Y_by_Direction(parentNode, direction);
-        if(cell_Y < 0 || cell_Y >= Field.GetInstance().getCells_Count())
+        if(cell_Y < 0 || cell_Y >= Field.getInstance().getCellsCount())
             throw new OutOfFieldException("Out from field borders. Vertical cell index is " + cell_Y);
 
         if(nodeByDirection == null)
@@ -145,9 +149,7 @@ public class Network {
                 Nodes.remove(lastAdded);
             connectWith = null;
         }
-        catch(Exception e){
-            throw e;
-        }
+
         if(connectWith != null) {
             for (int t : connectWith) {
                 Node ConnectingNode = GetNodeByID(t);
@@ -164,8 +166,6 @@ public class Network {
                         continue;
                     } catch (NodeRelationsCountException e){
                         continue;
-                    } catch (Exception e) {
-                        throw e;
                     }
                 }
             }
@@ -198,7 +198,7 @@ public class Network {
         Type = type;
     }
 
-    public List<NodeGenerator.Node> getNodes() {
+    public List<nodeGenerator.Node> getNodes() {
         return Nodes;
     }
 

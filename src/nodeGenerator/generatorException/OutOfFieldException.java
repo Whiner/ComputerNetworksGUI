@@ -1,4 +1,4 @@
-package NodeGenerator.GeneratorException;
+package nodeGenerator.generatorException;
 
 public class OutOfFieldException extends Exception {
     private int x, y;

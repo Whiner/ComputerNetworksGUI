@@ -1,4 +1,4 @@
-package NodeGenerator;
+package nodeGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

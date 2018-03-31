@@ -1,13 +1,11 @@
-package NodeGenerator;
+package nodeGenerator;
 
 
-import NodeGenerator.GeneratorException.NodeRelationsCountException;
-import NodeGenerator.GeneratorException.OutOfFieldException;
-import NodeGenerator.GeneratorException.SectionException;
+import nodeGenerator.drawer.Field;
+import nodeGenerator.generatorException.NodeRelationsCountException;
+import nodeGenerator.generatorException.OutOfFieldException;
+import nodeGenerator.generatorException.SectionException;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -30,14 +28,12 @@ public class TopologyGenerator {
         Random r = new Random();
         Network network = new Network();
 
-        try {
-            network.CreateParentNode( // создает родительский элемент
+
+        network.CreateParentNode( // создает родительский элемент
                     section.getBeginCell_X() + r.nextInt(section.getCells_Count_X()),
                     section.getBeginCell_Y() + r.nextInt(section.getCells_Count_Y()));
-            network.GetLastNode().setMaxRelationsCount(maxNodeRelationsCount);
-        } catch (Exception e){
-            throw e;
-        }
+        network.GetLastNode().setMaxRelationsCount(maxNodeRelationsCount);
+
         int i = 0;
 
         while(i < t_NodeCount - 1 && !network.isAllHaveMaxRelations()){
@@ -119,17 +115,17 @@ public class TopologyGenerator {
         if(maxNodeRelationsCount <= 0 || maxNodeRelationsCount > 5) {
             throw new NodeRelationsCountException("Max node relations count must be greater 0 and less 5");
         }
-        if(Field.GetInstance().getWAN_Section() == null) {
+        if(Field.getInstance().getWanSection() == null) {
             throw new NullPointerException("WAN Section is null");
         }
 
 
-        Field.GetInstance().getWAN_Section().setFill();
+        Field.getInstance().getWanSection().setFill();
 
         Network network = GenerateNodes(
                 nodeCount,
                 maxNodeRelationsCount,
-                Field.GetInstance().getWAN_Section());
+                Field.getInstance().getWanSection());
             network.setType(NetworkType.WAN);
         return network;
 
@@ -143,12 +139,12 @@ public class TopologyGenerator {
         if(maxNodeRelationsCount <= 0 || maxNodeRelationsCount > 5) {
             throw new NodeRelationsCountException("Max node relations count must be greater 0 and less 5");
         }
-        if(Field.GetInstance().getLAN_Sections().isEmpty()) {
+        if(Field.getInstance().getLanSections().isEmpty()) {
             throw new NullPointerException("LAN sections is null");
         }
 
         Section t_Section = null;
-        for(Section t: Field.GetInstance().getLAN_Sections()){
+        for(Section t: Field.getInstance().getLanSections()){
             if(!t.isFill())
             {
                 t_Section = t;

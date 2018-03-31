@@ -1,4 +1,4 @@
-package NodeGenerator.GeneratorException;
+package nodeGenerator.generatorException;
 
 public class NodeRelationsCountException extends Exception {
     public NodeRelationsCountException(String message) {

@@ -1,4 +1,4 @@
-package NodeGenerator;
+package nodeGenerator;
 
 public class NodeNavigation {
     private Node node;

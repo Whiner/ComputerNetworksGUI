@@ -1,7 +1,7 @@
-package NodeGenerator;
+package nodeGenerator;
 
-import NodeGenerator.GeneratorException.NodeRelationsCountException;
-import NodeGenerator.GeneratorException.OneselfConnection;
+import nodeGenerator.generatorException.NodeRelationsCountException;
+import nodeGenerator.generatorException.OneselfConnection;
 
 import java.util.ArrayList;
 import java.util.List;

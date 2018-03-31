@@ -1,4 +1,4 @@
-package NodeGenerator.GeneratorException;
+package nodeGenerator.generatorException;
 
 public class NodeExistException extends Exception {
     public NodeExistException(String message) {
