@@ -1,7 +1,9 @@
 package nodeGenerator;
 
 
-import nodeGenerator.drawer.Field;
+import nodeGenerator.field.Field;
+import nodeGenerator.field.Section;
+import nodeGenerator.generatorException.NodeExistException;
 import nodeGenerator.generatorException.NodeRelationsCountException;
 import nodeGenerator.generatorException.OutOfFieldException;
 import nodeGenerator.generatorException.SectionException;
@@ -9,12 +11,13 @@ import nodeGenerator.generatorException.SectionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class TopologyGenerator {
     /** бутлупы бывают. генерирует слишком много**/
 //скобки и имена с мал
-    private static Network GenerateNodes(int nodeCount, int maxNodeRelationsCount, Section section) throws Exception {
+   /* private static Network GenerateNodes(int nodeCount, int maxNodeRelationsCount, Section section) throws Exception {
         if(nodeCount <= 0)
             throw new Exception("Node count must be greater 0");
         if(maxNodeRelationsCount <= 0 || maxNodeRelationsCount > 5)
@@ -107,6 +110,64 @@ public class TopologyGenerator {
         section.setFill();
         return network;
     }
+*/
+
+    private static Network newGenerateNodes(int nodeCount, int maxNodeRelationsCount, Section section) throws Exception {
+        if(nodeCount <= 0)
+            throw new Exception("Node count must be greater 0");
+        if(maxNodeRelationsCount <= 0 || maxNodeRelationsCount > 5)
+            throw new Exception("Max node relations count must be greater 0 and less 5");
+        if(section == null)
+            throw new Exception("Null section");
+        int t_NodeCount = nodeCount;
+        if(section.getCells_Count_X() * section.getCells_Count_Y() < nodeCount)
+            t_NodeCount = section.getCells_Count_X()*section.getCells_Count_Y();
+
+        Network network = new Network();
+
+        int i = 0;
+
+        while(i < t_NodeCount){
+            int x = ThreadLocalRandom.current().nextInt(
+                    section.getBeginCell_X(),
+                    section.getBeginCell_X() + section.getCells_Count_X());
+            //System.out.println("X| " + section.getBeginCell_X() + "|" + (section.getBeginCell_X() + section.getCells_Count_X()) + "|" + x);
+            int y = ThreadLocalRandom.current().nextInt(
+                    section.getBeginCell_Y(),
+                    section.getBeginCell_Y() + section.getCells_Count_Y());
+
+            //System.out.println("Y| " + section.getBeginCell_Y() + "|" + (section.getBeginCell_Y() + section.getCells_Count_Y()) + "|" + y);
+            if(network.GetByCoord(x, y) != null){
+                continue;
+            }
+            List<Integer> connectWith = new ArrayList<>();
+            int connectQuantity;
+            if(i == 0){
+                connectQuantity = 0;
+            }
+            else{
+                connectQuantity = ThreadLocalRandom.current().nextInt(1, Math.min(i, maxNodeRelationsCount) + 1);
+            }
+
+            for(int j = 0; j < connectQuantity; j++){
+                int randomConnectNode;
+                do {
+                    randomConnectNode = ThreadLocalRandom.current().nextInt(0, i);
+                } while (connectWith.contains(randomConnectNode));
+                connectWith.add(randomConnectNode);
+            }
+            try{
+                network.addNode(x, y, connectWith);
+            }
+            catch(NodeExistException e){
+                continue;
+            }
+            i++;
+        }
+        section.setFill();
+        return network;
+    }
+
 
     public static Network GenerateWAN(int nodeCount, int maxNodeRelationsCount) throws Exception {
         if(nodeCount <= 0) {
@@ -122,7 +183,7 @@ public class TopologyGenerator {
 
         Field.getInstance().getWanSection().setFill();
 
-        Network network = GenerateNodes(
+        Network network = newGenerateNodes(
                 nodeCount,
                 maxNodeRelationsCount,
                 Field.getInstance().getWanSection());
@@ -155,7 +216,7 @@ public class TopologyGenerator {
             throw new SectionException("All LAN sections is full");
         }
 
-        Network network = GenerateNodes(
+        Network network = newGenerateNodes(
                 nodeCount,
                 maxNodeRelationsCount,
                 t_Section);

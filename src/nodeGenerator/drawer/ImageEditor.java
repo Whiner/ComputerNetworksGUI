@@ -8,7 +8,7 @@ import java.awt.image.WritableRaster;
 public class ImageEditor {
     public static Image resizeImage(Image image, int scaledWidth, int scaledHeight, boolean preserveAlpha){
 
-        int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+        int imageType = BufferedImage.TYPE_INT_ARGB;
         BufferedImage scaledBI = new BufferedImage(scaledWidth, scaledHeight, imageType);
         Graphics2D g = scaledBI.createGraphics();
         if (preserveAlpha) {

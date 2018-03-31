@@ -1,7 +1,6 @@
-package nodeGenerator.drawer;
+package nodeGenerator.field;
 
 import nodeGenerator.NetworkType;
-import nodeGenerator.Section;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,10 +9,9 @@ import java.util.List;
 public class Node {
     private NetworkType networkType;
     private int RelationsCount;
-    private List<NodeNavigation> ConnectedNodes;
+    private List<Node> ConnectedNodes;
     private int CellNumber_X, CellNumber_Y;
     private int MaxRelationsCount;
-    private int Size;
     private int ID;
 
 
@@ -28,7 +27,7 @@ public class Node {
 
 
 
-    public void ConnectNode(Node node, Direction direction) throws Exception {
+    /*public void ConnectNode(Node node, Direction direction) throws Exception {
         if(node == null)
             throw new NullPointerException("Node is null");
         if(node.equals(this))
@@ -52,25 +51,15 @@ public class Node {
 
 
     }
-    public boolean DeleteConnectedNode(int ID) {
+    */
+    public boolean deleteConnectedNode(int ID) {
         RelationsCount--;
-        for(NodeNavigation t: ConnectedNodes)
-            if(t.getNode().getID() == ID)
+        for(Node t: ConnectedNodes)
+            if(t.getID() == ID)
                 return ConnectedNodes.remove(t);
         return false;
     }
-    public Node GetNodeByDirection(Direction direction){
-        for(NodeNavigation t: ConnectedNodes)
-            if(t.getDirection() == direction)
-                return t.getNode();
-        return null;
-    }
-    public void CalculateSize(int FieldSizeInPixels, int LineSectionsCount) throws Exception {
-        if(FieldSizeInPixels < 1 || LineSectionsCount < 1)
-            throw new Exception("Incorrect value");
-        else
-            Size = FieldSizeInPixels / LineSectionsCount;
-    }
+
 
     public Node() {
         ConnectedNodes = new ArrayList<>();
@@ -86,20 +75,6 @@ public class Node {
         MaxRelationsCount = 8888888;
     }
 
-    public Node(NetworkType networkType, List<NodeNavigation> connectedNodes, int coord_x, int coord_y, int size, int ID) throws Exception {
-        this.networkType = networkType;
-        if(connectedNodes == null)
-            throw new NullPointerException("Connected Nodes list is NULL");
-        RelationsCount = connectedNodes.size();
-        ConnectedNodes = connectedNodes;
-        CellNumber_X = coord_x;
-        CellNumber_Y = coord_y;
-        if(size < 0)
-            throw new Exception("Size must be greater than 0");
-        Size = size;
-        this.ID = ID;
-        MaxRelationsCount = 8888888;
-    }
 
     public int getID() {
         return ID;
@@ -117,20 +92,11 @@ public class Node {
         this.networkType = networkType;
     }
 
-    public List<NodeNavigation> getConnectedNodes() {
+    public List<Node> getConnectedNodes() {
         return ConnectedNodes;
     }
 
 
-    public int getSize() {
-        return Size;
-    }
-
-    public void setSize(int size) throws Exception {
-        if(size < 0)
-            throw new Exception("Size must be greater than 0");
-        Size = size;
-    }
 
     public int getCellNumber_X() {
         return CellNumber_X;
@@ -168,7 +134,30 @@ public class Node {
 
     public void setMaxRelationsCount(int maxRelationsCount) throws Exception {
         if(maxRelationsCount < 0)
-            throw new NodeRelationsCountException("Max relation count less than 0");
+            throw new NodeRelationsCountException("Максимальное количество связей не может быть меньше 0");
         MaxRelationsCount = maxRelationsCount;
+    }
+
+    public void connectNode(Node connectingNode) throws OneselfConnection, NodeRelationsCountException {
+        if(connectingNode == null)
+            throw new NullPointerException("Соединяемый узел - null");
+        if(connectingNode.equals(this))
+            throw new OneselfConnection("Соединение с самим собой");
+        if(this.MaxRelationsCount <= RelationsCount
+                || connectingNode.MaxRelationsCount <= connectingNode.RelationsCount)
+            throw new NodeRelationsCountException("Максимальное количество связей достигнуто");
+
+        if(!ConnectedNodes.contains(connectingNode))
+        {
+            ConnectedNodes.add(connectingNode);
+            RelationsCount++;
+        }
+
+        if(!connectingNode.ConnectedNodes.contains(connectingNode))
+        {
+            connectingNode.ConnectedNodes.add(connectingNode);
+            connectingNode.RelationsCount++;
+        }
+
     }
 }

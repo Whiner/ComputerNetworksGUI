@@ -1,6 +1,8 @@
 package nodeGenerator.drawer;
 
 
+import nodeGenerator.field.Field;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
@@ -25,6 +27,7 @@ public class DrawConfigs {
         }
         try{
             nodeSize = Field.getInstance().getFieldSize_px() / (Field.getInstance().getCellsCount() * 2);
+            this.nodeImage = ImageEditor.resizeImage(nodeImage, nodeSize, nodeSize, true);
         }
         catch (Exception e){
             throw new Exception("Division by 0");

@@ -1,6 +1,6 @@
 package nodeGenerator;
 
-import nodeGenerator.drawer.Field;
+import nodeGenerator.field.Field;
 import nodeGenerator.generatorException.NodeExistException;
 import nodeGenerator.generatorException.NodeRelationsCountException;
 import nodeGenerator.generatorException.OneselfConnection;
@@ -106,7 +106,7 @@ public class Network {
     }
 
     /**между соедияемыми не должно быть других узлов. Иначе соединение проигнорируется*/
-    public boolean AddNode(Direction direction, int parentNodeID, List<Integer> connectWith) throws Exception {
+    /*public boolean AddNode(Direction direction, int parentNodeID, List<Integer> connectWith) throws Exception {
         if(Nodes.isEmpty())
             throw new Exception("You must create parent node firstly");
         if(direction == Direction.None)
@@ -173,7 +173,40 @@ public class Network {
 
         return newNode;
     }
+*/
+    public void addNode(int x, int y, List<Integer> connectWith) throws NodeRelationsCountException, NodeExistException {
+        if(Nodes.size() + 1 > MaxNodeCount) {
+            throw new NodeExistException("Максимальное количество узлов в этой сети уже достигнуто");
+        }
 
+        if(GetByCoord(x, y) != null){
+            throw new NodeExistException("В этой ячейке уже существует узел");
+        }
+        int ID;
+        if(Nodes.isEmpty()) {
+            ID = 0;
+        }
+        else {
+            ID = Nodes.get(Nodes.size() - 1).getID() + 1;
+        }
+
+        Nodes.add(new Node(Type, x, y, ID));
+
+        Node lastAdded = Nodes.get(ID);
+
+        for (int t : connectWith) {
+            Node ConnectingNode = GetNodeByID(t);
+            if (ConnectingNode != null) {
+                /*if (CheckIntersection(lastAdded, ConnectingNode)){
+                    continue;
+                }*/
+                try {
+                    lastAdded.connectNode(ConnectingNode);
+                }
+                catch(OneselfConnection | NodeRelationsCountException e) {}
+            }
+        }
+    }
 
     public int Size(){
         return Nodes.size();

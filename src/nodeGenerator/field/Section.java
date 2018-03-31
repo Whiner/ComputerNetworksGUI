@@ -1,4 +1,6 @@
-package nodeGenerator;
+package nodeGenerator.field;
+
+import nodeGenerator.NetworkType;
 
 public class Section {
 

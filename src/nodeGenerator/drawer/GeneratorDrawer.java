@@ -3,6 +3,8 @@ package nodeGenerator.drawer;
 import nodeGenerator.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import nodeGenerator.field.Field;
+import nodeGenerator.field.Section;
 
 
 import javax.imageio.ImageIO;
@@ -28,9 +30,23 @@ public class GeneratorDrawer {
             bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             graphics2D = (Graphics2D) bufferedImage.getGraphics();
             fillBackground(Color.WHITE);
+
+            drawCells();
             drawSections();
         }
 
+        private void drawCells(){
+            graphics2D.setColor(Color.PINK);
+            for (int i = 0; i < Field.getInstance().getCellsCount() * 2; i++){
+                graphics2D.drawLine(i * DrawConfigs.getInstance().getNodeSize(),
+                        0,
+                        i * DrawConfigs.getInstance().getNodeSize(),
+                        Field.getInstance().getFieldSize_px());
+                graphics2D.drawLine(0, i * DrawConfigs.getInstance().getNodeSize(),
+                        Field.getInstance().getFieldSize_px(),
+                        i * DrawConfigs.getInstance().getNodeSize());
+            }
+        }
         private void drawSections() {
 
             Section section = Field.getInstance().getWanSection();
@@ -39,7 +55,7 @@ public class GeneratorDrawer {
             graphics2D.drawLine(0, y, Field.getInstance().getFieldSize_px(), y);
 
             for (Section t : Field.getInstance().getLanSections()) {
-                int x = t.getCells_Count_X() * DrawConfigs.getInstance().getNodeSize() * 2;
+                int x = t.getBeginCell_X() * DrawConfigs.getInstance().getNodeSize() * 2;
                 graphics2D.drawLine(x, t.getBeginCell_Y() * DrawConfigs.getInstance().getNodeSize() * 2,
                         x, Field.getInstance().getFieldSize_px());
             }
@@ -90,10 +106,10 @@ public class GeneratorDrawer {
         }
 
 
-        public void drawNetwork(nodeGenerator.Network network) throws Exception {
+        public void drawNetwork(Network network) throws Exception {
             for (Node node: network.getNodes()){
-                for(NodeNavigation nodeNavigation: node.getConnectedNodes()) {
-                    drawConnection(node, nodeNavigation.getNode());
+                for(Node connectNode: node.getConnectedNodes()) {
+                    drawConnection(node, connectNode);
                 }
                 drawNode(node);
             }
