@@ -5,14 +5,13 @@ import nodeGenerator.NetworkType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Field { //что то сделать со связью с генератором. как её избежать?
+public class Field {
 
     private int cellsCount = -1;
     private int fieldSize_px = -1;
 
     private Section wanSection;
     private List<Section> lanSections;
-    private int maxSectionsCount = -1;
 
     public int getLAN_Field_Count() {
         return lanSections.size();
@@ -26,14 +25,12 @@ public class Field { //что то сделать со связью с гене�
         return lanSections;
     }
 
-    public int getMaxSectionsCount() {
-        return maxSectionsCount;
-    }
+
 
     public boolean AddWAN_Section(){
         if(wanSection != null)
             return false;
-        wanSection = new Section("",
+        wanSection = new Section("WAN",
                 NetworkType.WAN,
                 0,
                 0,
@@ -43,16 +40,15 @@ public class Field { //что то сделать со связью с гене�
     }
 
     public boolean CreateLAN_Sections(int count){
-        if(lanSections != null)
+        if(lanSections != null) {
             return false;
-
-        if(count > maxSectionsCount && maxSectionsCount != -1)
-            count = maxSectionsCount;
+        }
 
         lanSections = new ArrayList<>();
+
         for (int i = 0; i < count; i++){
             lanSections.add(new Section(
-                    "" + (lanSections.size() + i + 1),
+                    "LAN" + (i + 1),
                     NetworkType.LAN,
                     (cellsCount / count) * i,
                     cellsCount / 2 ,
@@ -107,7 +103,5 @@ public class Field { //что то сделать со связью с гене�
     private Field() {}
 
 
-    public void setMaxSectionsCount(int maxSectionsCount) {
-        this.maxSectionsCount = maxSectionsCount;
-    }
+
 }

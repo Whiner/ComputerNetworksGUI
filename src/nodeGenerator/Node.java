@@ -1,6 +1,6 @@
 package nodeGenerator;
 
-import nodeGenerator.generatorException.NodeRelationsCountException;
+import nodeGenerator.generatorException.NodeRelationsException;
 import nodeGenerator.generatorException.OneselfConnection;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class Node {
     private int ID;
 
 
-    public Node(NetworkType networkType, int cellNumber_X, int cellNumber_Y, int ID) {
+    Node(NetworkType networkType, int cellNumber_X, int cellNumber_Y, int ID) {
         this.networkType = networkType;
         CellNumber_X = cellNumber_X;
         CellNumber_Y = cellNumber_Y;
@@ -26,32 +26,6 @@ public class Node {
     }
 
 
-
-    /*public void ConnectNode(Node node, Direction direction) throws Exception {
-        if(node == null)
-            throw new NullPointerException("Node is null");
-        if(node.equals(this))
-            throw new OneselfConnection("Comparison of oneself node");
-        if(this.MaxRelationsCount <= RelationsCount
-                || node.MaxRelationsCount <= node.RelationsCount)
-            throw new NodeRelationsCountException("Max relations count");
-        NodeNavigation nodeNavigation = new NodeNavigation(node, direction);
-        if(!ConnectedNodes.contains(nodeNavigation))
-        {
-            ConnectedNodes.add(nodeNavigation);
-            RelationsCount++;
-        }
-
-        nodeNavigation = new NodeNavigation(this, direction.reverse());
-        if(!node.ConnectedNodes.contains(nodeNavigation))
-        {
-            node.ConnectedNodes.add(nodeNavigation);
-            node.RelationsCount++;
-        }
-
-
-    }
-    */
     public boolean deleteConnectedNode(int ID) {
         RelationsCount--;
         for(Node t: ConnectedNodes)
@@ -61,22 +35,7 @@ public class Node {
     }
 
 
-    public Node() {
-        ConnectedNodes = new ArrayList<>();
-        RelationsCount = 0;
-        MaxRelationsCount = 8888888;
-    }
-
-    public Node(NetworkType networkType, int ID) {
-        this.ConnectedNodes = new ArrayList<>();
-        this.networkType = networkType;
-        this.ID = ID;
-        this.RelationsCount = 0;
-        MaxRelationsCount = 8888888;
-    }
-
-
-    public int getID() {
+    int getID() {
         return ID;
     }
 
@@ -118,7 +77,7 @@ public class Node {
     public boolean equals(Object object)
     {
         boolean equal = false;
-        if (object != null && object instanceof Node)
+        if (object instanceof Node)
             equal = this.CellNumber_X == ((Node)object).CellNumber_X
             && this.CellNumber_Y == ((Node)object).CellNumber_Y && this.ID == ((Node)object).ID;
         return equal;
@@ -134,30 +93,35 @@ public class Node {
 
     public void setMaxRelationsCount(int maxRelationsCount) throws Exception {
         if(maxRelationsCount < 0)
-            throw new NodeRelationsCountException("Максимальное количество связей не может быть меньше 0");
+            throw new NodeRelationsException("Максимальное количество связей не может быть меньше 0");
         MaxRelationsCount = maxRelationsCount;
     }
 
-    public void connectNode(Node connectingNode) throws OneselfConnection, NodeRelationsCountException {
-        if(connectingNode == null)
+
+    public void connectNode(Node connectingNode, boolean forcibly) throws OneselfConnection, NodeRelationsException {
+        if(connectingNode == null) {
             throw new NullPointerException("Соединяемый узел - null");
-        if(connectingNode.equals(this))
+        }
+        if(connectingNode.equals(this)) {
             throw new OneselfConnection("Соединение с самим собой");
-        if(this.MaxRelationsCount <= RelationsCount
-                || connectingNode.MaxRelationsCount <= connectingNode.RelationsCount)
-            throw new NodeRelationsCountException("Максимальное количество связей достигнуто");
-
-        if(!ConnectedNodes.contains(connectingNode))
-        {
-            ConnectedNodes.add(connectingNode);
-            RelationsCount++;
+        }
+        if(!forcibly) {
+            if (this.MaxRelationsCount <= RelationsCount
+                    || connectingNode.MaxRelationsCount <= connectingNode.RelationsCount) {
+                throw new NodeRelationsException("Максимальное количество связей достигнуто");
+            }
         }
 
-        if(!connectingNode.ConnectedNodes.contains(connectingNode))
-        {
-            connectingNode.ConnectedNodes.add(connectingNode);
-            connectingNode.RelationsCount++;
+        if(this.ConnectedNodes.contains(connectingNode) || connectingNode.ConnectedNodes.contains(this)){
+            throw new NodeRelationsException("Связь уже существует");
         }
+
+        ConnectedNodes.add(connectingNode);
+        RelationsCount++;
+
+        connectingNode.ConnectedNodes.add(this);
+        connectingNode.RelationsCount++;
+
 
     }
 }

@@ -39,11 +39,11 @@ public class Topology {
         return WAN;
     }
 
-    public void SetWAN() {
+    public void setWAN() {
         this.WAN = true;
     }
 
-    public int getLAN() {
+    public int get_LAN_Quantity() {
         return LAN;
     }
 

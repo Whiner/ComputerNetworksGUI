@@ -1,7 +1,7 @@
 package nodeGenerator.generatorException;
 
-public class NodeRelationsCountException extends Exception {
-    public NodeRelationsCountException(String message) {
+public class NodeRelationsException extends Exception {
+    public NodeRelationsException(String message) {
         super(message);
     }
 
