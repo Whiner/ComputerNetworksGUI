@@ -3,7 +3,6 @@ package nodeGenerator.drawer;
 import nodeGenerator.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import nodeGenerator.drawer.other.ColorUse;
 import nodeGenerator.drawer.other.Coordinates;
 import nodeGenerator.drawer.other.NodeCoordinatesConvertor;
 import nodeGenerator.field.Field;
@@ -23,13 +22,6 @@ public class GeneratorDrawer {
         private int height;
         private int width;
 
-        private ColorUse[] selectionsColors = {
-                new ColorUse(new Color(255, 233, 233, 25)),
-                new ColorUse(new Color(255, 35, 12, 25)),
-                new ColorUse(new Color(123, 123, 123, 25)),
-                new ColorUse(new Color(212, 165, 16, 25)),
-                new ColorUse(new Color(222, 45, 31, 25)),
-                new ColorUse(new Color(255, 185, 196, 25))};
 
 
         public Image getImage(){

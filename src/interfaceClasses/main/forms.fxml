@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="743.0" prefWidth="898.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="interfaceClasses.main.Controller">
+   <children>
+      <Button id="button" fx:id="taskButton" layoutX="20.0" layoutY="196.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="243.0" text="Получить задание" />
+      <AnchorPane id="top-panel" prefHeight="77.0" prefWidth="730.0" stylesheets="@../MainCSS.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label id="label" layoutX="72.0" layoutY="20.0" text="Компьютерные сети" AnchorPane.leftAnchor="72.0" />
+            <ImageView fx:id="top_panel_imageView" fitHeight="52.0" fitWidth="52.0" layoutX="14.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0">
+               <image>
+                  <Image url="@knt.png" />
+               </image></ImageView>
+         </children>
+      </AnchorPane>
+      <ImageView fx:id="topology_imageView" fitHeight="607.0" fitWidth="709.0" layoutX="277.0" layoutY="101.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="67.0" AnchorPane.leftAnchor="277.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="101.0">
+         <image>
+            <Image url="@471e69d05dc4a7cf160cf7af9c34.jpeg" />
+         </image></ImageView>
+      <Button id="button" fx:id="generationButton" layoutX="20.0" layoutY="101.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="243.0" text="Генерация" />
+      <Button id="button" fx:id="generationParametersButton" layoutX="20.0" layoutY="148.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="243.0" text="Параметры генерации" />
+      <Button id="button" fx:id="aboutProgramButton" layoutX="20.0" layoutY="243.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="243.0" text="О программе" />
+   </children>
+</AnchorPane>

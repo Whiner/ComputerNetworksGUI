@@ -11,8 +11,8 @@ import javafx.scene.image.Image;
 import java.io.File;
 import java.util.List;
 
-class pozhiloiClass {
-    static Image pozhiloiMetod() throws Exception {
+public class pozhiloiClass {
+    public static Image pozhiloiMetod() throws Exception {
         if(Field.getInstance().getLanSections() != null){
             Field.getInstance().getLanSections().clear();
         }

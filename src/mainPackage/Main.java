@@ -14,17 +14,19 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 800, 550));
+        Parent root = FXMLLoader.load(getClass().getResource("../interfaceClasses/main/forms.fxml"));
+        primaryStage.setTitle("Компьютерные сети");
+        primaryStage.setScene(new Scene(root));
+        primaryStage.setResizable(false);
         primaryStage.show();
-        primaryStage.close();
+
+        //primaryStage.close();
     }
 
 
     public static void main(String[] args) throws Exception {
         launch(args);
-        pozhiloiClass.pozhiloiMetod();
+        /*pozhiloiClass.pozhiloiMetod();
 
         Desktop desktop = null;
         if (Desktop.isDesktopSupported()) {
@@ -34,7 +36,7 @@ public class Main extends Application {
             desktop.open(new File("E:/Projects/JavaProjects/ComputerNetworksGUI/1.png"));
         } catch (IOException ioe) {
             ioe.printStackTrace();
-        }
+        }*/
         /*networks = t.getNetworks();
         for (Network _t: networks){
             System.out.println("--------------------------------------------------------");

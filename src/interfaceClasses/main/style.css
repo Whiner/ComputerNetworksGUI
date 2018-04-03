@@ -1,0 +1,22 @@
+.button{
+    -fx-background-color:#061e26;
+    -fx-text-fill:#26c9ff;
+    -fx-font-size:18px;
+}
+
+.button:hover{
+    -fx-background-color:#0b2b36;
+}
+
+#top-panel{
+    -fx-background-color:#061e26;
+}
+
+#main_panel{
+    -fx-background-color:#deebf8;
+}
+
+#label{
+    -fx-font-size:26px;
+    -fx-text-fill:white;
+}
