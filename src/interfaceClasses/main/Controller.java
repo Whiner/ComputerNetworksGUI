@@ -19,9 +19,6 @@ public class Controller implements Initializable {
     private ImageView top_panel_imageView;
 
     @FXML
-    private ImageView topology_imageView;
-
-    @FXML
     private Button generationButton;
 
     @FXML
@@ -31,13 +28,8 @@ public class Controller implements Initializable {
     private Button aboutProgramButton;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         generationButton.setOnAction(event -> {
-            try {
-                topology_imageView.setImage(pozhiloiClass.pozhiloiMetod());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
         });
     }
 

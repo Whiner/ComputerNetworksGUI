@@ -35,7 +35,7 @@ public class Node {
     }
 
 
-    int getID() {
+    public int getID() {
         return ID;
     }
 

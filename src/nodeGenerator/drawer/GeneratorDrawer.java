@@ -1,5 +1,6 @@
 package nodeGenerator.drawer;
 
+import javafx.util.Pair;
 import nodeGenerator.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
@@ -8,7 +9,8 @@ import nodeGenerator.drawer.other.NodeCoordinatesConvertor;
 import nodeGenerator.field.Field;
 import nodeGenerator.field.Section;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -66,7 +68,7 @@ public class GeneratorDrawer {
                     DrawConfigs.getInstance().getNodeSize() / 2);
 
             for (Section t : Field.getInstance().getLanSections()) {
-                graphics2D.setColor(new Color(
+                graphics2D.setColor(new Color( //генератор цветов сделать с разными оттенками
                         ThreadLocalRandom.current().nextInt(0, 256),
                         ThreadLocalRandom.current().nextInt(0, 256),
                         ThreadLocalRandom.current().nextInt(0, 256),
@@ -114,8 +116,13 @@ public class GeneratorDrawer {
         }
 
         private void drawNodeName(Node node){
-            Coordinates text = new Coordinates();
-
+            Coordinates text = NodeCoordinatesConvertor.getCenter(node);
+            text.setY((int) (text.getY() + DrawConfigs.getInstance().getNodeSize() / 1.5));
+            text.setX(text.getX() - 20);
+            graphics2D.setColor(Color.BLACK);
+            graphics2D.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 40));
+            graphics2D.drawString("R" + (node.getID() + 1),
+                    text.getX(), text.getY());
         }
         private void drawNode(Node node) throws Exception {
                 if(node != null){
@@ -143,20 +150,29 @@ public class GeneratorDrawer {
         private void drawAllNodes(Network network) throws Exception {
             for (Node node: network.getNodes()){
                 drawNode(node);
+                drawNodeName(node);
             }
         }
 
         private void drawAllConnects(Network network){
+
+            List<Pair<Node, Node>> pairList = new ArrayList<>();
+
             for (Node node: network.getNodes()){
                 for(Node connectNode: node.getConnectedNodes()) {
-                    drawConnection(node, connectNode);
+                    if(!pairList.contains(new Pair<>(node, connectNode))
+                            && !pairList.contains(new Pair<>(connectNode, node))){
+                        pairList.add(new Pair<>(node, connectNode));
+                        drawConnection(node, connectNode);
+                        drawPointsOnConnection(node, connectNode);
+                        drawPointsOnConnection(connectNode, node);
+                    }
+
                 }
             }
-            for (Node node: network.getNodes()) {
-                for (Node connectNode : node.getConnectedNodes()) {
-                    drawPointsOnConnection(node, connectNode);
-                }
-            }
+
+
+
         }
         private void drawAllPointsOnConnection(Network network){
             for (Node node: network.getNodes()) {
@@ -177,7 +193,11 @@ public class GeneratorDrawer {
             }
             for (Network n: topology.getNetworks()){
                 drawAllNodes(n);
+
             }
+
+
+
         }
         public void saveImage(String imageDirectory) throws IOException {
             ImageIO.write(bufferedImage,"png", new FileOutputStream(imageDirectory));

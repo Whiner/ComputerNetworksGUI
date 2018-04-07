@@ -2,28 +2,47 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="743.0" prefWidth="898.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="interfaceClasses.main.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="900.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="interfaceClasses.main.Controller">
    <children>
-      <Button id="button" fx:id="taskButton" layoutX="20.0" layoutY="196.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="243.0" text="Получить задание" />
-      <AnchorPane id="top-panel" prefHeight="77.0" prefWidth="730.0" stylesheets="@../MainCSS.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane id="top-panel" prefHeight="80.0" prefWidth="730.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label id="label" layoutX="72.0" layoutY="20.0" text="Компьютерные сети" AnchorPane.leftAnchor="72.0" />
             <ImageView fx:id="top_panel_imageView" fitHeight="52.0" fitWidth="52.0" layoutX="14.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0">
                <image>
-                  <Image url="@knt.png" />
+                  <Image url="@images/knt.png" />
                </image></ImageView>
          </children>
       </AnchorPane>
-      <ImageView fx:id="topology_imageView" fitHeight="607.0" fitWidth="709.0" layoutX="277.0" layoutY="101.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="67.0" AnchorPane.leftAnchor="277.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="101.0">
-         <image>
-            <Image url="@471e69d05dc4a7cf160cf7af9c34.jpeg" />
-         </image></ImageView>
-      <Button id="button" fx:id="generationButton" layoutX="20.0" layoutY="101.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="243.0" text="Генерация" />
-      <Button id="button" fx:id="generationParametersButton" layoutX="20.0" layoutY="148.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="243.0" text="Параметры генерации" />
-      <Button id="button" fx:id="aboutProgramButton" layoutX="20.0" layoutY="243.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="243.0" text="О программе" />
+      <Pane id="slidePane" layoutY="80.0" prefHeight="670.0" prefWidth="270.0">
+         <children>
+            <Button id="button" fx:id="generationButton" layoutY="14.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Генерация" />
+            <Button id="button" fx:id="generationParametersButton" layoutY="64.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Параметры генерации" />
+            <Button id="button" fx:id="taskButton" layoutY="114.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Получить задание" />
+            <Button id="button" fx:id="aboutProgramButton" layoutY="164.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="О программе" />
+         </children>
+      </Pane>
+      <AnchorPane id="mainAnchorPane" layoutX="270.0" layoutY="80.0" prefHeight="660.0" prefWidth="629.0">
+         <children>
+            <Button id="open-slide-button" layoutX="15.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="--" textFill="WHITE">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Button>
+            <TableView id="dbTable" layoutX="14.0" layoutY="62.0" prefHeight="580.0" prefWidth="600.0">
+              <columns>
+                <TableColumn prefWidth="75.0" text="C1" />
+                <TableColumn prefWidth="75.0" text="C2" />
+              </columns>
+            </TableView>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

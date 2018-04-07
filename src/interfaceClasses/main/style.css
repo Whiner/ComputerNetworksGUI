@@ -1,15 +1,17 @@
 .button{
-    -fx-background-color:#061e26;
-    -fx-text-fill:#26c9ff;
+    -fx-background-color:#183640;
+    -fx-text-fill:white;
     -fx-font-size:18px;
 }
 
 .button:hover{
     -fx-background-color:#0b2b36;
 }
-
+#slidePane{
+    -fx-background-color:#183640;
+}
 #top-panel{
-    -fx-background-color:#061e26;
+    -fx-background-color:#132f38;
 }
 
 #main_panel{
@@ -19,4 +21,7 @@
 #label{
     -fx-font-size:26px;
     -fx-text-fill:white;
+}
+#open-slide-button:hover{
+    -fx-background-color:#375660;
 }

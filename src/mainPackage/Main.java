@@ -20,13 +20,13 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
 
-        //primaryStage.close();
+        primaryStage.close();
     }
 
 
     public static void main(String[] args) throws Exception {
         launch(args);
-        /*pozhiloiClass.pozhiloiMetod();
+        pozhiloiClass.pozhiloiMetod();
 
         Desktop desktop = null;
         if (Desktop.isDesktopSupported()) {
@@ -36,23 +36,6 @@ public class Main extends Application {
             desktop.open(new File("E:/Projects/JavaProjects/ComputerNetworksGUI/1.png"));
         } catch (IOException ioe) {
             ioe.printStackTrace();
-        }*/
-        /*networks = t.getNetworks();
-        for (Network _t: networks){
-            System.out.println("--------------------------------------------------------");
-            System.out.println("Сеть " + _t.getType());
-            List<Node> nodes = _t.getNodes();
-            for (Node _tt: nodes){
-                System.out.println("----------------------------");
-                System.out.println("ID узла: " + _tt.getID() + " \nX = " + _tt.getCellNumber_X() + " Y = " + _tt.getCellNumber_Y());
-                System.out.println("Соединения: ");
-                for (NodeNavigation _ttt: _tt.getConnectedNodes()){
-                    System.out.println("ID: " + _ttt.getNode().getID() + " Direction: " + _ttt.getDirection());
-                }
-                System.out.println();
-            }
-
         }
-*/
     }
 }

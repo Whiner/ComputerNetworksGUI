@@ -37,7 +37,6 @@ public class pozhiloiClass {
         }
 
         GeneratorDrawer drawer = new GeneratorDrawer(Field.getInstance().getFieldSize_px(), Field.getInstance().getFieldSize_px());
-        List<Network> networks = t.getNetworks();
         drawer.drawTopology(t);
         drawer.saveImage("1.png");
         return drawer.getImage();
