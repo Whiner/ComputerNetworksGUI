@@ -40,7 +40,7 @@ public class Field {
     }
 
     public boolean CreateLAN_Sections(int count){
-        if(lanSections != null) {
+        if(lanSections != null && !lanSections.isEmpty()) {
             return false;
         }
 
