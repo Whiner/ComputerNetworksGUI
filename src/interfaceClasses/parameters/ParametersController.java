@@ -1,10 +1,10 @@
 package interfaceClasses.parameters;
 
-import javafx.fxml.Initializable;
-import javafx.scene.image.ImageView;
+        import javafx.fxml.Initializable;
+        import javafx.scene.image.ImageView;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+        import java.net.URL;
+        import java.util.ResourceBundle;
 
 public class ParametersController implements Initializable {
     public ImageView top_panel_imageView;

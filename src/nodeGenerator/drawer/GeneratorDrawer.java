@@ -4,6 +4,7 @@ import javafx.util.Pair;
 import nodeGenerator.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import nodeGenerator.drawer.other.ColorComparator;
 import nodeGenerator.drawer.other.Coordinates;
 import nodeGenerator.drawer.other.NodeCoordinatesConvertor;
 import nodeGenerator.field.Field;
@@ -23,7 +24,7 @@ public class GeneratorDrawer {
         private Graphics2D graphics2D;
         private int height;
         private int width;
-
+        private List<Color> usedColors = new ArrayList<>();
 
 
         public Image getImage(){
@@ -68,11 +69,15 @@ public class GeneratorDrawer {
                     DrawConfigs.getInstance().getNodeSize() / 2);
 
             for (Section t : Field.getInstance().getLanSections()) {
-                graphics2D.setColor(new Color( //генератор цветов сделать с разными оттенками
-                        ThreadLocalRandom.current().nextInt(0, 256),
-                        ThreadLocalRandom.current().nextInt(0, 256),
-                        ThreadLocalRandom.current().nextInt(0, 256),
-                        25));
+                Color color = null;
+                do { //
+                    color = new Color( ThreadLocalRandom.current().nextInt(0, 256),
+                            ThreadLocalRandom.current().nextInt(0, 256),
+                            ThreadLocalRandom.current().nextInt(0, 256), 25);
+                }
+                while(ColorComparator.isContainLikeTone(color, usedColors));
+                usedColors.add(color);
+                graphics2D.setColor(color);
                 int x = t.getBeginCell_X() * DrawConfigs.getInstance().getNodeSize() * 2;
                 graphics2D.fillRect(x, t.getBeginCell_Y() * DrawConfigs.getInstance().getNodeSize() * 2,
                         DrawConfigs.getInstance().getNodeSize() * t.getCells_Count_X() * 2,

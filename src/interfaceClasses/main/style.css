@@ -1,12 +1,36 @@
-.button{
+#button{
     -fx-background-color:#183640;
     -fx-text-fill:white;
     -fx-font-size:18px;
 }
 
-.button:hover{
+#button:hover{
     -fx-background-color:#0b2b36;
 }
+
+#search_button{
+    -fx-background-color:#132f38;
+    -fx-text-fill:white;
+    -fx-font-size:15px;
+}
+
+#search_button:hover{
+    -fx-background-color:#183640;
+}
+
+#parameters-label-names{
+    -fx-text-fill:white;
+    -fx-font-size:15px;
+}
+
+#title-panels{
+    -fx-background-color:#88acb9;
+}
+
+#parametersPanel{
+    -fx-background-color: #0b2b36;
+}
+
 #slidePane{
     -fx-background-color:#183640;
 }
