@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static databaseworker.DBConstants.*;
 
 
 public class DBWorker {
@@ -33,7 +32,7 @@ public class DBWorker {
                 query = "SELECT Название FROM группы " +
                         "WHERE (Название = \'" + group + "\');";
                 resultSet = dbConnector.getConnection().createStatement().executeQuery(query);
-                return resultSet.next();
+                return resultSet.next() ;
             } catch(SQLException e){
                 return false;
             }

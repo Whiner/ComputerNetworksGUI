@@ -23,15 +23,14 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
 
-        primaryStage.close();
+        //primaryStage.close();
     }
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         launch(args);
 
-        DBWorker dbWorker = new DBWorker(new DBConnector());
-        dbWorker.toDB(new StudentTask(new Topology(), "Александр", "Шиленко", "ИС-13"));
+
         //pozhiloiClass.pozhiloiMetod();
 
         /*Desktop desktop = null;
