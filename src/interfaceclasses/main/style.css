@@ -7,7 +7,9 @@
 #button:hover{
     -fx-background-color:#0b2b36;
 }
-
+.label{
+    -fx-font-family: "Raleway";
+}
 #search_button{
     -fx-background-color:#132f38;
     -fx-text-fill:white;
@@ -24,11 +26,14 @@
 }
 
 #title-panels{
-    -fx-background-color:#88acb9;
+    -fx-background-color:#071a21;
 }
 
+#parametersBG{
+    -fx-background-color:#132f38;
+}
 #parametersPanel{
-    -fx-background-color: #0b2b36;
+    -fx-background-color: #183640;
 }
 
 #slidePane{

@@ -31,21 +31,22 @@ public class GeneratorDrawer {
             return SwingFXUtils.toFXImage(bufferedImage, null);
         }
 
-        public GeneratorDrawer(int height, int width) throws Exception {
+        public GeneratorDrawer(int height, int width, boolean cells) throws Exception {
             DrawConfigs.getInstance().calcNodeSize();
             this.height = height;
             this.width = width;
             bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             graphics2D = (Graphics2D) bufferedImage.getGraphics();
             fillBackground(Color.WHITE);
-
-            //drawCells();
+            if(cells){
+                drawCells();
+            }
             drawSections();
         }
 
         private void drawCells(){
             graphics2D.setColor(Color.PINK);
-            for (int i = 0; i < Field.getInstance().getCellsCount() * 2; i++){
+            for (int i = 0; i < Field.getInstance().getCellsCount() * 2 + 1; i++){
                 graphics2D.drawLine(i * DrawConfigs.getInstance().getNodeSize(),
                         0,
                         i * DrawConfigs.getInstance().getNodeSize(),
@@ -69,7 +70,7 @@ public class GeneratorDrawer {
                     DrawConfigs.getInstance().getNodeSize() / 2);
 
             for (Section t : Field.getInstance().getLanSections()) {
-                Color color = null;
+                Color color;
                 do { //
                     color = new Color( ThreadLocalRandom.current().nextInt(0, 256),
                             ThreadLocalRandom.current().nextInt(0, 256),

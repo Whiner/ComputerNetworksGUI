@@ -44,7 +44,10 @@ public class GenerateImage {
                         GenerateConfig.getInstance().getNetworksRelationsQuantity());
             }
 
-            drawer = new GeneratorDrawer(Field.getInstance().getFieldSize_px(), Field.getInstance().getFieldSize_px());
+            drawer = new GeneratorDrawer(
+                    Field.getInstance().getFieldSize_px(),
+                    Field.getInstance().getFieldSize_px(),
+                    true);
             drawer.drawTopology(t);
         } catch (Exception e) {
             e.printStackTrace();

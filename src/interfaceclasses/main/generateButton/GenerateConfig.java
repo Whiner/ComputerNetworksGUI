@@ -18,6 +18,12 @@ public class GenerateConfig {
     private int networksRelationsQuantity;
     private int cellsCount;
 
+    public void calcCellsCount(){
+        if(lanQuantity == 3) {
+            cellsCount++;
+        }
+    }
+
     private GenerateConfig() {
         imagesQuantity = 1;
         directory = new File("");

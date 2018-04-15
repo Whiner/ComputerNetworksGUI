@@ -39,25 +39,31 @@ public class Field {
         return true;
     }
 
-    public boolean CreateLAN_Sections(int count){
+    public void CreateLAN_Sections(int count) throws Exception {
         if(lanSections != null && !lanSections.isEmpty()) {
-            return false;
+            throw new Exception("Пустой указатель или секции уже существуют");
         }
 
         lanSections = new ArrayList<>();
 
         for (int i = 0; i < count; i++){
+            int beginCell_X = (cellsCount / count) * i;
+            int beginCell_Y = cellsCount / 2;
+            int cells_Count_X = cellsCount / count;
+            int cells_Count_Y = cellsCount - cellsCount / 2;
+            if(i == count - 1){
+                cells_Count_X = cellsCount - cells_Count_X * (count - 1);
+            }
             lanSections.add(new Section(
                     "LAN" + (i + 1),
                     NetworkType.LAN,
-                    (cellsCount / count) * i,
-                    cellsCount / 2 ,
-                    cellsCount / count,
-                    cellsCount / 2
+                    beginCell_X,
+                    beginCell_Y,
+                    cells_Count_X,
+                    cells_Count_Y
                     ));
         }
 
-        return true;
     }
 
     public void Delete_LAN_Sections(){ //индикатор успеха надо
