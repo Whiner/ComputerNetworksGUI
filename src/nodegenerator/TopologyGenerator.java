@@ -4,11 +4,13 @@ package nodegenerator;
 import nodegenerator.field.Field;
 import nodegenerator.field.Section;
 import nodegenerator.generatorException.NodeExistException;
+import nodegenerator.generatorException.NodeInterseptionException;
 import nodegenerator.generatorException.NodeRelationsException;
 import nodegenerator.generatorException.SectionException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -60,9 +62,14 @@ public class TopologyGenerator {
             }
             try{
                 network.addNode(x, y, connectWith, maxNodeRelationsCount);
-            }
-            catch(NodeExistException e){
+            } catch (NodeExistException e){
                 continue;
+            } catch (NodeInterseptionException e){
+                if(tries > 1000){
+                    break;
+                } else {
+                    continue;
+                }
             }
             i++;
         }
@@ -130,32 +137,54 @@ public class TopologyGenerator {
         if(firstNetwork == null || secondNetwork == null){
             throw new NullPointerException();
         }
-        if(connectionsQuantity < 1 || connectionsQuantity > 2){
-            throw new Exception("Некорректное количество связей. Может быть 1 или 2");
+        if(connectionsQuantity < 1){
+            throw new Exception("Некорректное количество связей");
         }
 
-        Node firstNode = null;
-        Node secondNode = null;
-        Node lastFirstNode = null;
-        Node lastSecondNode = null;
-        int lastLength = 1000;
 
-        for (int i = 0; i < connectionsQuantity; i++) { //шо делать если у узла уже максимальное количество связей?
+
+        class Connected {
+            private Node first;
+            private Node second;
+            Connected(){}
+            private Connected(Node f, Node s) {
+                first = f;
+                second = s;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                Connected connected = (Connected) o;
+                return Objects.equals(first, connected.first) &&
+                        Objects.equals(second, connected.second);
+            }
+
+        }
+        List<Connected> connectedNodes = new ArrayList<>();
+
+
+
+
+        for (int i = 0; i < connectionsQuantity; i++) { // сделать проверку на всем поле по переечениям
+            Connected lastConnected = new Connected();
+            int lastLength = 1000;
             for (Node f : firstNetwork.getNodes()) {
                 for (Node s : secondNetwork.getNodes()) {
                     int length = (int) Math.sqrt(Math.pow(f.getCellNumber_X() - s.getCellNumber_X(), 2)
                             + Math.pow(f.getCellNumber_Y() - s.getCellNumber_Y(), 2)); // расстояние между точками
-                    if (length <= lastLength && !f.equals(lastFirstNode) && !s.equals(lastSecondNode)) {
-                        firstNode = f;
-                        secondNode = s;
+                    if (length <= lastLength && !connectedNodes.contains(new Connected(f, s) )) {
+                        lastConnected.first = f;
+                        lastConnected.second = s;
                         lastLength = length;
                     }
                 }
             }
-            lastFirstNode = firstNode;
-            lastSecondNode = secondNode;
-            firstNode.connectNode(secondNode, true);
-            lastLength = 1000;
+
+            lastConnected.first.connectNode(lastConnected.second, true);
+            connectedNodes.add(lastConnected);
+
         }
 
     }

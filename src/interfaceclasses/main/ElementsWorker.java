@@ -11,7 +11,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class ElementsWorker {
+class ElementsWorker {
     private MainWindowController controller;
     private String notPointed = "Не указано";
 
@@ -19,7 +19,7 @@ public class ElementsWorker {
         int min;
         int max;
 
-        public ComboBoxValuesStruct(int min, int max) {
+        ComboBoxValuesStruct(int min, int max) {
             this.min = min;
             this.max = max;
         }
@@ -30,12 +30,12 @@ public class ElementsWorker {
         }
     }
 
-    ComboBoxValuesStruct countCB = new ComboBoxValuesStruct(3, 10);
-    ComboBoxValuesStruct maxrelCB = new ComboBoxValuesStruct(2, 5);
-    ComboBoxValuesStruct t_CB = new ComboBoxValuesStruct(1, 3);
+    private ComboBoxValuesStruct countCB = new ComboBoxValuesStruct(3, 10);
+    private ComboBoxValuesStruct maxrelCB = new ComboBoxValuesStruct(2, 5);
+    private ComboBoxValuesStruct t_CB = new ComboBoxValuesStruct(1, 3);
 
 
-    public ElementsWorker(MainWindowController controller){
+    ElementsWorker(MainWindowController controller){
         if(controller == null){
             throw new NullPointerException();
         }
@@ -126,6 +126,8 @@ public class ElementsWorker {
         controller.slider_RAM.setMajorTickUnit(1024);
         controller.slider_RAM.setMinorTickCount(4);
         controller.textField_RAM.setText(notPointed);
+        setMemoryToSlider();
+        controller.slider_RAM.setDisable(false);
         controller.slider_RAM.valueProperty().addListener((ov, old_val, new_val) -> {
             if(controller.slider_RAM.isDisabled()){
                 controller.slider_RAM.setDisable(false);
@@ -163,7 +165,7 @@ public class ElementsWorker {
 
     }
 
-    public void fillAll(){
+    void fillAll(){
         fillButtonActions();
         comboBoxesActions();
         fillComboboxes();

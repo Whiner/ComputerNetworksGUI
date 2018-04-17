@@ -1,6 +1,7 @@
 package nodegenerator;
 
 import nodegenerator.generatorException.NodeExistException;
+import nodegenerator.generatorException.NodeInterseptionException;
 import nodegenerator.generatorException.NodeRelationsException;
 import nodegenerator.generatorException.OneselfConnection;
 
@@ -53,40 +54,71 @@ public class Network {
     }
 
 
-
-
-    public boolean checkIntersection(Node from, Node to){ //переделать
+    private boolean checkRelationIntersection(Node from, Node to){ //переделать под лямбды
         int t_x = Math.abs(from.getCellNumber_X() - to.getCellNumber_X());
         int t_y = Math.abs(from.getCellNumber_Y() - to.getCellNumber_Y());
-        if(t_x == 0){
+        if(t_x == 0) {
             int start = Math.min(from.getCellNumber_Y(), to.getCellNumber_Y());
-            for (int i = 1; i < t_y; i++){
-                if(getByCoord(from.getCellNumber_X(), start + i) != null)
+            for (int i = 1; i < t_y; i++) {
+                if (getByCoord(from.getCellNumber_X(), start + i) != null) {
                     return true;
+                }
             }
             return false;
-        }
-        else
-            if(t_y == 0){
+        } else if(t_y == 0){
             int start = Math.min(from.getCellNumber_X(), to.getCellNumber_X());
             for (int i = 1; i < t_x; i++){
-                if(getByCoord(start + i, from.getCellNumber_Y()) != null)
+                if(getByCoord(start + i, from.getCellNumber_Y()) != null) {
                     return true;
+                }
             }
             return false;
-        }
-        else
-            if(t_x == t_y) {
+        } else if(t_x == t_y) {
                 int start = Math.min(from.getCellNumber_X(), to.getCellNumber_X());
                 for (int i = 1; i < t_x; i++){
-                    if(getByCoord(start + i, start + i) != null)
+                    if(getByCoord(start + i, start + i) != null) {
                         return true;
+                    }
                 }
                 return false;
         }
         return false;
     }
 
+    private boolean checkNodeIntersection(int x, int y){
+        for (Node node: nodes) {
+            for (Node rel : node.getConnectedNodes()) {
+                int t_x = Math.abs(node.getCellNumber_X() - rel.getCellNumber_X());
+                int t_y = Math.abs(node.getCellNumber_Y() - rel.getCellNumber_Y());
+                if (t_x == 0) {
+                    int start = Math.min(node.getCellNumber_Y(), rel.getCellNumber_Y());
+                    for (int i = 1; i < t_y; i++) {
+                        if (node.getCellNumber_X() == x && (start + i) == y) {
+                            return true;
+                        }
+                    }
+                    return false;
+                } else if (t_y == 0) {
+                    int start = Math.min(node.getCellNumber_X(), rel.getCellNumber_X());
+                    for (int i = 1; i < t_x; i++) {
+                        if (node.getCellNumber_Y() == y && (start + i) == x) {
+                            return true;
+                        }
+                    }
+                    return false;
+                } else if (t_x == t_y) {
+                    int start = Math.min(node.getCellNumber_X(), rel.getCellNumber_X());
+                    for (int i = 1; i < t_x; i++) {
+                        if ((start + i) == x && (start + i) == y) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
 
     public void addNode(int x, int y, List<Integer> connectWith, int maxRelationsQuantity) throws Exception {
         if(nodes.size() + 1 > maxNodeCount) {
@@ -97,6 +129,9 @@ public class Network {
         }
         if(getByCoord(x, y) != null){
             throw new NodeExistException("В этой ячейке уже существует узел");
+        }
+        if(checkNodeIntersection(x, y)){
+            throw new NodeInterseptionException("Этот узел будет пересекаться с соединениями других");
         }
         int ID;
         if(nodes.isEmpty()) {
@@ -117,7 +152,7 @@ public class Network {
             Node ConnectingNode = getNodeByID(connectWith.get(i));
             if (ConnectingNode != null) {
                 try {
-                    if (checkIntersection(lastAdded, ConnectingNode)) {
+                    if (checkRelationIntersection(lastAdded, ConnectingNode)) {
                         if (lastAdded.getRelationsCount() == 0 && i == connectWith.size() - 1) {
                             throw new NodeRelationsException("");
                         }

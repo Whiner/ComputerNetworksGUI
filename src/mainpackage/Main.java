@@ -20,7 +20,9 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("../interfaceclasses/main/forms.fxml"));
         primaryStage.setTitle("Компьютерные сети");
         primaryStage.setScene(new Scene(root));
-        primaryStage.setResizable(false);
+        //primaryStage.setResizable(false);
+        primaryStage.setMinHeight(780);
+        primaryStage.setMinWidth(1200);
         primaryStage.show();
 
         //primaryStage.close();

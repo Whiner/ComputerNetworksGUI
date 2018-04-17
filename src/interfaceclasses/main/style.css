@@ -28,12 +28,19 @@
 #title-panels{
     -fx-background-color:#071a21;
 }
+#mainAnchorPane{
+   -fx-background-color:#e5e5e5;  
+}
+
+#mainPanel{
+    -fx-background-color:#183640;
+}
 
 #parametersBG{
-    -fx-background-color:#132f38;
+    -fx-background-color:#183640;
 }
 #parametersPanel{
-    -fx-background-color: #183640;
+    -fx-background-color: #132f38;
 }
 
 #slidePane{
