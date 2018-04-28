@@ -13,7 +13,6 @@ import java.util.List;
 public class Network {
     private NetworkType type;
     private List<Node> nodes;
-    //private int maxNodeCount;
     private IP ip = new IP();
     private List<Network> connectedWith = new ArrayList<>();
 

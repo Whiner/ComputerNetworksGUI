@@ -14,7 +14,16 @@ public class Topology {
        LAN = 0;
        WAN = false;
     }
-
+    public Network getWAN(){
+        if(WAN) {
+            for (Network network : networks) {
+                if (network.getType() == NetworkType.WAN) {
+                    return network;
+                }
+            }
+        }
+        return null;
+    }
     public void AddNetwork(Network network) throws Exception {
         if(network == null) {
             throw new NullPointerException();

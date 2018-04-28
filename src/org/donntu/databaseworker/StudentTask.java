@@ -1,5 +1,6 @@
 package org.donntu.databaseworker;
 
+import org.donntu.generator.IP;
 import org.donntu.generator.Topology;
 
 public class StudentTask {

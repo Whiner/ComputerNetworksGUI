@@ -2,10 +2,10 @@ package org.donntu.databaseworker;
 
 import org.donntu.generator.Topology;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 
 
 public class DBWorker {
@@ -60,20 +60,53 @@ public class DBWorker {
         return null;
     }
 
-    public boolean checkStudentInDB(String group, String name, String surname)  {
-        if(!checkGroupInDB(group)){
-            return false;
+    public Integer getStudentID(String name, String surname){
+        if(name != null && !name.isEmpty() && surname != null && !surname.isEmpty()){
+            try {
+                query = "SELECT idСтуденты FROM студенты " +
+                        "WHERE Имя = " + name + " AND Фамилия = "+ surname + ";";
+                resultSet = dbConnector.getConnection().createStatement().executeQuery(query);
+                if (resultSet.next()){
+                    return resultSet.getInt(1);
+                }
+                else {
+                    return null;
+                }
+            } catch(SQLException e){
+                return null;
+            }
         }
+        return null;
+    }
+
+    public Integer getLastTaskIDbyStudent(String name, String surname) {
+        if (name != null && !name.isEmpty() && surname != null && !surname.isEmpty()) {
+
+            int ID = getStudentID(name, surname);
+            query = "SELECT idстудента FROM задания " +
+                    "WHERE idстудента = " + ID + ";";
+            try {
+                resultSet = dbConnector.getConnection().createStatement().executeQuery(query);
+                while(resultSet.next()){
+                    if(resultSet.last()) {
+                        return resultSet.getInt(1);
+                    }
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public boolean checkStudentInDB(String name, String surname)  {
+
         try{
             query = "SELECT Имя, Фамилия FROM студенты " +
-                    "WHERE idГруппы = " + getGroupID(group) + ";";
+                    "WHERE Имя = " + name + " AND Фамилия = "+ surname + ";";
             resultSet = dbConnector.getConnection().createStatement().executeQuery(query);
-            while(resultSet.next()){
-                if(resultSet.getNString(1).equals(name) && resultSet.getNString(2).equals(surname)){
-                    return true;
-                }
-            }
-            return false;
+            return resultSet.next();
         } catch(SQLException e){
             return false;
         }
@@ -84,26 +117,33 @@ public class DBWorker {
             query = "INSERT INTO группы(Название) VALUES (\'" + group + "\');";
             try {
                 statement.execute(query);
-            } catch (SQLException e) {}
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void addStudent(String name, String surname, String group, int taskID) throws SQLException {
-        addGroup(group);
-        query = "INSERT INTO студенты(Имя, Фамилия, idГруппы, idЗадания) " +
-                "VALUES (" + name + "," + surname + "," + getGroupID(group) + "," + taskID + ");";
-        statement.execute(query);
+    private void addStudent(String name, String surname, String group) throws SQLException {
+        if(!checkGroupInDB(group)){
+            addGroup(group);
+        }
+        if(!checkStudentInDB(name, surname)) {
+            query = "INSERT INTO студенты(Имя, Фамилия, idГруппы) " +
+                    "VALUES (" + name + "," + surname + "," + getGroupID(group) + ");";
+            statement.execute(query);
+        }
     }
 
-    private int addTask(Topology topology) {
-        int taskID = 0;
+    private void addTask(Topology topology, int idTask) {
+
+
         //перенести все узлы
         //заполнить запись с заданием
 
-        return taskID;
+
     }
 
-    public boolean toDB(StudentTask studentTask, boolean rewrite) throws NullPointerException {
+    public boolean addStudentTask(StudentTask studentTask) throws NullPointerException {
         if(studentTask == null){
             throw new NullPointerException();
         }
@@ -111,27 +151,24 @@ public class DBWorker {
         try{
             statement = dbConnector.getConnection().createStatement();
             if(!checkGroupInDB(studentTask.getGroup())){
-                query = "INSERT INTO группы(Название) VALUES (\'" + studentTask.getGroup() + "\');";
-                statement.execute(query);
+                addGroup(studentTask.getGroup());
             }
-            if(checkStudentInDB(studentTask.getGroup(), studentTask.getName(), studentTask.getSurname())){
-                if(rewrite){
-                    query = "SELECT idзадания FROM студенты " +
-                            "WHERE (Имя = " + studentTask.getName() + ") AND (Фамилия = " + studentTask.getSurname() + ");";
-                    resultSet = statement.executeQuery(query);
-                    int id = resultSet.getInt(1);
-
-                    query = "DELETE * FROM задания " +
-                            "WHERE idзадания = " + id + ";";
-                    statement.execute(query);
-
-                    //записать новое
-                } else {
-                    return false;
-                }
-            } else {
-
+            if(!checkStudentInDB(studentTask.getName(), studentTask.getSurname())){
+                addStudent(studentTask.getName(),  studentTask.getSurname(), studentTask.getGroup());
             }
+
+            query = "INSERT INTO задания(idстудента) " +
+                    "VALUE (" + getStudentID(studentTask.getName(), studentTask.getSurname()) + ");";
+            statement.execute(query);
+            Topology topology = studentTask.getTopology();
+
+            query = "INSERT INTO сети(`Тип сети`, `Первый октет`,`Второй октет`,`Третий октет`,`Четвертый октет`,`Маска`, idЗадания)" +
+                    "VALUES (" + topology.getWAN().getType() + "," + topology.getWAN().getIp().getFirst()
+                    + "," + topology.getWAN().getIp().getSecond()
+                    + "," + topology.getWAN().getIp().getThird()
+                    + "," + topology.getWAN().getIp().getFourth()
+                    + "," + topology.getWAN().getIp().getMask()
+                    + "," + getLastTaskIDbyStudent(studentTask.getName(), studentTask.getSurname()) + ");";
 
         } catch(Exception e){
             e.printStackTrace();
