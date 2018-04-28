@@ -1,4 +1,4 @@
-package org.donntu.nodegenerator.generatorException;
+package org.donntu.generator.generatorException;
 
 public class NodeRelationsException extends Exception {
     public NodeRelationsException(String message) {

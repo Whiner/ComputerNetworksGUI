@@ -1,4 +1,4 @@
-package org.donntu.nodegenerator.generatorException;
+package org.donntu.generator.generatorException;
 
 public class NodeInterseptionException extends Exception {
     public NodeInterseptionException(String message) {

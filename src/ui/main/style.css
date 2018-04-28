@@ -40,7 +40,7 @@
     -fx-background-color:#183640;
 }
 #parametersPanel{
-    -fx-background-color: #132f38;
+    -fx-background-color:#132f38;
 }
 
 #slidePane{
@@ -60,4 +60,13 @@
 }
 #open-slide-button:hover{
     -fx-background-color:#375660;
+}
+
+#default-button {
+     -fx-background-color:#375660;
+     -fx-text-fill:white;
+     -fx-font-size:15px;
+}
+#default-button:hover {
+     -fx-background-color:#132f38;
 }

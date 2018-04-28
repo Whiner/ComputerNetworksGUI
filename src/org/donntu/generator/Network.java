@@ -1,10 +1,10 @@
-package org.donntu.nodegenerator;
+package org.donntu.generator;
 
 import javafx.util.Pair;
-import org.donntu.nodegenerator.generatorException.NodeExistException;
-import org.donntu.nodegenerator.generatorException.NodeInterseptionException;
-import org.donntu.nodegenerator.generatorException.NodeRelationsException;
-import org.donntu.nodegenerator.generatorException.OneselfConnection;
+import org.donntu.generator.generatorException.NodeExistException;
+import org.donntu.generator.generatorException.NodeInterseptionException;
+import org.donntu.generator.generatorException.NodeRelationsException;
+import org.donntu.generator.generatorException.OneselfConnection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +14,10 @@ public class Network {
     private NetworkType type;
     private List<Node> nodes;
     //private int maxNodeCount;
-    private IP ip;
+    private IP ip = new IP();
+    private List<Network> connectedWith = new ArrayList<>();
 
-    private int countRelations(){
+    public int getCountRelations(){
         List<Pair<Node, Node>> pairList = new ArrayList<>();
         for (Node node : nodes) {
             for (Node connectNode : node.getConnectedNodes()) {
@@ -45,9 +46,6 @@ public class Network {
             t.setMaxRelationsCount(maxNodeRelations);
         }
     }
-   /* public void setMaxNodeCount(int maxNodeCount) {
-        this.maxNodeCount = maxNodeCount;
-    }*/
 
     public Node getByCoord(int x, int y){
         for (Node t: nodes){
@@ -142,9 +140,7 @@ public class Network {
     }
 
     public void addNode(int x, int y, List<Integer> connectWith, int maxRelationsQuantity) throws Exception {
-        /*if(nodes.size() + 1 > maxNodeCount) {
-            throw new NodeExistException("Максимальное количество узлов в этой сети уже достигнуто");
-        }*/
+
         if(maxRelationsQuantity <= 0){
             throw new NodeRelationsException("Значение максимального количества связей не корректно");
         }
@@ -199,13 +195,11 @@ public class Network {
         return nodes.size();
     }
 
-    public Network() {
+    public Network() throws Exception {
         nodes = new ArrayList<>();
-        //maxNodeCount = 8965545;
     }
 
-    public Network(NetworkType type, int maxNodeCount) {
-        //this.maxNodeCount = maxNodeCount;
+    public Network(NetworkType type, int maxNodeCount) throws Exception {
         nodes = new ArrayList<>();
         this.type = type;
     }
@@ -218,11 +212,19 @@ public class Network {
         this.type = type;
     }
 
-    public List<org.donntu.nodegenerator.Node> getNodes() {
+    public List<org.donntu.generator.Node> getNodes() {
         return nodes;
     }
 
     public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
+    }
+
+    public List<Network> getConnectedWith() {
+        return connectedWith;
+    }
+
+    public void addConnectedNetwork(Network network) {
+        this.connectedWith.add(network);
     }
 }

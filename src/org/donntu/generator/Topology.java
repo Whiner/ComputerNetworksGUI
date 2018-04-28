@@ -1,4 +1,4 @@
-package org.donntu.nodegenerator;
+package org.donntu.generator;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -50,6 +50,8 @@ public class MainWindowController implements Initializable {
     @FXML
     TextField textField_RAM;
 
+    @FXML
+    Button defaultButton;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

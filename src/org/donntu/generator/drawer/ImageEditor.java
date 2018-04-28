@@ -1,4 +1,4 @@
-package org.donntu.nodegenerator.drawer;
+package org.donntu.generator.drawer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

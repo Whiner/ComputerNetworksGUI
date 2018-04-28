@@ -1,6 +1,6 @@
 package org.donntu.databaseworker;
 
-import org.donntu.nodegenerator.Topology;
+import org.donntu.generator.Topology;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

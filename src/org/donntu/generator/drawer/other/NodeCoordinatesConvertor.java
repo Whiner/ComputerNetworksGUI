@@ -1,7 +1,7 @@
-package org.donntu.nodegenerator.drawer.other;
+package org.donntu.generator.drawer.other;
 
-import org.donntu.nodegenerator.Node;
-import org.donntu.nodegenerator.drawer.DrawConfigs;
+import org.donntu.generator.Node;
+import org.donntu.generator.drawer.DrawConfigs;
 
 public class NodeCoordinatesConvertor {
     public static Coordinates getCenter(Node node){

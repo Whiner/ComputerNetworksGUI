@@ -1,10 +1,14 @@
-package org.donntu.nodegenerator;
+package org.donntu.generator;
 
 public class IP {
     private int first;
     private int second;
     private int third;
     private int fourth;
+    private int mask;
+
+    public IP() {
+    }
 
     public int getMask() {
         return mask;
@@ -17,7 +21,7 @@ public class IP {
         this.mask = mask;
     }
 
-    private int mask;
+
 
     public int getFirst() {
         return first;

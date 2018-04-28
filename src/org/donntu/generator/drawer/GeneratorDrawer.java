@@ -1,14 +1,14 @@
-package org.donntu.nodegenerator.drawer;
+package org.donntu.generator.drawer;
 
 import javafx.util.Pair;
-import org.donntu.nodegenerator.*;
+import org.donntu.generator.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import org.donntu.nodegenerator.drawer.other.ColorComparator;
-import org.donntu.nodegenerator.drawer.other.Coordinates;
-import org.donntu.nodegenerator.drawer.other.NodeCoordinatesConvertor;
-import org.donntu.nodegenerator.field.Field;
-import org.donntu.nodegenerator.field.Section;
+import org.donntu.generator.drawer.other.ColorComparator;
+import org.donntu.generator.drawer.other.Coordinates;
+import org.donntu.generator.drawer.other.NodeCoordinatesConvertor;
+import org.donntu.generator.field.Field;
+import org.donntu.generator.field.Section;
 
 import java.util.ArrayList;
 import java.util.List;

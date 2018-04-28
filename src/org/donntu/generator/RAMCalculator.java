@@ -1,4 +1,4 @@
-package org.donntu.nodegenerator;
+package org.donntu.generator;
 
 public class RAMCalculator {
     private static int nodeRAM = 128;

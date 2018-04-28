@@ -1,4 +1,4 @@
-package org.donntu.nodegenerator.generatorException;
+package org.donntu.generator.generatorException;
 
 public class OneselfConnection extends Exception {
     public OneselfConnection(String message) {

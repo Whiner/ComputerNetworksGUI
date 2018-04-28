@@ -1,7 +1,7 @@
-package org.donntu.nodegenerator;
+package org.donntu.generator;
 
-import org.donntu.nodegenerator.generatorException.NodeRelationsException;
-import org.donntu.nodegenerator.generatorException.OneselfConnection;
+import org.donntu.generator.generatorException.NodeRelationsException;
+import org.donntu.generator.generatorException.OneselfConnection;
 
 import java.util.ArrayList;
 import java.util.List;

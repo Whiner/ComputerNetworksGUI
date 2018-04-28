@@ -1,4 +1,4 @@
-package org.donntu.nodegenerator.drawer.other;
+package org.donntu.generator.drawer.other;
 
 public class Coordinates {
     private int x;

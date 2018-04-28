@@ -1,7 +1,7 @@
-package org.donntu.nodegenerator.drawer;
+package org.donntu.generator.drawer;
 
 
-import org.donntu.nodegenerator.field.Field;
+import org.donntu.generator.field.Field;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

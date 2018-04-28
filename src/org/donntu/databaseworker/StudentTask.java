@@ -1,13 +1,12 @@
 package org.donntu.databaseworker;
 
-import org.donntu.nodegenerator.Topology;
+import org.donntu.generator.Topology;
 
 public class StudentTask {
     private Topology topology;
     private String name;
     private String surname;
     private String group;
-    //IP
 
     public StudentTask(Topology topology, String name, String surname, String group) {
         this.topology = topology;

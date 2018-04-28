@@ -1,4 +1,4 @@
-package ui.main.generateButton;
+package org.donntu.generator.configs;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -6,10 +6,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class GenerateConfig {
-    private int imagesQuantity;
-    private File directory;
-    private int imageSize;
-    private Image nodeImage;
+    private int imagesQuantity; //
+    private File directory; //
+    private int imageSize; //
+    private Image nodeImage; //
     private int wanNodesQuantity;
     private int wanRelationsQuantity;
     private int lanQuantity;
@@ -23,33 +23,7 @@ public class GenerateConfig {
             cellsCount++;
         }
     }
-
-    private GenerateConfig() {
-        imagesQuantity = 1;
-        directory = new File("");
-        try {
-            nodeImage = ImageIO.read(new File("src/images-fx/2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        imageSize = 2000;
-        wanNodesQuantity = 6;
-        wanRelationsQuantity = 3;
-        lanQuantity = 2;
-        lanNodesQuantity = 4;
-        lanRelationsQuantity = 2;
-        networksRelationsQuantity = 1;
-        cellsCount = 8;
-    }
-
-    private static GenerateConfig instance;
-
-    public static GenerateConfig getInstance(){
-        if (instance == null) {
-            instance = new GenerateConfig();
-        }
-        return instance;
-    }
+    public GenerateConfig() {}
 
     public int getImagesQuantity() {
         return imagesQuantity;

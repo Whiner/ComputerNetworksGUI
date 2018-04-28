@@ -23,9 +23,9 @@ public class DBConnector {
     }
     public boolean connectToDB()  {
         try {
-            url = "jdbc:mysql://localhost:3306/networks?autoReconnect=true&useSSL=false";
-            login = "Admin";
-            password = "admin";
+            url = "jdbc:mysql://localhost:3306/networksdb?autoReconnect=true&useSSL=false";
+            login = "root";
+            password = "root";
 
             connection = DriverManager.getConnection(url, login, password);
 

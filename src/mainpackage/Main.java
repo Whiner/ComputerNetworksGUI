@@ -5,8 +5,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.donntu.databaseworker.DBConnector;
+import org.donntu.databaseworker.DBWorker;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class Main extends Application {
 
@@ -20,13 +23,19 @@ public class Main extends Application {
         primaryStage.setMinWidth(1200);
         primaryStage.show();
 
-        //primaryStage.close();
+        primaryStage.close();
     }
 
 
     public static void main(String[] args) {
         launch(args);
 
+        try {
+            DBWorker dbWorker = new DBWorker(new DBConnector());
+            System.out.println(dbWorker.checkGroupInDB("АСУ-16"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         //pozhiloiClass.pozhiloiMetod();
 

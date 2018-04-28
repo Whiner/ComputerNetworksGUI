@@ -1,6 +1,6 @@
-package org.donntu.nodegenerator.field;
+package org.donntu.generator.field;
 
-import org.donntu.nodegenerator.NetworkType;
+import org.donntu.generator.NetworkType;
 
 import java.util.ArrayList;
 import java.util.List;

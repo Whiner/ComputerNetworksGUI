@@ -1,15 +1,18 @@
 package ui.main;
 
-import ui.main.generateButton.GenerateConfig;
-import ui.main.generateButton.GenerateImage;
+
+import org.donntu.databaseworker.StudentTask;
+import org.donntu.generator.configs.DefaultConfig;
+import org.donntu.generator.configs.GenerateConfig;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
-import org.donntu.nodegenerator.RAMCalculator;
+import org.donntu.generator.RAMCalculator;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 class ElementsWorker {
     private MainWindowController controller;
@@ -37,11 +40,14 @@ class ElementsWorker {
     private ComboBoxValuesStruct t_CB = new ComboBoxValuesStruct(1, 3);
 
 
+    private GenerateConfig config;
+
     ElementsWorker(MainWindowController controller){
         if(controller == null){
             throw new NullPointerException();
         }
         this.controller = controller;
+        config = DefaultConfig.getDefaultConfig();
     }
 
 
@@ -50,21 +56,33 @@ class ElementsWorker {
     private void fillButtonActions(){
         controller.generationButton.setOnAction(event -> {
             try {
-                GenerateImage.generate();
-                GenerateImage.SaveImage("generated_image");
+
+                Date date = new Date();
+                GenerateTask.generate(config);
+                StudentTask task = GenerateTask.getLastStudentTask();
+                String lastPath = "task/"
+                        + task.getName() + " " + task.getSurname()
+                        + " " + task.getGroup() + " " + date.getTime() + ".png";
+                GenerateTask.saveImage(lastPath);
                 Desktop desktop = null;
                 if (Desktop.isDesktopSupported()) {
                     desktop = Desktop.getDesktop();
                 }
                 try {
                     assert desktop != null;
-                    desktop.open(new File("E:/Projects/JavaProjects/ComputerNetworksGUI/generated_image.png"));
+                    desktop.open(new File(lastPath));
                 } catch (IOException ioe) {
                     ioe.printStackTrace();
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+        });
+
+        controller.defaultButton.setOnAction(event -> {
+            config = DefaultConfig.getDefaultConfig();
+            fillComboBoxes();
+            fillSlider();
         });
     }
 
@@ -72,8 +90,8 @@ class ElementsWorker {
     private void setMemoryToSlider(){
         controller.slider_RAM.setDisable(true);
         int ram = RAMCalculator.getRAM(
-                GenerateConfig.getInstance().getWanNodesQuantity()
-                + GenerateConfig.getInstance().getLanQuantity() * GenerateConfig.getInstance().getLanNodesQuantity());
+                config.getWanNodesQuantity()
+                + config.getLanQuantity() * config.getLanNodesQuantity());
         controller.slider_RAM.setValue(ram);
         controller.textField_RAM.setText(String.valueOf(ram));
 
@@ -82,25 +100,21 @@ class ElementsWorker {
     private void comboBoxesActions(){
 
         controller.cb_WAN_nodes_quantity.setOnHidden(event ->
-        {
-            GenerateConfig.getInstance().setWanNodesQuantity(controller.cb_WAN_nodes_quantity.getValue());
-        }
+                config.setWanNodesQuantity(controller.cb_WAN_nodes_quantity.getValue())
         );
         controller.cb_WAN_max_rel_quantity.setOnHidden(event ->
-                GenerateConfig.getInstance().setWanRelationsQuantity(controller.cb_WAN_max_rel_quantity.getValue()));
+                config.setWanRelationsQuantity(controller.cb_WAN_max_rel_quantity.getValue()));
         controller.cb_WAN_rel_with_LAN_quantity.setOnHidden(event ->
-                GenerateConfig.getInstance().setNetworksRelationsQuantity(controller.cb_WAN_rel_with_LAN_quantity.getValue()));
+                config.setNetworksRelationsQuantity(controller.cb_WAN_rel_with_LAN_quantity.getValue()));
         controller.cb_LAN_networks_quantity.setOnHidden(event -> {
-            GenerateConfig.getInstance().setLanQuantity(controller.cb_LAN_networks_quantity.getValue());
+            config.setLanQuantity(controller.cb_LAN_networks_quantity.getValue());
             controller.slider_RAM.setValue(controller.slider_RAM.getValue() - 1);
             controller.slider_RAM.setValue(controller.slider_RAM.getValue() + 1);
         });
         controller.cb_LAN_max_rel_quantity.setOnHidden(event ->
-                GenerateConfig.getInstance().setLanRelationsQuantity(controller.cb_LAN_max_rel_quantity.getValue()));
-        controller.cb_LAN_nodes_quantity.setOnHidden(event -> {
-            GenerateConfig.getInstance().setLanNodesQuantity(controller.cb_LAN_nodes_quantity.getValue());
-
-        });
+                config.setLanRelationsQuantity(controller.cb_LAN_max_rel_quantity.getValue()));
+        controller.cb_LAN_nodes_quantity.setOnHidden(event ->
+                config.setLanNodesQuantity(controller.cb_LAN_nodes_quantity.getValue()));
     }
 
     private ObservableList<Integer> fillObsList(int min, int max){
@@ -113,13 +127,14 @@ class ElementsWorker {
 
 
     private void fillComboBoxes(){
-        quantity_wan_nodes_CB.fillComboBox(controller.cb_WAN_nodes_quantity, GenerateConfig.getInstance().getWanNodesQuantity());
-        maxrelCB.fillComboBox(controller.cb_WAN_max_rel_quantity, GenerateConfig.getInstance().getWanRelationsQuantity());
-        t_CB.fillComboBox(controller.cb_WAN_rel_with_LAN_quantity, GenerateConfig.getInstance().getNetworksRelationsQuantity());
-        quantity_wan_nodes_CB.fillComboBox(controller.cb_LAN_nodes_quantity, GenerateConfig.getInstance().getLanNodesQuantity());
-        maxrelCB.fillComboBox(controller.cb_LAN_max_rel_quantity, GenerateConfig.getInstance().getLanRelationsQuantity());
-        t_CB.fillComboBox(controller.cb_LAN_networks_quantity, GenerateConfig.getInstance().getLanQuantity());
+        quantity_wan_nodes_CB.fillComboBox(controller.cb_WAN_nodes_quantity, config.getWanNodesQuantity());
+        maxrelCB.fillComboBox(controller.cb_WAN_max_rel_quantity, config.getWanRelationsQuantity());
+        t_CB.fillComboBox(controller.cb_WAN_rel_with_LAN_quantity, config.getNetworksRelationsQuantity());
+        quantity_wan_nodes_CB.fillComboBox(controller.cb_LAN_nodes_quantity,config.getLanNodesQuantity());
+        maxrelCB.fillComboBox(controller.cb_LAN_max_rel_quantity, config.getLanRelationsQuantity());
+        t_CB.fillComboBox(controller.cb_LAN_networks_quantity, config.getLanQuantity());
     }
+
 
     private void fillSlider(){
         controller.slider_RAM.setMin(1024);
@@ -140,15 +155,15 @@ class ElementsWorker {
             int quantity;
             quantity = RAMCalculator.getNodeQuantityInWAN(new_val.intValue());//количество WAN узлов
 
-            GenerateConfig.getInstance().setWanNodesQuantity(quantity);
+            config.setWanNodesQuantity(quantity);
             quantity_wan_nodes_CB.max = quantity;
             quantity_wan_nodes_CB.fillComboBox(controller.cb_WAN_nodes_quantity, quantity);
 
             quantity = RAMCalculator.getNodeQuantityInLAN( //количество LAN узлов
                     new_val.intValue(),
-                    RAMCalculator.getRAM(GenerateConfig.getInstance().getWanNodesQuantity()),
-                    GenerateConfig.getInstance().getLanQuantity());
-            GenerateConfig.getInstance().setLanNodesQuantity(quantity);
+                    RAMCalculator.getRAM(config.getWanNodesQuantity()),
+                    config.getLanQuantity());
+            config.setLanNodesQuantity(quantity);
             quantity_lan_nodes_CB.max = quantity;
             quantity_lan_nodes_CB.fillComboBox(controller.cb_LAN_nodes_quantity, quantity);
 

@@ -1,20 +1,17 @@
-package org.donntu.nodegenerator;
+package org.donntu.generator;
 
 
-import javafx.util.Pair;
-import org.donntu.nodegenerator.field.Field;
-import org.donntu.nodegenerator.field.Section;
-import org.donntu.nodegenerator.generatorException.NodeExistException;
-import org.donntu.nodegenerator.generatorException.NodeInterseptionException;
-import org.donntu.nodegenerator.generatorException.NodeRelationsException;
-import org.donntu.nodegenerator.generatorException.SectionException;
+import org.donntu.generator.field.Field;
+import org.donntu.generator.field.Section;
+import org.donntu.generator.generatorException.NodeExistException;
+import org.donntu.generator.generatorException.NodeInterseptionException;
+import org.donntu.generator.generatorException.NodeRelationsException;
+import org.donntu.generator.generatorException.SectionException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
-import java.util.function.DoubleSupplier;
 
 
 public class TopologyGenerator {
@@ -187,7 +184,8 @@ public class TopologyGenerator {
 
             lastConnected.first.connectNode(lastConnected.second, true);
             connectedNodes.add(lastConnected);
-
+            firstNetwork.addConnectedNetwork(secondNetwork);
+            secondNetwork.addConnectedNetwork(firstNetwork);
         }
 
     }
@@ -214,6 +212,9 @@ public class TopologyGenerator {
                         t.getNetworks().get(i + 1),
                         networks_relations);
             }
+            for (Network network: t.getNetworks()){
+                generateIPforNetwork(network);
+            }
             return t;
         } catch (Exception e) { //че то ловить
             e.printStackTrace();
@@ -221,7 +222,10 @@ public class TopologyGenerator {
         return null;
     }
 
-    public void generateIPforNetwork(Network network) throws Exception {
+    public static void generateIPforNetwork(Network network) throws Exception {
+        if(network.getNodes().size() == 0){
+            throw new NodeExistException("Пустая сеть");
+        }
         IP ip = network.getIp();
 
         if(network.getType() == NetworkType.LAN){
@@ -247,15 +251,31 @@ public class TopologyGenerator {
             ip.setFirst(firstOctet);
             ip.setSecond(ThreadLocalRandom.current().nextInt(lowerSecondOctet, upperSecondOctet));
             ip.setThird(ThreadLocalRandom.current().nextInt(0, 255));
-
         } else {
             ip.setFirst(ThreadLocalRandom.current().nextInt(0, 255));
             ip.setSecond(ThreadLocalRandom.current().nextInt(0, 255));
             ip.setThird(ThreadLocalRandom.current().nextInt(0, 255));
         }
 
+        int relationsCount = network.getCountRelations();
+        int needAddresses = relationsCount * 4 + network.getConnectedWith().size() * 4 + 2;
+        int fourthOctet = ThreadLocalRandom.current().nextInt(0, 255 - needAddresses);
+        ip.setFourth(fourthOctet);
 
+        for (int i = 32; i > 0; i --){
+            if(Math.pow(2, 32 - i) > needAddresses){
+                ip.setMask(i);
+                break;
+            }
+        }
 
+        System.out.println(network.getType());
+        System.out.println(
+                ip.getFirst() + "."
+                        + ip.getSecond() + "."
+                        + ip.getThird() + "."
+                        + ip.getFourth() + "/"
+                        + ip.getMask());
     }
 
 
