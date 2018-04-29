@@ -16,7 +16,7 @@ public class Network {
     private IP ip = new IP();
     private List<Network> connectedWith = new ArrayList<>();
 
-    public int getCountRelations(){
+    public List<Pair<Node, Node>> getUniqueConnections() {
         List<Pair<Node, Node>> pairList = new ArrayList<>();
         for (Node node : nodes) {
             for (Node connectNode : node.getConnectedNodes()) {
@@ -26,7 +26,11 @@ public class Network {
                 }
             }
         }
-        return pairList.size();
+        return pairList;
+    }
+
+    public int getCountRelations(){
+        return getUniqueConnections().size();
     }
 
     public IP getIp() {
@@ -73,7 +77,7 @@ public class Network {
     }
 
 
-    private boolean checkRelationIntersection(Node from, Node to){
+    private boolean checkRelationIntersection(Node from, Node to){ //вот этот не работает
         int t_x = Math.abs(from.getCellNumber_X() - to.getCellNumber_X());
         int t_y = Math.abs(from.getCellNumber_Y() - to.getCellNumber_Y());
         if(t_x == 0) {
@@ -146,7 +150,7 @@ public class Network {
         if(getByCoord(x, y) != null){
             throw new NodeExistException("В этой ячейке уже существует узел");
         }
-        System.out.println(x + "/" + y + "----------------");
+        //System.out.println(x + "/" + y + "----------------");
         if(checkNodeIntersection(x, y)){
             throw new NodeInterseptionException("Этот узел будет пересекаться с соединениями других");
         }
@@ -163,7 +167,7 @@ public class Network {
         Node lastAdded = nodes.get(ID);
         lastAdded.setMaxRelationsCount(maxRelationsQuantity);
 
-        int con = connectWith.size();
+        //int con = connectWith.size();
 
         for (int i = 0; i < connectWith.size(); i++) {
             Node ConnectingNode = getNodeByID(connectWith.get(i));
@@ -173,13 +177,13 @@ public class Network {
                         if (lastAdded.getRelationsCount() == 0 && i == connectWith.size() - 1) {
                             throw new NodeRelationsException("");
                         }
-                        con--;
+                        //con--;
                         continue;
                     }
                     lastAdded.connectNode(ConnectingNode, false);
                 }
                 catch(OneselfConnection | NodeRelationsException e) {
-                    con--;
+                    //con--;
                    if(lastAdded.getRelationsCount() == 0 && i == connectWith.size() - 1){
                        nodes.remove(lastAdded);
                        throw new NodeExistException("Узел был удален т.к. не соединился ни с одним уже существующим");
@@ -187,7 +191,7 @@ public class Network {
                 }
             }
         }
-        System.out.println("Conn " + con + "/" + connectWith.size());
+       // System.out.println("Conn " + con + "/" + connectWith.size());
     }
 
     public int size(){

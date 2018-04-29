@@ -76,11 +76,19 @@ public class Node {
     @Override
     public boolean equals(Object object)
     {
-        boolean equal = false;
-        if (object instanceof Node)
-            equal = this.CellNumber_X == ((Node)object).CellNumber_X
+        if (object == this) {
+            return true;
+        }
+        if (object == null || object.getClass() != this.getClass()) {
+            return false;
+        }
+        return this.CellNumber_X == ((Node)object).CellNumber_X
             && this.CellNumber_Y == ((Node)object).CellNumber_Y && this.ID == ((Node)object).ID;
-        return equal;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public int getRelationsCount() {
@@ -100,9 +108,11 @@ public class Node {
 
     public void connectNode(Node connectingNode, boolean forcibly) throws OneselfConnection, NodeRelationsException {
         if(connectingNode == null) {
+            System.out.println(this.ID + " / " + connectingNode.ID + " NULL");
             throw new NullPointerException("Соединяемый узел - null");
         }
         if(connectingNode.equals(this)) {
+            System.out.println(this.ID + " / " + connectingNode.ID + " Самосоединение");
             throw new OneselfConnection("Соединение с самим собой");
         }
         if(!forcibly) {
@@ -113,15 +123,13 @@ public class Node {
         }
 
         if(this.ConnectedNodes.contains(connectingNode) || connectingNode.ConnectedNodes.contains(this)){
+            System.out.println(this.ID + " / " + connectingNode.ID + " Уже существует");
             throw new NodeRelationsException("Связь уже существует");
         }
 
         ConnectedNodes.add(connectingNode);
         RelationsCount++;
-
         connectingNode.ConnectedNodes.add(this);
         connectingNode.RelationsCount++;
-
-
     }
 }

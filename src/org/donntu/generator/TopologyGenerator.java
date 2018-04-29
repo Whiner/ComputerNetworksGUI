@@ -1,6 +1,8 @@
 package org.donntu.generator;
 
 
+import org.donntu.generator.drawer.GeneratorDrawer;
+import org.donntu.generator.drawer.WindowDrawer;
 import org.donntu.generator.field.Field;
 import org.donntu.generator.field.Section;
 import org.donntu.generator.generatorException.NodeExistException;
@@ -15,6 +17,16 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class TopologyGenerator {
+
+    private static GeneratorDrawer drawer;
+
+    static {
+        try {
+            drawer = new GeneratorDrawer(2000, 2000, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private static Network generateNodes(int nodeCount, int maxNodeRelationsCount, Section section) throws Exception {
         if(nodeCount <= 0) {
@@ -76,9 +88,11 @@ public class TopologyGenerator {
                 }
             }
             i++;
+            drawer.drawNetwork(network);
+            drawer.saveImage("test.png");
         }
         section.setFill();
-        System.out.println("Node tries " + tries + "/" + nodeCount);
+        //System.out.println("Node tries " + tries + "/" + nodeCount);
         return network;
     }
 
@@ -157,11 +171,15 @@ public class TopologyGenerator {
 
             @Override
             public boolean equals(Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
+                if (this == o) {
+                    return true;
+                }
+                if (o == null || getClass() != o.getClass()) {
+                    return false;
+                }
                 Connected connected = (Connected) o;
-                return Objects.equals(first, connected.first) &&
-                        Objects.equals(second, connected.second);
+                return first.equals(connected.first) &&
+                        second.equals(connected.second);
             }
 
         }
