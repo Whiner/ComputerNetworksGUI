@@ -52,28 +52,31 @@ public class GeneratorDrawer {
 
     private void drawCells() {
         graphics2D.setColor(Color.PINK);
-        for (int i = 0; i < Field.getInstance().getCellsCount() * 2 + 1; i++) {
-            graphics2D.drawLine(i * DrawConfigs.getInstance().getNodeSize(),
+        for (int i = 0; i < Field.getInstance().getCellsCountX() * 2 + 1; i++) {
+            graphics2D.drawLine(i * DrawConfigs.getInstance().getNodeWidth(),
                     0,
-                    i * DrawConfigs.getInstance().getNodeSize(),
-                    Field.getInstance().getFieldSize_px());
-            graphics2D.drawLine(0, i * DrawConfigs.getInstance().getNodeSize(),
-                    Field.getInstance().getFieldSize_px(),
-                    i * DrawConfigs.getInstance().getNodeSize());
+                    i * DrawConfigs.getInstance().getNodeWidth(),
+                    Field.getInstance().getHeight());
+        }
+        for (int i = 0; i < Field.getInstance().getCellsCountY() * 2 + 1; i++) {
+            graphics2D.drawLine(0,
+                    i * DrawConfigs.getInstance().getNodeHeight(),
+                    Field.getInstance().getWidth(),
+                    i * DrawConfigs.getInstance().getNodeHeight());
         }
     }
 
     private void drawSections() {
 
         Section section = Field.getInstance().getWanSection();
-        int y = section.getCells_Count_Y() * DrawConfigs.getInstance().getNodeSize() * 2;
+        int y = section.getCells_Count_Y() * DrawConfigs.getInstance().getNodeHeight() * 2;
         graphics2D.setColor(Color.BLACK);
-        graphics2D.drawLine(0, y, Field.getInstance().getFieldSize_px(), y);
+        graphics2D.drawLine(0, y, Field.getInstance().getWidth(), y);
         graphics2D.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 50));
         graphics2D.drawString(section.getName(),
-                Field.getInstance().getFieldSize_px()
-                        - DrawConfigs.getInstance().getNodeSize(),
-                DrawConfigs.getInstance().getNodeSize() / 2);
+                Field.getInstance().getWidth()
+                        - DrawConfigs.getInstance().getNodeWidth(),
+                DrawConfigs.getInstance().getNodeHeight() / 2);
 
         for (Section t : Field.getInstance().getLanSections()) {
             Color color;
@@ -85,14 +88,16 @@ public class GeneratorDrawer {
             while (ColorComparator.isContainLikeTone(color, usedColors));
             usedColors.add(color);
             graphics2D.setColor(color);
-            int x = t.getBeginCell_X() * DrawConfigs.getInstance().getNodeSize() * 2;
-            graphics2D.fillRect(x, t.getBeginCell_Y() * DrawConfigs.getInstance().getNodeSize() * 2,
-                    DrawConfigs.getInstance().getNodeSize() * t.getCells_Count_X() * 2,
-                    DrawConfigs.getInstance().getNodeSize() * t.getCells_Count_Y() * 2);
+            int x = t.getBeginCell_X() * DrawConfigs.getInstance().getNodeWidth() * 2;
+            graphics2D.fillRect(x,
+                    t.getBeginCell_Y() * DrawConfigs.getInstance().getNodeHeight() * 2,
+                    DrawConfigs.getInstance().getNodeWidth() * t.getCells_Count_X() * 2,
+                    DrawConfigs.getInstance().getNodeHeight() * t.getCells_Count_Y() * 2);
             graphics2D.setColor(Color.BLACK);
-            graphics2D.drawString(t.getName(), x + DrawConfigs.getInstance().getNodeSize()
-                            * t.getCells_Count_X() * 2 - DrawConfigs.getInstance().getNodeSize(),
-                    t.getBeginCell_Y() * DrawConfigs.getInstance().getNodeSize() * 2 + DrawConfigs.getInstance().getNodeSize() / 2);
+            graphics2D.drawString(t.getName(),
+                    x + DrawConfigs.getInstance().getNodeWidth()
+                            * t.getCells_Count_X() * 2 - DrawConfigs.getInstance().getNodeWidth(),
+                    t.getBeginCell_Y() * DrawConfigs.getInstance().getNodeHeight() * 2 + DrawConfigs.getInstance().getNodeHeight() / 2);
         }
 
     }
@@ -110,7 +115,10 @@ public class GeneratorDrawer {
             Coordinates to_c = NodeCoordinatesConvertor.getCenter(to);
             graphics2D.setColor(Color.RED);
 
-            float distance = (float) (DrawConfigs.getInstance().getNodeSize() / 1.5);
+            float distance = (float) (Math.max(
+                    DrawConfigs.getInstance().getNodeWidth(),
+                    DrawConfigs.getInstance().getNodeHeight() )
+                    / 1.5); // пересмотреть тут
             float rab = (float) Math.sqrt(Math.pow(from_c.getX() - to_c.getX(), 2) + Math.pow(from_c.getY() - to_c.getY(), 2));
             float k = distance / rab;
             int xc = (int) (from_c.getX() + (to_c.getX() - from_c.getX()) * k);
@@ -132,7 +140,7 @@ public class GeneratorDrawer {
 
     private void drawNodeName(Node node) {
         Coordinates text = NodeCoordinatesConvertor.getCenter(node);
-        text.setY((int) (text.getY() + DrawConfigs.getInstance().getNodeSize() / 1.5));
+        text.setY((int) (text.getY() + DrawConfigs.getInstance().getNodeHeight() / 1.5));
         text.setX(text.getX() - 20);
         graphics2D.setColor(Color.BLACK);
         graphics2D.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 40));

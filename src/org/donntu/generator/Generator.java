@@ -17,8 +17,10 @@ public class Generator { //оболочка для всего
             }
 
             Field.getInstance().setConfig(
-                    generateConfig.getCellsCount(),
-                    generateConfig.getImageSize(),
+                    generateConfig.getCellsCountX(),
+                    generateConfig.getCellsCountY(),
+                    generateConfig.getImageHeight(),
+                    generateConfig.getImageWidth(),
                     generateConfig.getLanQuantity()
             );
             DrawConfigs.getInstance().setNodeImage(generateConfig.getNodeImage());

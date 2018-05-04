@@ -10,11 +10,24 @@ import java.io.IOException;
 
 
 public class DrawConfigs {
-    private int nodeSize;
+    private int nodeHeight;
+    private int nodeWidth;
     private Image nodeImage;
 
-    public int getNodeSize() {
-        return nodeSize;
+    public int getNodeHeight() {
+        return nodeHeight;
+    }
+
+    public void setNodeHeight(int nodeHeight) {
+        this.nodeHeight = nodeHeight;
+    }
+
+    public int getNodeWidth() {
+        return nodeWidth;
+    }
+
+    public void setNodeWidth(int nodeWidth) {
+        this.nodeWidth = nodeWidth;
     }
 
     public Image getNodeImage() {
@@ -22,12 +35,10 @@ public class DrawConfigs {
     }
 
     public void calcNodeSize() throws Exception {
-        if(Field.getInstance().getCellsCount() == -1 || Field.getInstance().getFieldSize_px() == -1){
-            throw new Exception("Fill field parameters in class Field");
-        }
         try{
-            nodeSize = Field.getInstance().getFieldSize_px() / (Field.getInstance().getCellsCount() * 2);
-            this.nodeImage = ImageEditor.resizeImage(nodeImage, nodeSize, nodeSize, true);
+            nodeWidth = Field.getInstance().getWidth() / (Field.getInstance().getCellsCountX() * 2);
+            nodeHeight = Field.getInstance().getHeight() / (Field.getInstance().getCellsCountY() * 2);
+            this.nodeImage = ImageEditor.resizeImage(nodeImage, nodeWidth, nodeHeight, true);
         }
         catch (Exception e){
             throw new Exception("Division by 0");
@@ -41,9 +52,10 @@ public class DrawConfigs {
         if(nodeImage == null)
            throw new NullPointerException();
         this.nodeImage = ImageEditor.deepImageCopy(nodeImage);
-        nodeSize = nodeImage.getHeight(null);
+        nodeHeight = nodeImage.getHeight(null);
+        nodeWidth = nodeImage.getWidth(null);
         if(nodeImage.getHeight(null) != nodeImage.getWidth(null)){
-            this.nodeImage = ImageEditor.resizeImage(nodeImage, nodeSize, nodeSize, false);
+            this.nodeImage = ImageEditor.resizeImage(nodeImage, nodeWidth, nodeHeight, false);
         }
 
     }
@@ -55,9 +67,10 @@ public class DrawConfigs {
         if(directory.isFile()) {
             try {
                 nodeImage = ImageIO.read(directory);
-                nodeSize = nodeImage.getHeight(null);
+                nodeHeight = nodeImage.getHeight(null);
+                nodeWidth = nodeImage.getWidth(null);
                 if(nodeImage.getHeight(null) != nodeImage.getWidth(null)) {
-                    nodeImage = ImageEditor.resizeImage(nodeImage, nodeSize, nodeSize, false);
+                    nodeImage = ImageEditor.resizeImage(nodeImage, nodeWidth, nodeHeight, false);
                 }
             } catch (IOException e) {
                 throw new Exception("Directory does not point to an image or image is corrupted");

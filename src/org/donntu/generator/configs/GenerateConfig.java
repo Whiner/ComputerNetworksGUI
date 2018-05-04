@@ -8,7 +8,8 @@ import java.io.IOException;
 public class GenerateConfig {
     private int imagesQuantity; //
     private File directory; //
-    private int imageSize; //
+    private int imageHeight; //
+    private int imageWidth;
     private Image nodeImage; //
     private int wanNodesQuantity;
     private int wanRelationsQuantity;
@@ -16,13 +17,9 @@ public class GenerateConfig {
     private int lanNodesQuantity;
     private int lanRelationsQuantity;
     private int networksRelationsQuantity;
-    private int cellsCount;
+    private int cellsCountX;
+    private int cellsCountY;
 
-    public void calcCellsCount(){
-        if(lanQuantity == 3) {
-            cellsCount++;
-        }
-    }
     public GenerateConfig() {}
 
     public int getImagesQuantity() {
@@ -41,13 +38,7 @@ public class GenerateConfig {
         this.directory = directory;
     }
 
-    public int getImageSize() {
-        return imageSize;
-    }
 
-    public void setImageSize(int imageSize) {
-        this.imageSize = imageSize;
-    }
 
     public Image getNodeImage() {
         return nodeImage;
@@ -105,11 +96,35 @@ public class GenerateConfig {
         this.networksRelationsQuantity = networksRelationsQuantity;
     }
 
-    public int getCellsCount() {
-        return cellsCount;
+    public int getCellsCountX() {
+        return cellsCountX;
     }
 
-    public void setCellsCount(int cellsCount) {
-        this.cellsCount = cellsCount;
+    public void setCellsCountX(int cellsCountX) {
+        this.cellsCountX = cellsCountX;
+    }
+
+    public int getCellsCountY() {
+        return cellsCountY;
+    }
+
+    public void setCellsCountY(int cellsCountY) {
+        this.cellsCountY = cellsCountY;
+    }
+
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
     }
 }

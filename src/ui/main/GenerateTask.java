@@ -33,8 +33,8 @@ public class GenerateTask {
     public static void generate(GenerateConfig config) throws Exception {
         lastStudentTask = Generator.generateIndividualTask("Саня", "Шляпик", "ИС-16", config);
         drawer = new GeneratorDrawer(
-                    Field.getInstance().getFieldSize_px(),
-                    Field.getInstance().getFieldSize_px(),
+                    Field.getInstance().getHeight(),
+                    Field.getInstance().getWidth(),
                     true);
         drawer.drawTopology(lastStudentTask.getTopology());
         lastImage = drawer.getImage();

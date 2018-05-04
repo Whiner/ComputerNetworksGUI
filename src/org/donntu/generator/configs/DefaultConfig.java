@@ -13,7 +13,7 @@ public class DefaultConfig{
         buildImageSize();
         buildImagesQuantity();
         buildLANsettings();
-        buildWANsettings();
+        buildWANSettings();
         buildNetworkRelations();
         buildNodeImage();
         return config;
@@ -36,10 +36,11 @@ public class DefaultConfig{
     }
 
     private static void buildImageSize() {
-        config.setImageSize(2000);
+        config.setImageHeight(2000);
+        config.setImageWidth(2000);
     }
 
-    private static void buildWANsettings() {
+    private static void buildWANSettings() {
         config.setWanNodesQuantity(6);
         config.setWanRelationsQuantity(3);
     }
@@ -55,6 +56,7 @@ public class DefaultConfig{
     }
 
     private static void buildCellsCount() {
-        config.setCellsCount(8);
+        config.setCellsCountX(8);
+        config.setCellsCountY(8);
     }
 }

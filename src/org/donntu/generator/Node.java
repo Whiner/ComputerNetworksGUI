@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
-    private NetworkType networkType;
     private int RelationsCount;
     private List<Node> ConnectedNodes;
     private int CellNumber_X, CellNumber_Y;
@@ -16,7 +15,6 @@ public class Node {
 
 
     Node(NetworkType networkType, int cellNumber_X, int cellNumber_Y, int ID) {
-        this.networkType = networkType;
         CellNumber_X = cellNumber_X;
         CellNumber_Y = cellNumber_Y;
         this.ID = ID;
@@ -43,13 +41,6 @@ public class Node {
         this.ID = ID;
     }
 
-    public NetworkType getNetworkType() {
-        return networkType;
-    }
-
-    public void setNetworkType(NetworkType networkType) {
-        this.networkType = networkType;
-    }
 
     public List<Node> getConnectedNodes() {
         return ConnectedNodes;

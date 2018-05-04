@@ -12,11 +12,50 @@ import java.util.List;
 
 public class Network {
     private NetworkType type;
-    private List<Node> nodes;
+    private List<Node> nodes = new ArrayList<>();
     private IP ip = new IP();
-    private List<Network> connectedWith = new ArrayList<>();
+    //private List<Network> connectedWith = new ArrayList<>();
+    private List<ConnectedOtherNetworks> connectedOtherNetworks = new ArrayList<>();
 
-    public List<Pair<Node, Node>> getUniqueConnections() {
+    private class ConnectedOtherNetworks{
+        Node thisNetworkNode;
+        Network network;
+        Node otherNetworkNode;
+
+        public ConnectedOtherNetworks(Node thisNetworkNode, Network network, Node otherNetworkNode) {
+            this.network = network;
+            this.thisNetworkNode = thisNetworkNode;
+            this.otherNetworkNode = otherNetworkNode;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ConnectedOtherNetworks that = (ConnectedOtherNetworks) o;
+
+            if (!thisNetworkNode.equals(that.thisNetworkNode)) return false;
+            if (!network.equals(that.network)) return false;
+            return otherNetworkNode.equals(that.otherNetworkNode);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = thisNetworkNode.hashCode();
+            result = 31 * result + network.hashCode();
+            result = 31 * result + otherNetworkNode.hashCode();
+            return result;
+        }
+    }
+
+
+
+    public List<ConnectedOtherNetworks> getConnectedOtherNetworks() {
+        return connectedOtherNetworks;
+    }
+
+    public List<Pair<Node, Node>> getUniqueConnections() { // сам себя и с другой сетью
         List<Pair<Node, Node>> pairList = new ArrayList<>();
         for (Node node : nodes) {
             for (Node connectNode : node.getConnectedNodes()) {
@@ -77,7 +116,7 @@ public class Network {
     }
 
 
-    private boolean checkRelationIntersection(Node from, Node to){ //вот этот не работает
+    private boolean checkRelationIntersection(Node from, Node to){
         int t_x = Math.abs(from.getCellNumber_X() - to.getCellNumber_X());
         int t_y = Math.abs(from.getCellNumber_Y() - to.getCellNumber_Y());
         if(t_x == 0) {
@@ -87,7 +126,6 @@ public class Network {
                     return true;
                 }
             }
-            return false;
         } else if(t_y == 0){
             int start = Math.min(from.getCellNumber_X(), to.getCellNumber_X());
             for (int i = 1; i < t_x; i++){
@@ -95,50 +133,76 @@ public class Network {
                     return true;
                 }
             }
-            return false;
         } else if(t_x == t_y) {
-            int start_x = Math.min(from.getCellNumber_X(), to.getCellNumber_X());
-            int start_y = Math.min(from.getCellNumber_Y(), to.getCellNumber_Y());
+            int start_x = from.getCellNumber_X();
+            int start_y = from.getCellNumber_Y();
+            int step_x;
+            int step_y;
+            if(from.getCellNumber_X() > to.getCellNumber_X()){
+                step_x = -1;
+            } else {
+                step_x = 1;
+            }
+            if(from.getCellNumber_Y() > to.getCellNumber_Y()){
+                step_y = -1;
+            } else {
+                step_y = 1;
+            }
                 for (int i = 1; i < t_x; i++){
-                    if(getByCoord(start_x + i, start_y + i) != null) {
+                    if(getByCoord(start_x + step_x, start_y + step_y) != null) {
                         return true;
                     }
                 }
-                return false;
         }
         return false;
     }
 
     private boolean checkNodeIntersection(int x, int y){
-        for (Node node: nodes) {
-            for (Node rel : node.getConnectedNodes()) {
-                int t_x = Math.abs(node.getCellNumber_X() - rel.getCellNumber_X());
-                int t_y = Math.abs(node.getCellNumber_Y() - rel.getCellNumber_Y());
-                if (t_x == 0) {
-                    int start = Math.min(node.getCellNumber_Y(), rel.getCellNumber_Y());
-                    for (int i = 1; i < t_y; i++) {
-                        if (node.getCellNumber_X() == x && (start + i) == y) {
-                            return true;
-                        }
+        List<Pair<Node, Node>> uniqueRelations = getUniqueConnections();
+
+        for (Pair<Node, Node> link: uniqueRelations){
+            int t_x = Math.abs(link.getValue().getCellNumber_X() - link.getKey().getCellNumber_X());
+            int t_y = Math.abs(link.getValue().getCellNumber_Y() - link.getKey().getCellNumber_Y());
+            if (t_x == 0) {
+                int start = Math.min(link.getValue().getCellNumber_Y(), link.getKey().getCellNumber_Y());
+                for (int i = 1; i < t_y; i++) {
+                    if (link.getValue().getCellNumber_X() == x && (start + i) == y) {
+                        return true;
                     }
-                } else if (t_y == 0) {
-                    int start = Math.min(node.getCellNumber_X(), rel.getCellNumber_X());
-                    for (int i = 1; i < t_x; i++) {
-                        if (node.getCellNumber_Y() == y && (start + i) == x) {
-                            return true;
-                        }
+                }
+            } else if (t_y == 0) {
+                int start = Math.min(link.getValue().getCellNumber_X(), link.getKey().getCellNumber_X());
+                for (int i = 1; i < t_x; i++) {
+                    if (link.getValue().getCellNumber_Y() == y && (start + i) == x) {
+                        return true;
                     }
-                } else if (t_x == t_y) {
-                    int start_x = Math.min(node.getCellNumber_X(), rel.getCellNumber_X());
-                    int start_y = Math.min(node.getCellNumber_Y(), rel.getCellNumber_Y());
-                    for (int i = 1; i < t_x; i++) {
-                        if ((start_x + i) == x && (start_y + i) == y) {
-                            return true;
-                        }
+                }
+            } else if (t_x == t_y) {
+                Node first = link.getValue();
+                Node second = link.getKey();
+                int start_x = first.getCellNumber_X();
+                int start_y = first.getCellNumber_Y();
+                int step_x;
+                int step_y;
+                if(first.getCellNumber_X() > second.getCellNumber_X()){
+                    step_x = -1;
+                } else {
+                    step_x = 1;
+                }
+                if(first.getCellNumber_Y() > second.getCellNumber_Y()){
+                    step_y = -1;
+                } else {
+                    step_y = 1;
+                }
+
+                for (int i = 1; i < t_x; i++) {
+                    if ((start_x + step_x) == x && (start_y + step_y) == y) {
+                        return true;
                     }
                 }
             }
         }
+
         return false;
     }
 
@@ -198,14 +262,9 @@ public class Network {
         return nodes.size();
     }
 
-    public Network() throws Exception {
-        nodes = new ArrayList<>();
+    public Network() {
     }
 
-    public Network(NetworkType type, int maxNodeCount) throws Exception {
-        nodes = new ArrayList<>();
-        this.type = type;
-    }
 
     public NetworkType getType() {
         return type;
@@ -215,19 +274,55 @@ public class Network {
         this.type = type;
     }
 
-    public List<org.donntu.generator.Node> getNodes() {
+    public List<Node> getNodes() {
         return nodes;
     }
 
-    public void setNodes(List<Node> nodes) {
-        this.nodes = nodes;
-    }
-
-    public List<Network> getConnectedWith() {
+    /*public List<Network> getConnectedWith() {
         return connectedWith;
+    }*/
+
+    public void addConnectedNetwork(Node thisNetworkNode, Network connectedNetwork, Node connectedNode) throws Exception {
+        if (thisNetworkNode != null && connectedNetwork != null && connectedNode != null) {
+            if(!nodes.contains(thisNetworkNode)){
+                throw new Exception("Неверный первый параметр. Этот узел не существует в этой сети");
+            }
+            if(!connectedNetwork.nodes.contains(connectedNode)){
+                throw new Exception("ConnectedNode должен находиться в ConnectedNetwork");
+            }
+            if(thisNetworkNode.equals(connectedNode)){
+                throw new Exception("Соединение с самим собой");
+            }
+
+            if(connectedOtherNetworks.contains(new ConnectedOtherNetworks(
+                    thisNetworkNode,
+                    connectedNetwork,
+                    connectedNode))) {
+                throw new Exception("Связь уже существует");
+            }
+
+            connectedOtherNetworks.add(new ConnectedOtherNetworks(thisNetworkNode, connectedNetwork, connectedNode));
+            connectedNetwork.connectedOtherNetworks.add(new ConnectedOtherNetworks(connectedNode, this, thisNetworkNode));
+        }
     }
 
-    public void addConnectedNetwork(Network network) {
-        this.connectedWith.add(network);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Network network = (Network) o;
+
+        if (type != network.type) return false;
+        if (!nodes.equals(network.nodes)) return false;
+        return ip.equals(network.ip);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + nodes.hashCode();
+        result = 31 * result + ip.hashCode();
+        return result;
     }
 }

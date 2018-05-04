@@ -88,8 +88,8 @@ public class TopologyGenerator {
                 }
             }
             i++;
-            drawer.drawNetwork(network);
-            drawer.saveImage("test.png");
+            //drawer.drawNetwork(network);
+            //drawer.saveImage("test.png");
         }
         section.setFill();
         //System.out.println("Node tries " + tries + "/" + nodeCount);
@@ -185,7 +185,7 @@ public class TopologyGenerator {
         }
         List<Connected> connectedNodes = new ArrayList<>();
 
-        for (int i = 0; i < connectionsQuantity; i++) { // сделать проверку на всем поле по переечениям
+        for (int i = 0; i < connectionsQuantity; i++) { // сделать проверку на всем поле по переcечениям
             Connected lastConnected = new Connected();
             int lastLength = 1000;
             for (Node f : firstNetwork.getNodes()) {
@@ -200,10 +200,10 @@ public class TopologyGenerator {
                 }
             }
 
-            lastConnected.first.connectNode(lastConnected.second, true);
+            //lastConnected.first.connectNode(lastConnected.second, true);
             connectedNodes.add(lastConnected);
-            firstNetwork.addConnectedNetwork(secondNetwork);
-            secondNetwork.addConnectedNetwork(firstNetwork);
+            firstNetwork.addConnectedNetwork(lastConnected.first, secondNetwork, lastConnected.second);
+            //secondNetwork.addConnectedNetwork(firstNetwork);
         }
 
     }
@@ -276,7 +276,7 @@ public class TopologyGenerator {
         }
 
         int relationsCount = network.getCountRelations();
-        int needAddresses = relationsCount * 4 + network.getConnectedWith().size() * 4 + 2;
+        int needAddresses = relationsCount * 4 + network.getConnectedOtherNetworks().size() * 4 + 2;
         int fourthOctet = ThreadLocalRandom.current().nextInt(0, 255 - needAddresses);
         ip.setFourth(fourthOctet);
 

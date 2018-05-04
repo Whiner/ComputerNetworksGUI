@@ -46,7 +46,7 @@ public class Main extends Application {
             drawer.saveImage("task/" + studentTask.getName()
                     + " " + studentTask.getSurname() + " " + studentTask.getGroup() +
                     "Прям щас" + ".png");
-            //dbWorker.addStudentTask(studentTask);
+            dbWorker.addStudentTask(studentTask);
 
         } catch (Exception e) {
             e.printStackTrace();

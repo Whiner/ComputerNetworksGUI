@@ -7,11 +7,17 @@ import java.util.List;
 
 public class Field {
 
-    private int cellsCount = 8;
-    private int fieldSize_px = 2000;
-
+    private int cellsCountX = 16;
+    private int cellsCountY = 8;
+    //private int fieldSize_px = 2000;
+    private int height = 1000;
+    private int width = 2000;
     private Section wanSection;
     private List<Section> lanSections;
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
     public int getLAN_Field_Count() {
         return lanSections.size();
@@ -25,9 +31,11 @@ public class Field {
         return lanSections;
     }
 
-    public void setConfig(int cellsCount, int fieldSize_px, int lan_quantity) throws Exception {
-        setCellsCount(cellsCount); //предусмотреть отсутствие этих строк
-        setFieldSize_px(fieldSize_px);
+    public void setConfig(int cellsCountX, int cellsCountY, int fieldHeight, int fieldWidth, int lan_quantity) throws Exception {
+        setCellsCountX(cellsCountX);
+        setCellsCountY(cellsCountY);
+        setWidth(fieldWidth);
+        setHeight(fieldHeight);
         Field.getInstance().AddWAN_Section();
         CreateLAN_Sections(lan_quantity);
     }
@@ -39,8 +47,8 @@ public class Field {
                 NetworkType.WAN,
                 0,
                 0,
-                cellsCount,
-                cellsCount / 2);
+                cellsCountX,
+                cellsCountY / 2);
         return true;
     }
 
@@ -55,12 +63,12 @@ public class Field {
         lanSections = new ArrayList<>();
 
         for (int i = 0; i < count; i++){
-            int beginCell_X = (cellsCount / count) * i;
-            int beginCell_Y = cellsCount / 2;
-            int cells_Count_X = cellsCount / count;
-            int cells_Count_Y = cellsCount - cellsCount / 2;
+            int beginCell_X = (cellsCountX / count) * i;
+            int beginCell_Y = cellsCountY / 2;
+            int cells_Count_X = cellsCountX / count;
+            int cells_Count_Y = cellsCountY - cellsCountY / 2;
             if(i == count - 1){
-                cells_Count_X = cellsCount - cells_Count_X * (count - 1);
+                cells_Count_X = cellsCountX - cells_Count_X * (count - 1);
             }
             lanSections.add(new Section(
                     "LAN" + (i + 1),
@@ -82,18 +90,8 @@ public class Field {
         wanSection = null;
     }
 
-    public int getCellsCount() {
-        return cellsCount;
-    }
 
-    public void setCellsCount(int cellsCount) throws Exception {
-        if(cellsCount < 1) {
-            throw new Exception("Cells count must be greater 0");
-        }
-        this.cellsCount = cellsCount;
-    }
-
-    public int getFieldSize_px() {
+   /* public int getFieldSize_px() {
         return fieldSize_px;
     }
 
@@ -102,7 +100,7 @@ public class Field {
             throw new Exception("Field size must be positive");
         }
         this.fieldSize_px = fieldSize_px;
-    }
+    }*/
 
 
 
@@ -119,5 +117,31 @@ public class Field {
     private Field() {}
 
 
+    public int getHeight() {
+        return height;
+    }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getCellsCountX() {
+        return cellsCountX;
+    }
+
+    public void setCellsCountX(int cellsCountX) {
+        this.cellsCountX = cellsCountX;
+    }
+
+    public int getCellsCountY() {
+        return cellsCountY;
+    }
+
+    public void setCellsCountY(int cellsCountY) {
+        this.cellsCountY = cellsCountY;
+    }
 }
