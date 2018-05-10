@@ -1,6 +1,13 @@
 package ui.main;
 
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import mainpackage.Main;
 import org.donntu.databaseworker.StudentTask;
 import org.donntu.generator.configs.DefaultConfig;
 import org.donntu.generator.configs.GenerateConfig;
@@ -8,41 +15,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import org.donntu.generator.RAMCalculator;
+import ui.ComboBoxWorker;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-class ElementsWorker {
-    private MainWindowController controller;
+class FormWorker {
+    private Controller controller;
     private String notPointed = "Не указано";
-
-    private class ComboBoxValuesStruct {
-        int min;
-        int max;
-
-        ComboBoxValuesStruct(int min, int max) {
-            this.min = min;
-            this.max = max;
-        }
-
-        void fillComboBox(ComboBox<Integer> comboBox, int value){
-            comboBox.getItems().clear();
-            comboBox.setItems(fillObsList(min, max));
-            comboBox.setValue(value);
-        }
-    }
-
-    private ComboBoxValuesStruct quantity_wan_nodes_CB = new ComboBoxValuesStruct(3, 10);
-    private ComboBoxValuesStruct quantity_lan_nodes_CB = new ComboBoxValuesStruct(3, 10);
-    private ComboBoxValuesStruct maxrelCB = new ComboBoxValuesStruct(2, 5);
-    private ComboBoxValuesStruct t_CB = new ComboBoxValuesStruct(1, 3);
 
 
     private GenerateConfig config;
 
-    ElementsWorker(MainWindowController controller){
+    FormWorker(Controller controller){
         if(controller == null){
             throw new NullPointerException();
         }
@@ -53,12 +40,53 @@ class ElementsWorker {
 
 
 
+
     private void fillButtonActions(){
+        controller.addButton.setOnAction(event -> {
+            Parent secondaryLayout;
+            try {
+                secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/add/forms.fxml"));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            Scene secondScene = new Scene(secondaryLayout, 700, 460);
+
+            Stage newWindow = new Stage();
+            newWindow.setTitle("Добавить...");
+            newWindow.setScene(secondScene);
+
+            newWindow.initModality(Modality.WINDOW_MODAL);
+            newWindow.initOwner(Main.primaryStage);
+            newWindow.setResizable(false);
+            newWindow.show();
+        });
+
+        controller.showStudentsButton.setOnAction(event -> {
+
+        });
+
+        controller.showGroupsButton.setOnAction(event -> {
+
+        });
+
+        controller.showTasksButton.setOnAction(event -> {
+
+        });
+
+        controller.taskButton.setOnAction(event -> {
+
+        });
+
+        controller.aboutProgramButton.setOnAction(event -> {
+
+        });
+
         controller.generationButton.setOnAction(event -> {
             try {
 
                 Date date = new Date();
-                GenerateTask.generate(config);
+                //GenerateTask.generateIndividual(config);
                 StudentTask task = GenerateTask.getLastStudentTask();
                 String lastPath = "task/"
                         + task.getName() + " " + task.getSurname()
@@ -81,9 +109,15 @@ class ElementsWorker {
 
         controller.defaultButton.setOnAction(event -> {
             config = DefaultConfig.getDefaultConfig();
-            fillComboBoxes();
+            try {
+                fillComboBoxes();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
             fillSlider();
         });
+
     }
 
 
@@ -117,22 +151,16 @@ class ElementsWorker {
                 config.setLanNodesQuantity(controller.cb_LAN_nodes_quantity.getValue()));
     }
 
-    private ObservableList<Integer> fillObsList(int min, int max){
-        ObservableList<Integer> integers = FXCollections.observableArrayList();
-        for (int i = min; i <= max; i++){
-            integers.add(i);
-        }
-        return integers;
-    }
 
 
-    private void fillComboBoxes(){
-        quantity_wan_nodes_CB.fillComboBox(controller.cb_WAN_nodes_quantity, config.getWanNodesQuantity());
-        maxrelCB.fillComboBox(controller.cb_WAN_max_rel_quantity, config.getWanRelationsQuantity());
-        t_CB.fillComboBox(controller.cb_WAN_rel_with_LAN_quantity, config.getNetworksRelationsQuantity());
-        quantity_wan_nodes_CB.fillComboBox(controller.cb_LAN_nodes_quantity,config.getLanNodesQuantity());
-        maxrelCB.fillComboBox(controller.cb_LAN_max_rel_quantity, config.getLanRelationsQuantity());
-        t_CB.fillComboBox(controller.cb_LAN_networks_quantity, config.getLanQuantity());
+
+    private void fillComboBoxes() throws Exception {
+        ComboBoxWorker.fillComboBox(3, 10, config.getWanNodesQuantity(), controller.cb_WAN_nodes_quantity);
+        ComboBoxWorker.fillComboBox(2, 5, config.getWanRelationsQuantity(), controller.cb_WAN_max_rel_quantity );
+        ComboBoxWorker.fillComboBox(1, 3, config.getNetworksRelationsQuantity(), controller.cb_WAN_rel_with_LAN_quantity );
+        ComboBoxWorker.fillComboBox(3, 10, config.getLanNodesQuantity(), controller.cb_LAN_nodes_quantity);
+        ComboBoxWorker.fillComboBox(2, 5, config.getLanRelationsQuantity(), controller.cb_LAN_max_rel_quantity);
+        ComboBoxWorker.fillComboBox(1, 3, config.getLanQuantity(), controller.cb_LAN_networks_quantity);
     }
 
 
@@ -156,23 +184,29 @@ class ElementsWorker {
             quantity = RAMCalculator.getNodeQuantityInWAN(new_val.intValue());//количество WAN узлов
 
             config.setWanNodesQuantity(quantity);
-            quantity_wan_nodes_CB.max = quantity;
-            quantity_wan_nodes_CB.fillComboBox(controller.cb_WAN_nodes_quantity, quantity);
+            try {
+                ComboBoxWorker.fillComboBox(3, quantity, quantity,controller.cb_WAN_nodes_quantity);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
 
             quantity = RAMCalculator.getNodeQuantityInLAN( //количество LAN узлов
                     new_val.intValue(),
                     RAMCalculator.getRAM(config.getWanNodesQuantity()),
                     config.getLanQuantity());
             config.setLanNodesQuantity(quantity);
-            quantity_lan_nodes_CB.max = quantity;
-            quantity_lan_nodes_CB.fillComboBox(controller.cb_LAN_nodes_quantity, quantity);
-
+            try {
+                ComboBoxWorker.fillComboBox(3, quantity, quantity,controller.cb_LAN_nodes_quantity);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
 
 
     }
 
-    void fillAll(){
+    void fillAll() throws Exception {
         fillButtonActions();
         comboBoxesActions();
         fillComboBoxes();

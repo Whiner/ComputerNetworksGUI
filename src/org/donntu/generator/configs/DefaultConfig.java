@@ -9,36 +9,13 @@ public class DefaultConfig{
     public static GenerateConfig getDefaultConfig(){
         config = new GenerateConfig();
         buildCellsCount();
-        buildDirectory();
-        buildImageSize();
-        buildImagesQuantity();
         buildLANSettings();
         buildWANSettings();
         buildNetworkRelations();
-        buildNodeImage();
         return config;
     }
     private DefaultConfig() {}
-    private static void buildImagesQuantity() {
-        config.setImagesQuantity(1);
-    }
 
-    private static void buildDirectory() {
-        config.setDirectory(new File(""));
-    }
-
-    private static void buildNodeImage() {
-        try {
-            config.setNodeImage(ImageIO.read(new File("images-fx/2.png")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void buildImageSize() {
-        config.setImageHeight(2000);
-        config.setImageWidth(2000);
-    }
 
     private static void buildWANSettings() {
         config.setWanNodesQuantity(6);

@@ -12,7 +12,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.TextField;
 
-public class MainWindowController implements Initializable {
+public class Controller implements Initializable {
 
     @FXML
     ImageView top_panel_imageView;
@@ -53,10 +53,25 @@ public class MainWindowController implements Initializable {
     @FXML
     Button defaultButton;
 
+    @FXML
+    Button addButton;
+
+    @FXML
+    Button showGroupsButton;
+
+    @FXML
+    Button showStudentsButton;
+
+    @FXML
+    Button showTasksButton;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        new ElementsWorker(this).fillAll();
-
+        try {
+            new FormWorker(this).fillAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

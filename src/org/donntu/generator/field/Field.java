@@ -10,7 +10,7 @@ public class Field {
     private int cellsCountX = 16;
     private int cellsCountY = 8;
     //private int fieldSize_px = 2000;
-    private int height = 1000;
+    private int height = 2000;
     private int width = 2000;
     private Section wanSection;
     private List<Section> lanSections;
@@ -143,5 +143,13 @@ public class Field {
 
     public void setCellsCountY(int cellsCountY) {
         this.cellsCountY = cellsCountY;
+    }
+
+    public void setConfig(int cellsCountX, int cellsCountY, int lanQuantity) throws Exception {
+        setCellsCountX(cellsCountX);
+        setCellsCountY(cellsCountY);
+
+        Field.getInstance().AddWAN_Section();
+        CreateLAN_Sections(lanQuantity);
     }
 }

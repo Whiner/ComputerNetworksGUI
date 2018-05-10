@@ -6,11 +6,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class GenerateConfig {
-    private int imagesQuantity; //
-    private File directory; //
-    private int imageHeight; //
-    private int imageWidth;
-    private Image nodeImage; //
     private int wanNodesQuantity;
     private int wanRelationsQuantity;
     private int lanQuantity;
@@ -22,31 +17,6 @@ public class GenerateConfig {
 
     public GenerateConfig() {}
 
-    public int getImagesQuantity() {
-        return imagesQuantity;
-    }
-
-    public void setImagesQuantity(int imagesQuantity) {
-        this.imagesQuantity = imagesQuantity;
-    }
-
-    public File getDirectory() {
-        return directory;
-    }
-
-    public void setDirectory(File directory) {
-        this.directory = directory;
-    }
-
-
-
-    public Image getNodeImage() {
-        return nodeImage;
-    }
-
-    public void setNodeImage(Image nodeImage) {
-        this.nodeImage = nodeImage;
-    }
 
     public int getWanNodesQuantity() {
         return wanNodesQuantity;
@@ -112,19 +82,4 @@ public class GenerateConfig {
         this.cellsCountY = cellsCountY;
     }
 
-    public int getImageWidth() {
-        return imageWidth;
-    }
-
-    public void setImageWidth(int imageWidth) {
-        this.imageWidth = imageWidth;
-    }
-
-    public int getImageHeight() {
-        return imageHeight;
-    }
-
-    public void setImageHeight(int imageHeight) {
-        this.imageHeight = imageHeight;
-    }
 }

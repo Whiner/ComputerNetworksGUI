@@ -5,6 +5,7 @@ import org.donntu.generator.configs.GenerateConfig;
 import org.donntu.drawer.DrawConfigs;
 import org.donntu.generator.field.Field;
 
+import java.io.File;
 import java.util.Date;
 
 public class Generator { //оболочка для всего
@@ -20,11 +21,9 @@ public class Generator { //оболочка для всего
             Field.getInstance().setConfig(
                     generateConfig.getCellsCountX(),
                     generateConfig.getCellsCountY(),
-                    generateConfig.getImageHeight(),
-                    generateConfig.getImageWidth(),
                     generateConfig.getLanQuantity()
             );
-            DrawConfigs.getInstance().setNodeImage(generateConfig.getNodeImage());
+            DrawConfigs.getInstance().setNodeImage(new File("images-fx/2.png"));
             DrawConfigs.getInstance().calcNodeSize();
 
             Topology t = TopologyGenerator.generateTopology(

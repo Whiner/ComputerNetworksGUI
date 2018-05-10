@@ -15,39 +15,40 @@ import org.donntu.drawer.GeneratorDrawer;
 import java.io.IOException;
 
 public class Main extends Application {
-
+    public static Stage primaryStage;
     @Override
     public void start(Stage primaryStage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("../ui/main/forms.fxml"));
         primaryStage.setTitle("Компьютерные сети");
         primaryStage.setScene(new Scene(root));
+        Main.primaryStage = primaryStage;
         //primaryStage.setResizable(false);
         primaryStage.setMinHeight(780);
         primaryStage.setMinWidth(1200);
         primaryStage.show();
 
-        primaryStage.close();
+        //primaryStage.close();
     }
 
 
     public static void main(String[] args) {
         launch(args);
 
-        try {
+        /*try {
             //DBWorker dbWorker = new DBWorker(new DBConnector());
             StudentTask studentTask = Generator.generateIndividualTask(
                     "Алёша", "Попович", "Святая Русб", DefaultConfig.getDefaultConfig());
             GeneratorDrawer drawer = new GeneratorDrawer(2000, 2000, false);
-            /*drawer.drawTopology(studentTask.getTopology());
+            drawer.drawTopology(studentTask.getTopology());
             drawer.saveImage("task/" + studentTask.getName()
                     + " " + studentTask.getSurname() + " " + studentTask.getGroup() +
-                    "Прям щас" + ".png");*/
+                    "Прям щас" + ".png");
             drawer.drawAndSaveStudentTask(studentTask, "task", "Шляпа");
             //dbWorker.addStudentTask(studentTask);
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         //pozhiloiClass.pozhiloiMetod();
 

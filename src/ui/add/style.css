@@ -1,0 +1,15 @@
+#main-panel{
+    -fx-background-color:#0b2b36;
+}
+label{
+    -fx-fill:white;
+}
+#add-button {
+     -fx-background-color:#071a21;
+}
+#add-button:hover {
+     -fx-background-color:#132f38;
+} 
+#top-panel{
+    -fx-background-color: #071a21;
+}

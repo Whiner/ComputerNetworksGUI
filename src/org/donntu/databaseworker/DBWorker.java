@@ -13,25 +13,24 @@ import java.util.List;
 
 
 public class DBWorker {
-    private DBConnector dbConnector;
-    private Statement statement;
-    private String query;
-    private ResultSet resultSet;
+    private static DBConnector dbConnector;
+    private static Statement statement;
+    private static String query;
+    private static ResultSet resultSet;
 
-    public DBWorker(DBConnector dbConnector) throws SQLException {
+
+    public static void setDbConnector(DBConnector dbConnector) throws SQLException {
         if(dbConnector == null){
             throw new NullPointerException();
         }
-        this.dbConnector = dbConnector;
+        DBWorker.dbConnector = dbConnector;
         if(!dbConnector.connectToDB()){
             throw new SQLException("Соединение не установлено");
         }
         statement = dbConnector.getConnection().createStatement();
-
-
     }
 
-    public boolean checkGroupInDB(String group) {
+    private static boolean checkGroupInDB(String group) {
         if(group != null && !group.isEmpty()){
             try {
                 query = "SELECT Название FROM группы " +
@@ -46,7 +45,7 @@ public class DBWorker {
         return false;
     }
 
-    public Integer getGroupID(String group){
+    private static Integer getGroupID(String group){
         if(group != null && !group.isEmpty()){
             try {
                 query = "SELECT idГруппы,Название FROM группы " +
@@ -65,7 +64,7 @@ public class DBWorker {
         return null;
     }
 
-    public Integer getStudentID(String name, String surname, String group){
+    private static Integer getStudentID(String name, String surname, String group){
         if(name != null && !name.isEmpty() && surname != null && !surname.isEmpty()){
             try {
                 query = "SELECT `idстудента` FROM студенты " +
@@ -84,7 +83,7 @@ public class DBWorker {
         return null;
     }
 
-    public Integer getLastTaskIDbyStudent(String name, String surname, String group) {
+    private static Integer getLastTaskIDbyStudent(String name, String surname, String group) {
 
         int ID = getStudentID(name, surname, group);
         query = "SELECT idзадания FROM задания " +
@@ -102,8 +101,7 @@ public class DBWorker {
         return null;
     }
 
-    public boolean checkStudentInDB(String name, String surname, String group)  {
-
+    private static boolean checkStudentInDB(String name, String surname, String group)  {
         try{
             query = "SELECT Имя, Фамилия FROM студенты " +
                     "WHERE `Имя` = \'" + name + "\' AND `Фамилия` = \'" + surname + "\' AND `idГруппы` = \'" + getGroupID(group) + "\';";
@@ -114,7 +112,7 @@ public class DBWorker {
         }
     }
 
-    private int addGroup(String group){
+    private static int addGroup(String group){
         if(!checkGroupInDB(group)){
             query = "INSERT INTO группы(Название) VALUES (\'" + group + "\');";
             try {
@@ -126,7 +124,7 @@ public class DBWorker {
         return getGroupID(group);
     }
 
-    private int addStudent(String name, String surname, String group) throws SQLException {
+    private static int addStudent(String name, String surname, String group) throws SQLException {
         if(!checkGroupInDB(group)){
             addGroup(group);
         }
@@ -138,7 +136,7 @@ public class DBWorker {
         return getStudentID(name, surname, group);
     }
 
-    private Integer addTaskForStudent(String name, String surname, String group) throws SQLException {
+    private static Integer addTaskForStudent(String name, String surname, String group) throws SQLException {
 
         Integer idStudent = getStudentID(name, surname, group);
         if (idStudent == null) {
@@ -153,7 +151,7 @@ public class DBWorker {
 
     }
 
-    private int addNetworksConnection(int idNetworkFrom, int idNetworkTo, int idNodeFrom, int idNodeTo) throws SQLException {
+    private static int addNetworksConnection(int idNetworkFrom, int idNetworkTo, int idNodeFrom, int idNodeTo) throws SQLException {
         query = "INSERT INTO соединения(`idсети`, `idузла`,`idсети соединенного узла`,`idсоединенного узла`)\n" +
                 "VALUES ('" + idNetworkFrom  + "','" + idNodeFrom + "','" + idNetworkTo
                 + "','" + idNodeTo + "');";
@@ -163,7 +161,7 @@ public class DBWorker {
         return resultSet.getInt("last_id");
     }
 
-    private int addNetwork(int idTask, Network network, boolean addNodes) throws SQLException {
+    private static int addNetwork(int idTask, Network network, boolean addNodes) throws SQLException {
         final IP ip = network.getIp();
         query = "INSERT INTO сети(`Тип сети`, `Первый октет`,`Второй октет`,`Третий октет`,`Четвертый октет`,`Маска`, idЗадания)" +
                 "VALUES (\'" + network.getType() + "\',\'" + ip.getFirst()
@@ -189,7 +187,7 @@ public class DBWorker {
         return lastNetworkID;
     }
 
-    private int addNodeConnection(int idNetworkFrom, int idFrom, int idNetworkTo, int idTo) throws SQLException {
+    private static int addNodeConnection(int idNetworkFrom, int idFrom, int idNetworkTo, int idTo) throws SQLException {
         query = "INSERT INTO `соединения`(`idузла`,`idсоединенного узла`,`idсети`, `idсети соединенного узла`)" +
                 "VALUES (\'" + idFrom + "\', " +
                 "\'" + idTo + "\', " +
@@ -201,7 +199,7 @@ public class DBWorker {
         return resultSet.getInt("last_id");
     }
 
-    private int addNode(int idNetwork, Node node) throws SQLException {
+    private static int addNode(int idNetwork, Node node) throws SQLException {
         query = "INSERT INTO `узлы`(`idСети`,`НомерУзла`,`X`,`Y`)" +
                 "VALUES (\'" + idNetwork + "\', " +
                 "\'" + node.getID() + "\', " +
@@ -213,7 +211,7 @@ public class DBWorker {
         return resultSet.getInt("last_id");
     }
 
-    public boolean addStudentTask(StudentTask studentTask) throws NullPointerException {
+    public static boolean addStudentTask(StudentTask studentTask) throws NullPointerException {
         if(studentTask == null){
             throw new NullPointerException();
         }
@@ -261,13 +259,22 @@ public class DBWorker {
                         networksConnection.getFromNetworkNode().getID(),
                         networksConnection.getToNetworkNode().getID());
             }
-
         } catch(Exception e){
             e.printStackTrace();
             return false;
         }
-
-
         return true;
     }
+
+
+    public static List<String> getGroups() throws SQLException {
+        List<String> groups = new ArrayList<>();
+        query = "SELECT `Название` FROM `Группы`";
+        resultSet = statement.executeQuery(query);
+        while(resultSet.next()){
+            groups.add(resultSet.getString(1));
+        }
+        return groups;
+    }
+
 }

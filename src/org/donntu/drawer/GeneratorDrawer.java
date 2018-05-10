@@ -213,7 +213,7 @@ public class GeneratorDrawer {
         drawAllPointsOnConnection(network);
     }
 
-    public void drawTopology(Topology topology) throws Exception {
+    private void drawTopology(Topology topology) throws Exception {
         graphics2D.setColor(Color.BLACK);
         drawNetworksConnections(topology);
         for (Network n : topology.getNetworks()) {

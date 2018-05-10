@@ -8,7 +8,6 @@ public class DBConnector {
     private String login;
     private String password;
 
-
     public Connection getConnection() {
         return connection;
     }

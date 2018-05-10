@@ -1,7 +1,7 @@
 #button{
     -fx-background-color:#183640;
-    -fx-text-fill:white;
     -fx-font-size:18px;
+    -fx-text-fill:white;
 }
 
 #button:hover{
@@ -12,8 +12,8 @@
 }
 #search_button{
     -fx-background-color:#132f38;
-    -fx-text-fill:white;
     -fx-font-size:15px;
+    -fx-text-fill:white;
 }
 
 #search_button:hover{
@@ -21,8 +21,8 @@
 }
 
 #parameters-label-names{
-    -fx-text-fill:white;
     -fx-font-size:15px;
+    -fx-text-fill:white;
 }
 
 #title-panels{
@@ -64,9 +64,9 @@
 
 #default-button {
      -fx-background-color:#375660;
-     -fx-text-fill:white;
      -fx-font-size:15px;
+     -fx-text-fill:white;
 }
 #default-button:hover {
      -fx-background-color:#132f38;
-}
+} 
