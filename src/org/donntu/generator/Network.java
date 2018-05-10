@@ -15,44 +15,11 @@ public class Network {
     private List<Node> nodes = new ArrayList<>();
     private IP ip = new IP();
     //private List<Network> connectedWith = new ArrayList<>();
-    private List<ConnectedOtherNetworks> connectedOtherNetworks = new ArrayList<>();
-
-    private class ConnectedOtherNetworks{
-        Node thisNetworkNode;
-        Network network;
-        Node otherNetworkNode;
-
-        public ConnectedOtherNetworks(Node thisNetworkNode, Network network, Node otherNetworkNode) {
-            this.network = network;
-            this.thisNetworkNode = thisNetworkNode;
-            this.otherNetworkNode = otherNetworkNode;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ConnectedOtherNetworks that = (ConnectedOtherNetworks) o;
-
-            if (!thisNetworkNode.equals(that.thisNetworkNode)) return false;
-            if (!network.equals(that.network)) return false;
-            return otherNetworkNode.equals(that.otherNetworkNode);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = thisNetworkNode.hashCode();
-            result = 31 * result + network.hashCode();
-            result = 31 * result + otherNetworkNode.hashCode();
-            return result;
-        }
-    }
+    private List<NetworksConnection> networkConnections = new ArrayList<>();
 
 
-
-    public List<ConnectedOtherNetworks> getConnectedOtherNetworks() {
-        return connectedOtherNetworks;
+    public List<NetworksConnection> getNetworkConnections() {
+        return networkConnections;
     }
 
     public List<Pair<Node, Node>> getUniqueConnections() { // сам себя и с другой сетью
@@ -282,7 +249,7 @@ public class Network {
         return connectedWith;
     }*/
 
-    public void addConnectedNetwork(Node thisNetworkNode, Network connectedNetwork, Node connectedNode) throws Exception {
+    public void connectNetworks(Node thisNetworkNode, Network connectedNetwork, Node connectedNode) throws Exception {
         if (thisNetworkNode != null && connectedNetwork != null && connectedNode != null) {
             if(!nodes.contains(thisNetworkNode)){
                 throw new Exception("Неверный первый параметр. Этот узел не существует в этой сети");
@@ -294,15 +261,16 @@ public class Network {
                 throw new Exception("Соединение с самим собой");
             }
 
-            if(connectedOtherNetworks.contains(new ConnectedOtherNetworks(
+            if(networkConnections.contains(new NetworksConnection(
+                    this,
                     thisNetworkNode,
                     connectedNetwork,
                     connectedNode))) {
                 throw new Exception("Связь уже существует");
             }
 
-            connectedOtherNetworks.add(new ConnectedOtherNetworks(thisNetworkNode, connectedNetwork, connectedNode));
-            connectedNetwork.connectedOtherNetworks.add(new ConnectedOtherNetworks(connectedNode, this, thisNetworkNode));
+            networkConnections.add(new NetworksConnection(this, thisNetworkNode, connectedNetwork, connectedNode));
+            connectedNetwork.networkConnections.add(new NetworksConnection(connectedNetwork, connectedNode, this, thisNetworkNode));
         }
     }
 

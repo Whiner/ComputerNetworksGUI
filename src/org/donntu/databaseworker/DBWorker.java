@@ -2,11 +2,13 @@ package org.donntu.databaseworker;
 
 import javafx.util.Pair;
 import org.donntu.generator.*;
-import sun.nio.ch.Net;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -142,13 +144,23 @@ public class DBWorker {
         if (idStudent == null) {
             idStudent = addStudent(name, surname, group);
         }
-        query = "INSERT INTO задания(idстудента) " +
-                "VALUE (\'" + idStudent + "\');";
+        query = "INSERT INTO задания(idстудента, `Дата создания`) " +
+                "VALUE (\'" + idStudent + "\',\'" + new Date(System.currentTimeMillis()).toString() + "\');";
         statement.execute(query);
         resultSet = statement.executeQuery("SELECT last_insert_id() AS \'last_id\' FROM задания");
         resultSet.next();
         return resultSet.getInt("last_id");
 
+    }
+
+    private int addNetworksConnection(int idNetworkFrom, int idNetworkTo, int idNodeFrom, int idNodeTo) throws SQLException {
+        query = "INSERT INTO соединения(`idсети`, `idузла`,`idсети соединенного узла`,`idсоединенного узла`)\n" +
+                "VALUES ('" + idNetworkFrom  + "','" + idNodeFrom + "','" + idNetworkTo
+                + "','" + idNodeTo + "');";
+        statement.execute(query);
+        resultSet = statement.executeQuery("SELECT last_insert_id() AS last_id FROM `задания`");
+        resultSet.next();
+        return resultSet.getInt("last_id");
     }
 
     private int addNetwork(int idTask, Network network, boolean addNodes) throws SQLException {
@@ -163,23 +175,38 @@ public class DBWorker {
         statement.execute(query);
         resultSet = statement.executeQuery("SELECT last_insert_id() AS last_id FROM `задания`");
         resultSet.next();
-        final int last_id = resultSet.getInt("last_id");
+        final int lastNetworkID = resultSet.getInt("last_id");
         if(addNodes){
+            final List<Node> nodes = network.getNodes();
+            for (Node node: nodes){
+                addNode(lastNetworkID, node);
+            }
             final List<Pair<Node, Node>> connections = network.getUniqueConnections();
             for (Pair<Node, Node> pair: connections){
-                addNodeConnection(last_id, pair.getKey(), pair.getValue());
+                addNodeConnection(lastNetworkID, pair.getKey().getID(), lastNetworkID, pair.getValue().getID());
             }
         }
-        return last_id;
+        return lastNetworkID;
     }
 
-    private int addNodeConnection(int idNetwork, Node from, Node to) throws SQLException {
-        query = "INSERT INTO `узлы`(`idСети`,`НомерУзла`,`Соединен с`,`X`,`Y`)" +
+    private int addNodeConnection(int idNetworkFrom, int idFrom, int idNetworkTo, int idTo) throws SQLException {
+        query = "INSERT INTO `соединения`(`idузла`,`idсоединенного узла`,`idсети`, `idсети соединенного узла`)" +
+                "VALUES (\'" + idFrom + "\', " +
+                "\'" + idTo + "\', " +
+                "\'" + idNetworkFrom + "\', " +
+                "\'" + idNetworkTo + "\');";
+        statement.execute(query);
+        resultSet = statement.executeQuery("SELECT last_insert_id() AS last_id FROM `узлы`");
+        resultSet.next();
+        return resultSet.getInt("last_id");
+    }
+
+    private int addNode(int idNetwork, Node node) throws SQLException {
+        query = "INSERT INTO `узлы`(`idСети`,`НомерУзла`,`X`,`Y`)" +
                 "VALUES (\'" + idNetwork + "\', " +
-                "\'" + from.getID() + "\', " +
-                "\'" + to.getID() + " \', " +
-                "\'" + from.getCellNumber_X() + " \'," +
-                "\'" + from.getCellNumber_Y() + "\');";
+                "\'" + node.getID() + "\', " +
+                "\'" + node.getCellNumber_X() + " \'," +
+                "\'" + node.getCellNumber_Y() + "\');";
         statement.execute(query);
         resultSet = statement.executeQuery("SELECT last_insert_id() AS last_id FROM `узлы`");
         resultSet.next();
@@ -194,18 +221,50 @@ public class DBWorker {
             if(statement == null || statement.isClosed()) {
                 statement = dbConnector.getConnection().createStatement();
             }
-            int idGroup = addGroup(studentTask.getGroup());
-            int idStudent = addStudent(studentTask.getName(), studentTask.getSurname(), studentTask.getGroup());
+            addGroup(studentTask.getGroup());
+            addStudent(studentTask.getName(), studentTask.getSurname(), studentTask.getGroup());
             int idTask = addTaskForStudent(studentTask.getName(), studentTask.getSurname(), studentTask.getGroup());
 
             Topology topology = studentTask.getTopology();
             int idWAN = addNetwork(
                     idTask,
                     topology.getWAN(), true);
-            //for (Network network:)
+
+
+            List<Pair<Integer, Network>> idLAN = new ArrayList<>();
+            final List<Network> laNs = topology.getLANs();
+            for (Network lan: laNs){
+                idLAN.add(new Pair<>(addNetwork(idTask, lan, true), lan));
+            }
+
+            final List<NetworksConnection> networksConnections = topology.getUniqueNetworksConnections();
+            for (NetworksConnection networksConnection: networksConnections){
+                if(networksConnection.getFromNetwork().getType() != NetworkType.WAN){
+                    if(networksConnection.getToNetwork().getType() != NetworkType.WAN){
+                        continue;
+                    }
+                    networksConnection = networksConnection.getInvertedConnection();
+                }
+
+                int index = 0;
+                for (Pair<Integer, Network> pair: idLAN){
+                    if(pair.getValue().equals(networksConnection.getToNetwork())){
+                        break;
+                    }
+                    index++;
+                }
+                if(index == idLAN.size()){
+                    continue;
+                }
+                addNetworksConnection(idWAN,
+                        idLAN.get(index).getKey(),
+                        networksConnection.getFromNetworkNode().getID(),
+                        networksConnection.getToNetworkNode().getID());
+            }
 
         } catch(Exception e){
             e.printStackTrace();
+            return false;
         }
 
 

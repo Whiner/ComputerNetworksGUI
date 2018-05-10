@@ -6,16 +6,32 @@ import java.util.List;
 public class Topology {
 
     private List<Network> networks;
-    private boolean WAN;
-    private int LAN;
+    private boolean isWANExist;
+    private int LANQuantity;
 
     public Topology(){
        networks = new ArrayList<>();
-       LAN = 0;
-       WAN = false;
+       LANQuantity = 0;
+       isWANExist = false;
     }
+
+    public List<NetworksConnection> getUniqueNetworksConnections(){
+        if(networks.size() < 2){
+            return null;
+        }
+        List<NetworksConnection> uniqueConnections = new ArrayList<>();
+        for (Network network: networks){
+            for (NetworksConnection connection: network.getNetworkConnections()){
+                if(!uniqueConnections.contains(connection) && !uniqueConnections.contains(connection.getInvertedConnection())){
+                    uniqueConnections.add(connection);
+                }
+            }
+        }
+        return uniqueConnections;
+    }
+
     public Network getWAN(){
-        if(WAN) {
+        if(isWANExist) {
             for (Network network : networks) {
                 if (network.getType() == NetworkType.WAN) {
                     return network;
@@ -24,6 +40,20 @@ public class Topology {
         }
         return null;
     }
+
+    public List<Network> getLANs(){
+        if(LANQuantity > 0){
+            List<Network> LANs = new ArrayList<>();
+            for (Network network: networks){
+                if(network.getType() == NetworkType.LAN){
+                    LANs.add(network);
+                }
+            }
+            return LANs;
+        }
+        return null;
+    }
+
     public void AddNetwork(Network network) throws Exception {
         if(network == null) {
             throw new NullPointerException();
@@ -32,13 +62,13 @@ public class Topology {
             throw new Exception("Эта сеть уже существует в топологии");
         }
         if(network.getType() == NetworkType.WAN){
-            if(WAN) {
-                throw new Exception("WAN уже существует в этой топологии");
+            if(isWANExist) {
+                throw new Exception("isWANExist уже существует в этой топологии");
             } else {
-                WAN = true;
+                isWANExist = true;
             }
         } else {
-            LAN++;
+            LANQuantity++;
         }
         networks.add(network);
     }
@@ -47,16 +77,16 @@ public class Topology {
         return networks;
     }
 
-    public boolean isWAN() {
-        return WAN;
+    public boolean isWANExist() {
+        return isWANExist;
     }
 
     public void setWAN() {
-        this.WAN = true;
+        this.isWANExist = true;
     }
 
     public int get_LAN_Quantity() {
-        return LAN;
+        return LANQuantity;
     }
 
 

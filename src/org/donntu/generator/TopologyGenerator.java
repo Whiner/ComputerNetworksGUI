@@ -2,7 +2,6 @@ package org.donntu.generator;
 
 
 import org.donntu.generator.drawer.GeneratorDrawer;
-import org.donntu.generator.drawer.WindowDrawer;
 import org.donntu.generator.field.Field;
 import org.donntu.generator.field.Section;
 import org.donntu.generator.generatorException.NodeExistException;
@@ -12,21 +11,11 @@ import org.donntu.generator.generatorException.SectionException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 
 public class TopologyGenerator {
 
-    private static GeneratorDrawer drawer;
-
-    static {
-        try {
-            drawer = new GeneratorDrawer(2000, 2000, true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private static Network generateNodes(int nodeCount, int maxNodeRelationsCount, Section section) throws Exception {
         if(nodeCount <= 0) {
@@ -202,8 +191,8 @@ public class TopologyGenerator {
 
             //lastConnected.first.connectNode(lastConnected.second, true);
             connectedNodes.add(lastConnected);
-            firstNetwork.addConnectedNetwork(lastConnected.first, secondNetwork, lastConnected.second);
-            //secondNetwork.addConnectedNetwork(firstNetwork);
+            firstNetwork.connectNetworks(lastConnected.first, secondNetwork, lastConnected.second);
+            //secondNetwork.connectNetworks(firstNetwork);
         }
 
     }
@@ -231,7 +220,7 @@ public class TopologyGenerator {
                         networks_relations);
             }
             for (Network network: t.getNetworks()){
-                generateIPforNetwork(network);
+                generateIPForNetwork(network);
             }
             return t;
         } catch (Exception e) { //че то ловить
@@ -240,7 +229,7 @@ public class TopologyGenerator {
         return null;
     }
 
-    public static void generateIPforNetwork(Network network) throws Exception {
+    public static void generateIPForNetwork(Network network) throws Exception {
         if(network.getNodes().size() == 0){
             throw new NodeExistException("Пустая сеть");
         }
@@ -276,7 +265,7 @@ public class TopologyGenerator {
         }
 
         int relationsCount = network.getCountRelations();
-        int needAddresses = relationsCount * 4 + network.getConnectedOtherNetworks().size() * 4 + 2;
+        int needAddresses = relationsCount * 4 + network.getNetworkConnections().size() * 4 + 2;
         int fourthOctet = ThreadLocalRandom.current().nextInt(0, 255 - needAddresses);
         ip.setFourth(fourthOctet);
 

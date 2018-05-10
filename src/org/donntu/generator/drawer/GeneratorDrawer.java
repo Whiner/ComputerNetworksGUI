@@ -109,7 +109,7 @@ public class GeneratorDrawer {
         }
     }
 
-    private void drawPointsOnConnection(Node from, Node to) {
+    private void drawPointOnConnection(Node from, Node to) {
         if (from != null && to != null) {
             Coordinates from_c = NodeCoordinatesConvertor.getCenter(from);
             Coordinates to_c = NodeCoordinatesConvertor.getCenter(to);
@@ -133,8 +133,6 @@ public class GeneratorDrawer {
             Coordinates from_c = NodeCoordinatesConvertor.getCenter(from);
             Coordinates to_c = NodeCoordinatesConvertor.getCenter(to);
             graphics2D.drawLine(from_c.getX(), from_c.getY(), to_c.getX(), to_c.getY());
-        } else {
-            System.out.println("null in drawConn");
         }
     }
 
@@ -178,36 +176,44 @@ public class GeneratorDrawer {
         }
     }
 
-    private void drawAllConnects(Network network) {
+    private void drawAllConnections(Network network) {
 
         List<Pair<Node, Node>> pairList = network.getUniqueConnections();
 
         for (Pair<Node, Node> pair : pairList) {
             drawConnection(pair.getKey(), pair.getValue());
-            drawPointsOnConnection(pair.getKey(), pair.getValue());
-            drawPointsOnConnection(pair.getValue(), pair.getKey());
+            drawPointOnConnection(pair.getKey(), pair.getValue());
+            drawPointOnConnection(pair.getValue(), pair.getKey());
         }
 
     }
 
-
+    private void drawNetworksConnections(Topology topology){
+        final List<NetworksConnection> uniqueNetworksConnections = topology.getUniqueNetworksConnections();
+        for (NetworksConnection connection: uniqueNetworksConnections){
+            drawConnection(connection.getFromNetworkNode(), connection.getToNetworkNode());
+            drawPointOnConnection(connection.getFromNetworkNode(), connection.getToNetworkNode());
+            drawPointOnConnection(connection.getToNetworkNode(), connection.getFromNetworkNode());
+        }
+    }
     private void drawAllPointsOnConnection(Network network) {
         for (Node node : network.getNodes()) {
             for (Node connectNode : node.getConnectedNodes()) {
-                drawPointsOnConnection(node, connectNode);
+                drawPointOnConnection(node, connectNode);
             }
         }
     }
 
     public void drawNetwork(Network network) throws Exception {
-        drawAllConnects(network);
+        drawAllConnections(network);
         drawAllNodes(network);
         drawAllPointsOnConnection(network);
     }
 
     public void drawTopology(Topology topology) throws Exception {
+        drawNetworksConnections(topology);
         for (Network n : topology.getNetworks()) {
-            drawAllConnects(n);
+            drawAllConnections(n);
             drawAllPointsOnConnection(n);
         }
         for (Network n : topology.getNetworks()) {

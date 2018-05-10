@@ -12,7 +12,7 @@ public class DefaultConfig{
         buildDirectory();
         buildImageSize();
         buildImagesQuantity();
-        buildLANsettings();
+        buildLANSettings();
         buildWANSettings();
         buildNetworkRelations();
         buildNodeImage();
@@ -45,7 +45,7 @@ public class DefaultConfig{
         config.setWanRelationsQuantity(3);
     }
 
-    private static void buildLANsettings() {
+    private static void buildLANSettings() {
         config.setLanQuantity(2);
         config.setLanNodesQuantity(4);
         config.setLanRelationsQuantity(2);
