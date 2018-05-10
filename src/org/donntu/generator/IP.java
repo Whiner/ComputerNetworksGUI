@@ -22,6 +22,14 @@ public class IP {
     }
 
 
+    @Override
+    public String toString() {
+        return  first +
+                "." + second +
+                "." + third +
+                "." + fourth +
+                "/" + mask;
+    }
 
     public int getFirst() {
         return first;

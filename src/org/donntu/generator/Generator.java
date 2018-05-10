@@ -2,9 +2,10 @@ package org.donntu.generator;
 
 import org.donntu.databaseworker.StudentTask;
 import org.donntu.generator.configs.GenerateConfig;
-import org.donntu.generator.drawer.DrawConfigs;
-import org.donntu.generator.drawer.GeneratorDrawer;
+import org.donntu.drawer.DrawConfigs;
 import org.donntu.generator.field.Field;
+
+import java.util.Date;
 
 public class Generator { //оболочка для всего
 
@@ -33,7 +34,7 @@ public class Generator { //оболочка для всего
                     generateConfig.getLanNodesQuantity(),
                     generateConfig.getLanRelationsQuantity(),
                     generateConfig.getNetworksRelationsQuantity());
-            return new StudentTask(t, name, surname, group);
+            return new StudentTask(t, name, surname, group, new Date());
         } catch (Exception e) {
             throw new Exception("Генерация прервана с ошибкой: \n" + e.getMessage());
         }

@@ -3,17 +3,21 @@ package org.donntu.databaseworker;
 import org.donntu.generator.IP;
 import org.donntu.generator.Topology;
 
+import java.util.Date;
+
 public class StudentTask {
     private Topology topology;
+    private Date creationDate;
     private String name;
     private String surname;
     private String group;
 
-    public StudentTask(Topology topology, String name, String surname, String group) {
+    public StudentTask(Topology topology, String name, String surname, String group, Date creationDate) {
         this.topology = topology;
         this.name = name;
         this.surname = surname;
         this.group = group;
+        this.creationDate = creationDate;
     }
 
     public Topology getTopology() {
@@ -46,5 +50,13 @@ public class StudentTask {
 
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

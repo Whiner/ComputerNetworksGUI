@@ -9,14 +9,10 @@ import org.donntu.databaseworker.DBConnector;
 import org.donntu.databaseworker.DBWorker;
 import org.donntu.databaseworker.StudentTask;
 import org.donntu.generator.Generator;
-import org.donntu.generator.Topology;
-import org.donntu.generator.TopologyGenerator;
 import org.donntu.generator.configs.DefaultConfig;
-import org.donntu.generator.drawer.GeneratorDrawer;
+import org.donntu.drawer.GeneratorDrawer;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
 
 public class Main extends Application {
 
@@ -38,15 +34,16 @@ public class Main extends Application {
         launch(args);
 
         try {
-            DBWorker dbWorker = new DBWorker(new DBConnector());
+            //DBWorker dbWorker = new DBWorker(new DBConnector());
             StudentTask studentTask = Generator.generateIndividualTask(
-                    "Саня", "Шляпик", "ИУС-15", DefaultConfig.getDefaultConfig());
-            GeneratorDrawer drawer = new GeneratorDrawer(2000, 2000, true);
-            drawer.drawTopology(studentTask.getTopology());
+                    "Алёша", "Попович", "Святая Русб", DefaultConfig.getDefaultConfig());
+            GeneratorDrawer drawer = new GeneratorDrawer(2000, 2000, false);
+            /*drawer.drawTopology(studentTask.getTopology());
             drawer.saveImage("task/" + studentTask.getName()
                     + " " + studentTask.getSurname() + " " + studentTask.getGroup() +
-                    "Прям щас" + ".png");
-            dbWorker.addStudentTask(studentTask);
+                    "Прям щас" + ".png");*/
+            drawer.drawAndSaveStudentTask(studentTask, "task", "Шляпа");
+            //dbWorker.addStudentTask(studentTask);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,7 +1,6 @@
 package org.donntu.generator;
 
 
-import org.donntu.generator.drawer.GeneratorDrawer;
 import org.donntu.generator.field.Field;
 import org.donntu.generator.field.Section;
 import org.donntu.generator.generatorException.NodeExistException;

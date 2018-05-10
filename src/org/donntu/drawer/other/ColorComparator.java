@@ -1,4 +1,4 @@
-package org.donntu.generator.drawer.other;
+package org.donntu.drawer.other;
 
 import java.awt.*;
 import java.util.List;

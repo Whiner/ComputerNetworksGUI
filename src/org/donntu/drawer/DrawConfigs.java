@@ -1,4 +1,4 @@
-package org.donntu.generator.drawer;
+package org.donntu.drawer;
 
 
 import org.donntu.generator.field.Field;

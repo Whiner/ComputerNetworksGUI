@@ -4,15 +4,10 @@ import javafx.scene.image.Image;
 import org.donntu.databaseworker.StudentTask;
 import org.donntu.generator.Generator;
 import org.donntu.generator.configs.GenerateConfig;
-import org.donntu.generator.Topology;
-import org.donntu.generator.TopologyGenerator;
-import org.donntu.generator.drawer.DrawConfigs;
-import org.donntu.generator.drawer.GeneratorDrawer;
+import org.donntu.drawer.GeneratorDrawer;
 import org.donntu.generator.field.Field;
 
-import java.awt.*;
 import java.io.IOException;
-import java.util.Date;
 
 public class GenerateTask {
 

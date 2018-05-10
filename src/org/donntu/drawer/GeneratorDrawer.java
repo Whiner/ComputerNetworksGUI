@@ -1,15 +1,17 @@
-package org.donntu.generator.drawer;
+package org.donntu.drawer;
 
 import javafx.util.Pair;
+import org.donntu.databaseworker.StudentTask;
 import org.donntu.generator.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import org.donntu.generator.drawer.other.ColorComparator;
-import org.donntu.generator.drawer.other.Coordinates;
-import org.donntu.generator.drawer.other.NodeCoordinatesConvertor;
+import org.donntu.drawer.other.ColorComparator;
+import org.donntu.drawer.other.Coordinates;
+import org.donntu.drawer.other.NodeCoordinatesConvertor;
 import org.donntu.generator.field.Field;
 import org.donntu.generator.field.Section;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
@@ -177,7 +179,7 @@ public class GeneratorDrawer {
     }
 
     private void drawAllConnections(Network network) {
-
+        graphics2D.setColor(Color.BLACK);
         List<Pair<Node, Node>> pairList = network.getUniqueConnections();
 
         for (Pair<Node, Node> pair : pairList) {
@@ -189,6 +191,7 @@ public class GeneratorDrawer {
     }
 
     private void drawNetworksConnections(Topology topology){
+        graphics2D.setColor(Color.BLACK);
         final List<NetworksConnection> uniqueNetworksConnections = topology.getUniqueNetworksConnections();
         for (NetworksConnection connection: uniqueNetworksConnections){
             drawConnection(connection.getFromNetworkNode(), connection.getToNetworkNode());
@@ -204,13 +207,14 @@ public class GeneratorDrawer {
         }
     }
 
-    public void drawNetwork(Network network) throws Exception {
+    private void drawNetwork(Network network) throws Exception {
         drawAllConnections(network);
         drawAllNodes(network);
         drawAllPointsOnConnection(network);
     }
 
     public void drawTopology(Topology topology) throws Exception {
+        graphics2D.setColor(Color.BLACK);
         drawNetworksConnections(topology);
         for (Network n : topology.getNetworks()) {
             drawAllConnections(n);
@@ -219,8 +223,36 @@ public class GeneratorDrawer {
         for (Network n : topology.getNetworks()) {
             drawAllNodes(n);
         }
+    }
+
+    public void drawAndSaveStudentTask(StudentTask studentTask, String imageDirectory, String imageName) throws Exception {
+
+        BufferedImage studentTaskBufferedImage = new BufferedImage(width, height + 500, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D studentTaskGraphics2D = (Graphics2D) studentTaskBufferedImage.getGraphics();
+        studentTaskGraphics2D.setColor(Color.WHITE);
+        studentTaskGraphics2D.fillRect(0, 0, studentTaskBufferedImage.getWidth(), studentTaskBufferedImage.getHeight());
+        drawTopology(studentTask.getTopology());
+        studentTaskGraphics2D.drawImage(bufferedImage, 0, 300, null);
+
+        studentTaskGraphics2D.setFont(new Font(Font.DIALOG_INPUT, Font.ITALIC, 50));
+        studentTaskGraphics2D.setColor(Color.BLACK);
+        studentTaskGraphics2D.drawString(studentTask.getCreationDate().toString(), 5, 50);
+        studentTaskGraphics2D.drawString(studentTask.getName() + " " + studentTask.getSurname() + " \"" + studentTask.getGroup() + "\"", 5, 150);
+
+        final List<Network> networks = studentTask.getTopology().getNetworks();
+        int x = 20;
+        int step = Field.getInstance().getCellsCountX() / (networks.size() - 1);
+        for (Network network : networks) {
+            if (network.getType() == NetworkType.LAN) {
+                studentTaskGraphics2D.drawString(network.getIp().toString(), x, 300 + bufferedImage.getHeight() - 5);
+                x += step * DrawConfigs.getInstance().getNodeWidth() * 2;
+            } else {
+                studentTaskGraphics2D.drawString(network.getIp().toString(), 50, 300 - 15);
+            }
+        }
 
 
+        ImageIO.write(studentTaskBufferedImage, "png", new FileOutputStream(imageDirectory + "/" + imageName + ".png"));
     }
 
     public void saveImage(String imageDirectory) throws IOException {
