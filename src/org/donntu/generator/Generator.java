@@ -1,8 +1,8 @@
 package org.donntu.generator;
 
 import org.donntu.databaseworker.StudentTask;
+import org.donntu.drawer.DrawConfig;
 import org.donntu.generator.configs.GenerateConfig;
-import org.donntu.drawer.DrawConfigs;
 import org.donntu.generator.field.Field;
 
 import java.io.File;
@@ -23,8 +23,8 @@ public class Generator { //оболочка для всего
                     generateConfig.getCellsCountY(),
                     generateConfig.getLanQuantity()
             );
-            DrawConfigs.getInstance().setNodeImage(new File("images-fx/2.png"));
-            DrawConfigs.getInstance().calcNodeSize();
+            DrawConfig.getInstance().setNodeImage(new File("images-fx/2.png"));
+            DrawConfig.getInstance().calcNodeSize();
 
             Topology t = TopologyGenerator.generateTopology(
                     generateConfig.getLanQuantity(),

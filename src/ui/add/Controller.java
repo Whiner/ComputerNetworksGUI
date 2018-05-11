@@ -58,10 +58,46 @@ public class Controller implements Initializable {
         });
     }
 
+
+
+    private void buttonsSetOnAction(){
+        addButton.setOnAction(event -> {
+            if(studentRadiobutton.isSelected()) {
+                boolean empty = false;
+                if (nameTextbox.getText().isEmpty()) {
+                    Animation.shake(nameTextbox);
+                    empty = true;
+                }
+                if (surnameTextbox.getText().isEmpty()) {
+                    Animation.shake(surnameTextbox);
+                    empty = true;
+                }
+                if (groupsComboBox.getValue() == null) {
+                    Animation.shake(groupsComboBox);
+                    empty = true;
+                }
+                if (!empty) {
+                    System.out.println("Всанармуль");
+                    //DBWorker.addStudent(nameTextbox.getText(), surnameTextbox.getText(), groupsComboBox.getValue());
+                }
+            } else {
+                if(groupNameTextbox.getText().isEmpty()){
+                    Animation.shake(groupNameTextbox);
+                } else {
+                    System.out.println("Всанармална");
+                    //DBWorker.addGroup(groupNameTextbox.getText());
+                }
+            }
+        });
+    }
+
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            DBWorker.setDbConnector(new DBConnector());
+            buttonsSetOnAction();
+            DBWorker.setDbConnector(DBConnector.getInstance());
             ComboBoxWorker.fillComboBox(groupsComboBox, DBWorker.getGroups());
             radioButtonsSetOnAction();
             studentRadiobutton.setSelected(true);

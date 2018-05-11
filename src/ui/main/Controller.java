@@ -6,11 +6,8 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.TextField;
 
 public class Controller implements Initializable {
 
@@ -64,6 +61,9 @@ public class Controller implements Initializable {
 
     @FXML
     Button showTasksButton;
+
+    @FXML
+    TableView<StudentStruct> table;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

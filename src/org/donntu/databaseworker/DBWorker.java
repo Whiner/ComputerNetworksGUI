@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class DBWorker {
@@ -20,14 +22,18 @@ public class DBWorker {
 
 
     public static void setDbConnector(DBConnector dbConnector) throws SQLException {
-        if(dbConnector == null){
+        if (dbConnector == null) {
             throw new NullPointerException();
         }
-        DBWorker.dbConnector = dbConnector;
-        if(!dbConnector.connectToDB()){
-            throw new SQLException("Соединение не установлено");
+        if(DBWorker.dbConnector != dbConnector) {
+            DBWorker.dbConnector = dbConnector;
+            if (!dbConnector.isOpen()) {
+                if (!dbConnector.connectToDB()) {
+                    throw new SQLException("Соединение не установлено");
+                }
+            }
+            statement = dbConnector.getConnection().createStatement();
         }
-        statement = dbConnector.getConnection().createStatement();
     }
 
     private static boolean checkGroupInDB(String group) {
@@ -112,19 +118,17 @@ public class DBWorker {
         }
     }
 
-    private static int addGroup(String group){
+    public static int addGroup(String group) throws SQLException {
+        setDbConnector(DBConnector.getInstance());
         if(!checkGroupInDB(group)){
             query = "INSERT INTO группы(Название) VALUES (\'" + group + "\');";
-            try {
-                statement.execute(query);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            statement.execute(query);
         }
         return getGroupID(group);
     }
 
-    private static int addStudent(String name, String surname, String group) throws SQLException {
+    public static int addStudent(String name, String surname, String group) throws SQLException {
+        setDbConnector(DBConnector.getInstance());
         if(!checkGroupInDB(group)){
             addGroup(group);
         }
@@ -211,14 +215,13 @@ public class DBWorker {
         return resultSet.getInt("last_id");
     }
 
-    public static boolean addStudentTask(StudentTask studentTask) throws NullPointerException {
+    public static boolean addStudentTask(StudentTask studentTask) throws NullPointerException, SQLException {
+        setDbConnector(DBConnector.getInstance());
         if(studentTask == null){
             throw new NullPointerException();
         }
         try{
-            if(statement == null || statement.isClosed()) {
-                statement = dbConnector.getConnection().createStatement();
-            }
+
             addGroup(studentTask.getGroup());
             addStudent(studentTask.getName(), studentTask.getSurname(), studentTask.getGroup());
             int idTask = addTaskForStudent(studentTask.getName(), studentTask.getSurname(), studentTask.getGroup());
@@ -266,8 +269,8 @@ public class DBWorker {
         return true;
     }
 
-
     public static List<String> getGroups() throws SQLException {
+        setDbConnector(DBConnector.getInstance());
         List<String> groups = new ArrayList<>();
         query = "SELECT `Название` FROM `Группы`";
         resultSet = statement.executeQuery(query);
@@ -275,6 +278,26 @@ public class DBWorker {
             groups.add(resultSet.getString(1));
         }
         return groups;
+    }
+
+    public static List<HashMap<String, String>> getStudents() throws SQLException {
+        setDbConnector(DBConnector.getInstance());
+        List<HashMap<String, String>> students = new ArrayList<>();
+
+        query = "SELECT `Студенты`.`Имя` AS `Имя`, " +
+                "`Студенты`.`Фамилия` AS `Фамилия`, " +
+                "`Группы`.`Название` AS `Группа` " +
+                "FROM `Студенты`, `группы`" +
+                "WHERE `Студенты`.`idГруппы` = `Группы`.`idГруппы`";
+        resultSet = statement.executeQuery(query);
+        while(resultSet.next()){
+            HashMap<String, String> data = new HashMap<>();
+            data.put("Имя", resultSet.getString("Имя"));
+            data.put("Фамилия", resultSet.getString("Фамилия"));
+            data.put("Группа", resultSet.getString("Группа"));
+            students.add(data);
+        }
+        return students;
     }
 
 }

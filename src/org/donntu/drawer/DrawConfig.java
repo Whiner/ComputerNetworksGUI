@@ -9,10 +9,12 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class DrawConfigs {
+public class DrawConfig {
     private int nodeHeight;
     private int nodeWidth;
     private Image nodeImage;
+    private int imageHeight = 2000;
+    private int imageWidth = 2000;
 
     public int getNodeHeight() {
         return nodeHeight;
@@ -36,8 +38,8 @@ public class DrawConfigs {
 
     public void calcNodeSize() throws Exception {
         try{
-            nodeWidth = Field.getInstance().getWidth() / (Field.getInstance().getCellsCountX() * 2);
-            nodeHeight = Field.getInstance().getHeight() / (Field.getInstance().getCellsCountY() * 2);
+            nodeWidth = imageWidth / (Field.getInstance().getCellsCountX() * 2);
+            nodeHeight = imageHeight / (Field.getInstance().getCellsCountY() * 2);
             this.nodeImage = ImageEditor.resizeImage(nodeImage, nodeWidth, nodeHeight, true);
         }
         catch (Exception e){
@@ -46,15 +48,16 @@ public class DrawConfigs {
     }
 
 
-    private static DrawConfigs instance;
 
-    public void setNodeImage(Image nodeImage){
-        if(nodeImage == null)
-           throw new NullPointerException();
+
+    public void setNodeImage(Image nodeImage) {
+        if (nodeImage == null) {
+            throw new NullPointerException();
+        }
         this.nodeImage = ImageEditor.deepImageCopy(nodeImage);
         nodeHeight = nodeImage.getHeight(null);
         nodeWidth = nodeImage.getWidth(null);
-        if(nodeImage.getHeight(null) != nodeImage.getWidth(null)){
+        if (nodeImage.getHeight(null) != nodeImage.getWidth(null)) {
             this.nodeImage = ImageEditor.resizeImage(nodeImage, nodeWidth, nodeHeight, false);
         }
 
@@ -82,14 +85,30 @@ public class DrawConfigs {
     }
 
 
-
-    public static DrawConfigs getInstance(){
+    protected static DrawConfig instance;
+    public static DrawConfig getInstance(){
         if (instance == null) {
-            instance = new DrawConfigs();
+            instance = new DrawConfig();
         }
         return instance;
     }
 
+    private DrawConfig() {}
 
-    private DrawConfigs() {}
+
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
+    }
 }

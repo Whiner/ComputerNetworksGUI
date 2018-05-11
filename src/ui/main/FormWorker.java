@@ -1,26 +1,29 @@
 package ui.main;
 
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import mainpackage.Main;
+import org.donntu.databaseworker.DBWorker;
 import org.donntu.databaseworker.StudentTask;
 import org.donntu.generator.configs.DefaultConfig;
 import org.donntu.generator.configs.GenerateConfig;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ComboBox;
 import org.donntu.generator.RAMCalculator;
 import ui.ComboBoxWorker;
 
-import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
 
 class FormWorker {
     private Controller controller;
@@ -37,9 +40,47 @@ class FormWorker {
         config = DefaultConfig.getDefaultConfig();
     }
 
+    private Callback<TableColumn<StudentStruct, String>, TableCell<StudentStruct, String>> getCustomCellFactory() {
+        return param -> new TableCell<StudentStruct, String>() {
 
+            @Override
+            public void updateItem(final String item, boolean empty) {
+                if (item != null) {
+                    setText(item);
+                    setStyle("-fx-font-size: " + 16 + ";");
+                }
+            }
+        };
+    }
 
+    private void showStudentsOnTable() throws SQLException {
+        controller.table.getItems().clear();
+        controller.table.getColumns().clear();
+        TableColumn<StudentStruct, String> surname = new TableColumn<>("Фамилия");
+        TableColumn<StudentStruct, String> name = new TableColumn<>("Имя");
+        TableColumn<StudentStruct, String> group = new TableColumn<>("Группа");
 
+        surname.setCellFactory(getCustomCellFactory());
+        name.setCellFactory(getCustomCellFactory());
+        group.setCellFactory(getCustomCellFactory());
+
+        controller.table.getColumns().addAll(surname, name, group);
+
+        surname.setCellValueFactory(new PropertyValueFactory<>("surname"));
+        name.setCellValueFactory(new PropertyValueFactory<>("name"));
+        group.setCellValueFactory(new PropertyValueFactory<>("group"));
+
+        surname.setMinWidth(200);
+        name.setMinWidth(200);
+        group.setMinWidth(200);
+
+        ObservableList<StudentStruct> studentStruct = FXCollections.observableArrayList();
+        final List<HashMap<String, String>> students = DBWorker.getStudents();
+        for (HashMap<String, String> record: students){
+            studentStruct.add(new StudentStruct(record.get("Имя"), record.get("Фамилия"), record.get("Группа")));
+        }
+        controller.table.setItems(studentStruct);
+    }
 
     private void fillButtonActions(){
         controller.addButton.setOnAction(event -> {
@@ -85,23 +126,15 @@ class FormWorker {
         controller.generationButton.setOnAction(event -> {
             try {
 
-                Date date = new Date();
-                //GenerateTask.generateIndividual(config);
-                StudentTask task = GenerateTask.getLastStudentTask();
-                String lastPath = "task/"
-                        + task.getName() + " " + task.getSurname()
-                        + " " + task.getGroup() + " " + date.getTime() + ".png";
-                GenerateTask.saveImage(lastPath);
-                Desktop desktop = null;
-                if (Desktop.isDesktopSupported()) {
-                    desktop = Desktop.getDesktop();
-                }
-                try {
-                    assert desktop != null;
-                    desktop.open(new File(lastPath));
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
+                StudentTask task = GenerateTask.generateIndividual(
+                        config,
+                        "Максим Владимирович",
+                        "Привалов",
+                        "Кафедра АСУ",
+                        "task",
+                        "MB");
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -211,5 +244,6 @@ class FormWorker {
         comboBoxesActions();
         fillComboBoxes();
         fillSlider();
+        showStudentsOnTable();
     }
 }

@@ -39,4 +39,13 @@ public class DBConnector {
             connection.close();
         }
     }
+
+    private static DBConnector instance;
+    private DBConnector(){}
+    public static DBConnector getInstance(){
+        if(instance == null){
+            instance = new DBConnector();
+        }
+        return instance;
+    }
 }

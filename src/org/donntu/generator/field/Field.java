@@ -9,15 +9,10 @@ public class Field {
 
     private int cellsCountX = 16;
     private int cellsCountY = 8;
-    //private int fieldSize_px = 2000;
-    private int height = 2000;
-    private int width = 2000;
+
     private Section wanSection;
     private List<Section> lanSections;
 
-    public void setHeight(int height) {
-        this.height = height;
-    }
 
     public int getLAN_Field_Count() {
         return lanSections.size();
@@ -31,11 +26,9 @@ public class Field {
         return lanSections;
     }
 
-    public void setConfig(int cellsCountX, int cellsCountY, int fieldHeight, int fieldWidth, int lan_quantity) throws Exception {
+    public void setConfig(int cellsCountX, int cellsCountY, int lan_quantity) throws Exception {
         setCellsCountX(cellsCountX);
         setCellsCountY(cellsCountY);
-        setWidth(fieldWidth);
-        setHeight(fieldHeight);
         Field.getInstance().AddWAN_Section();
         CreateLAN_Sections(lan_quantity);
     }
@@ -117,18 +110,6 @@ public class Field {
     private Field() {}
 
 
-    public int getHeight() {
-        return height;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
     public int getCellsCountX() {
         return cellsCountX;
     }
@@ -145,11 +126,4 @@ public class Field {
         this.cellsCountY = cellsCountY;
     }
 
-    public void setConfig(int cellsCountX, int cellsCountY, int lanQuantity) throws Exception {
-        setCellsCountX(cellsCountX);
-        setCellsCountY(cellsCountY);
-
-        Field.getInstance().AddWAN_Section();
-        CreateLAN_Sections(lanQuantity);
-    }
 }

@@ -58,7 +58,7 @@
       </Pane>
       <AnchorPane id="mainAnchorPane" layoutX="270.0" layoutY="80.0" prefHeight="357.0" prefWidth="853.0" AnchorPane.bottomAnchor="265.0" AnchorPane.leftAnchor="270.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
          <children>
-            <TableView id="dbTable" layoutX="16.0" layoutY="13.0" prefHeight="342.0" prefWidth="817.0" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="13.0">
+            <TableView id="dbTable" fx:id="table" layoutX="16.0" layoutY="13.0" prefHeight="342.0" prefWidth="817.0" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="13.0">
                <columns>
                   <TableColumn prefWidth="192.0" text="C1" />
                   <TableColumn prefWidth="209.0" text="C2" />
