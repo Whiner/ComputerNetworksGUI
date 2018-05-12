@@ -69,4 +69,7 @@
 }
 #default-button:hover {
      -fx-background-color:#132f38;
-} 
+}
+#dbTable{
+    -fx-font-size: 16;
+}

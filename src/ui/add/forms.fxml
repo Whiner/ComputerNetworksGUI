@@ -50,7 +50,7 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="nameTextbox" prefHeight="25.0" prefWidth="240.0">
+                  <TextField fx:id="nameTextBox" prefHeight="25.0" prefWidth="240.0">
                      <font>
                         <Font size="17.0" />
                      </font>
@@ -70,7 +70,7 @@
                         <Insets />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="surnameTextbox" prefHeight="25.0" prefWidth="240.0">
+                  <TextField fx:id="surnameTextBox" prefHeight="25.0" prefWidth="240.0">
                      <font>
                         <Font size="17.0" />
                      </font>
@@ -112,12 +112,17 @@
                   <Font size="22.0" />
                </font>
             </Label>
-            <TextField fx:id="groupNameTextbox">
+            <TextField fx:id="groupNameTextBox">
                <font>
                   <Font size="20.0" />
                </font>
             </TextField>
          </children>
       </HBox>
+      <Label fx:id="successLabel" layoutX="490.0" layoutY="395.0" text="Успешно добавлено" textFill="#bfbfbf">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

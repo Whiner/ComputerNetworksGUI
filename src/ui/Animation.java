@@ -1,9 +1,6 @@
-package ui.add;
+package ui;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
@@ -18,5 +15,12 @@ public class Animation {
         translateTransition.setAutoReverse(true);
         translateTransition.setCycleCount(2);
         translateTransition.playFromStart();
+    }
+
+    public static void attenuation(Node node){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(3000), node);
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.0);
+        fadeTransition.play();
     }
 }

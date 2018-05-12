@@ -1,11 +1,16 @@
 package ui.main;
 
-public class StudentStruct {
+import java.util.Date;
+
+public class TableTaskStruct {
     private String name;
     private String surname;
     private String group;
+    //private Date cre
 
-    public StudentStruct(String name, String surname, String group) {
+
+
+    public TableTaskStruct(String name, String surname, String group) {
         this.name = name;
         this.surname = surname;
         this.group = group;

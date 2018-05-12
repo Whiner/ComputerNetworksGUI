@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import org.donntu.databaseworker.StudentTask;
 
 public class Controller implements Initializable {
 
@@ -16,9 +17,6 @@ public class Controller implements Initializable {
 
     @FXML
     Button generationButton;
-
-    @FXML
-    Button taskButton;
 
     @FXML
     Button aboutProgramButton;
@@ -54,16 +52,7 @@ public class Controller implements Initializable {
     Button addButton;
 
     @FXML
-    Button showGroupsButton;
-
-    @FXML
-    Button showStudentsButton;
-
-    @FXML
-    Button showTasksButton;
-
-    @FXML
-    TableView<StudentStruct> table;
+    TableView<StudentTask> table;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

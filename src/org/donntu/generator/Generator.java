@@ -1,5 +1,6 @@
 package org.donntu.generator;
 
+import org.donntu.databaseworker.GregorianCalendar;
 import org.donntu.databaseworker.StudentTask;
 import org.donntu.drawer.DrawConfig;
 import org.donntu.generator.configs.GenerateConfig;
@@ -33,7 +34,7 @@ public class Generator { //оболочка для всего
                     generateConfig.getLanNodesQuantity(),
                     generateConfig.getLanRelationsQuantity(),
                     generateConfig.getNetworksRelationsQuantity());
-            return new StudentTask(t, name, surname, group, new Date());
+            return new StudentTask(t, name, surname, group, new GregorianCalendar());
         } catch (Exception e) {
             throw new Exception("Генерация прервана с ошибкой: \n" + e.getMessage());
         }

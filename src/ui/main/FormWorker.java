@@ -5,23 +5,27 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import mainpackage.Main;
 import org.donntu.databaseworker.DBWorker;
+import org.donntu.databaseworker.GregorianCalendar;
 import org.donntu.databaseworker.StudentTask;
 import org.donntu.generator.configs.DefaultConfig;
 import org.donntu.generator.configs.GenerateConfig;
 import javafx.collections.ObservableList;
 import org.donntu.generator.RAMCalculator;
 import ui.ComboBoxWorker;
+import ui.MessageBox;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,47 +44,63 @@ class FormWorker {
         config = DefaultConfig.getDefaultConfig();
     }
 
-    private Callback<TableColumn<StudentStruct, String>, TableCell<StudentStruct, String>> getCustomCellFactory() {
-        return param -> new TableCell<StudentStruct, String>() {
+    private TableColumn<StudentTask, String> surname;
+    private TableColumn<StudentTask, String> name;
+    private TableColumn<StudentTask, String> group;
+    private TableColumn<StudentTask, GregorianCalendar> date;
 
-            @Override
-            public void updateItem(final String item, boolean empty) {
-                if (item != null) {
-                    setText(item);
-                    setStyle("-fx-font-size: " + 16 + ";");
-                }
-            }
-        };
-    }
+    private boolean createdStudentColumns = false;
 
-    private void showStudentsOnTable() throws SQLException {
-        controller.table.getItems().clear();
-        controller.table.getColumns().clear();
-        TableColumn<StudentStruct, String> surname = new TableColumn<>("Фамилия");
-        TableColumn<StudentStruct, String> name = new TableColumn<>("Имя");
-        TableColumn<StudentStruct, String> group = new TableColumn<>("Группа");
+    private void createTableColumns(){
+        if(!createdStudentColumns) {
+            controller.table.getColumns().clear();
 
-        surname.setCellFactory(getCustomCellFactory());
-        name.setCellFactory(getCustomCellFactory());
-        group.setCellFactory(getCustomCellFactory());
+            surname = new TableColumn<>("Фамилия");
+            name = new TableColumn<>("Имя");
+            group = new TableColumn<>("Группа");
+            date = new TableColumn<>("Дата создания");
 
-        controller.table.getColumns().addAll(surname, name, group);
+            surname.setCellValueFactory(new PropertyValueFactory<>("surname"));
+            name.setCellValueFactory(new PropertyValueFactory<>("name"));
+            group.setCellValueFactory(new PropertyValueFactory<>("group"));
+            date.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
 
-        surname.setCellValueFactory(new PropertyValueFactory<>("surname"));
-        name.setCellValueFactory(new PropertyValueFactory<>("name"));
-        group.setCellValueFactory(new PropertyValueFactory<>("group"));
+            surname.setMinWidth(200);
+            name.setMinWidth(200);
+            group.setMinWidth(200);
+            date.setMinWidth(200);
 
-        surname.setMinWidth(200);
-        name.setMinWidth(200);
-        group.setMinWidth(200);
-
-        ObservableList<StudentStruct> studentStruct = FXCollections.observableArrayList();
-        final List<HashMap<String, String>> students = DBWorker.getStudents();
-        for (HashMap<String, String> record: students){
-            studentStruct.add(new StudentStruct(record.get("Имя"), record.get("Фамилия"), record.get("Группа")));
+            createdStudentColumns = true;
+            controller.table.getColumns().addAll(group, surname, name, date);
         }
-        controller.table.setItems(studentStruct);
     }
+
+    private void refreshDataOnTable() throws SQLException {
+        controller.table.getItems().clear();
+        ObservableList<StudentTask> tableTaskStruct = FXCollections.observableArrayList();
+        final List<HashMap<String, String>> students = DBWorker.getStudentsTask();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-dd-DD");
+        Date tempDate;
+        GregorianCalendar tempCalendar;
+        for (HashMap<String, String> record: students){
+            try {
+                tempDate = dateFormat.parse(record.get("Дата"));
+            } catch (ParseException e) {
+                System.out.println("Date parse error");
+                continue;
+            }
+            tempCalendar = new GregorianCalendar();
+            tempCalendar.setTime(tempDate);
+            tableTaskStruct.add(new StudentTask(
+                    tempCalendar,
+                    record.get("Имя"),
+                    record.get("Фамилия"),
+                    record.get("Группа")));
+        }
+        controller.table.setItems(tableTaskStruct);
+    } //сомнительно каждый раз по новой загружать в таблицу
+
+
 
     private void fillButtonActions(){
         controller.addButton.setOnAction(event -> {
@@ -101,22 +121,16 @@ class FormWorker {
             newWindow.initOwner(Main.primaryStage);
             newWindow.setResizable(false);
             newWindow.show();
-        });
-
-        controller.showStudentsButton.setOnAction(event -> {
-
-        });
-
-        controller.showGroupsButton.setOnAction(event -> {
-
-        });
-
-        controller.showTasksButton.setOnAction(event -> {
-
-        });
-
-        controller.taskButton.setOnAction(event -> {
-
+            newWindow.setOnCloseRequest(event1 -> {
+                try {
+                    //добавить обновления
+                    refreshDataOnTable();
+                } catch (SQLException e) {
+                    MessageBox.error("Ошибка",
+                            "Ошибка обновления списка студентов.",
+                            "");
+                }
+            });
         });
 
         controller.aboutProgramButton.setOnAction(event -> {
@@ -153,7 +167,6 @@ class FormWorker {
 
     }
 
-
     private void setMemoryToSlider(){
         controller.slider_RAM.setDisable(true);
         int ram = RAMCalculator.getRAM(
@@ -184,9 +197,6 @@ class FormWorker {
                 config.setLanNodesQuantity(controller.cb_LAN_nodes_quantity.getValue()));
     }
 
-
-
-
     private void fillComboBoxes() throws Exception {
         ComboBoxWorker.fillComboBox(3, 10, config.getWanNodesQuantity(), controller.cb_WAN_nodes_quantity);
         ComboBoxWorker.fillComboBox(2, 5, config.getWanRelationsQuantity(), controller.cb_WAN_max_rel_quantity );
@@ -195,7 +205,6 @@ class FormWorker {
         ComboBoxWorker.fillComboBox(2, 5, config.getLanRelationsQuantity(), controller.cb_LAN_max_rel_quantity);
         ComboBoxWorker.fillComboBox(1, 3, config.getLanQuantity(), controller.cb_LAN_networks_quantity);
     }
-
 
     private void fillSlider(){
         controller.slider_RAM.setMin(1024);
@@ -240,10 +249,21 @@ class FormWorker {
     }
 
     void fillAll() throws Exception {
+        try {
+            createTableColumns();
+            refreshDataOnTable();
+        } catch (SQLException e) {
+            MessageBox.confirmationWithClose("Ошибка соединения с базой данных",
+                    "Продолжить?",
+                    "Работа с базой данных завершена с ошибкой: \n\t \"" + e.getMessage() +
+                            "\"\nНажмите \"ОК\", чтобы продолжить работу с программой. " +
+                            "Данные не будут сохранены в базу и будут существовать только на вашем компьютере.");
+            controller.addButton.setDisable(true);
+        }
         fillButtonActions();
         comboBoxesActions();
         fillComboBoxes();
         fillSlider();
-        showStudentsOnTable();
+
     }
 }

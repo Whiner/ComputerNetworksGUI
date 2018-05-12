@@ -118,16 +118,18 @@ public class DBWorker {
         }
     }
 
-    public static int addGroup(String group) throws SQLException {
+    public static boolean addGroup(String group) throws SQLException {
         setDbConnector(DBConnector.getInstance());
         if(!checkGroupInDB(group)){
             query = "INSERT INTO группы(Название) VALUES (\'" + group + "\');";
             statement.execute(query);
+        } else {
+            return false;
         }
-        return getGroupID(group);
+        return true;
     }
 
-    public static int addStudent(String name, String surname, String group) throws SQLException {
+    public static boolean addStudent(String name, String surname, String group) throws SQLException {
         setDbConnector(DBConnector.getInstance());
         if(!checkGroupInDB(group)){
             addGroup(group);
@@ -136,18 +138,21 @@ public class DBWorker {
             query = "INSERT INTO студенты(Имя, Фамилия, idГруппы) " +
                     "VALUES (\'" + name + "\',\'" + surname + "\',\'" + getGroupID(group) + "\');";
             statement.execute(query);
+        } else {
+            return false;
         }
-        return getStudentID(name, surname, group);
+        return true;
     }
 
-    private static Integer addTaskForStudent(String name, String surname, String group) throws SQLException {
+    private static Integer addTaskForStudent(String name, String surname, String group, Date date) throws SQLException {
 
         Integer idStudent = getStudentID(name, surname, group);
         if (idStudent == null) {
-            idStudent = addStudent(name, surname, group);
+            addStudent(name, surname, group);
+            idStudent = getStudentID(name, surname,group);
         }
         query = "INSERT INTO задания(idстудента, `Дата создания`) " +
-                "VALUE (\'" + idStudent + "\',\'" + new Date(System.currentTimeMillis()).toString() + "\');";
+                "VALUE (\'" + idStudent + "\',\'" + date.toString() + "\');";
         statement.execute(query);
         resultSet = statement.executeQuery("SELECT last_insert_id() AS \'last_id\' FROM задания");
         resultSet.next();
@@ -224,14 +229,15 @@ public class DBWorker {
 
             addGroup(studentTask.getGroup());
             addStudent(studentTask.getName(), studentTask.getSurname(), studentTask.getGroup());
-            int idTask = addTaskForStudent(studentTask.getName(), studentTask.getSurname(), studentTask.getGroup());
-
+            int idTask = addTaskForStudent(
+                    studentTask.getName(),
+                    studentTask.getSurname(),
+                    studentTask.getGroup(),
+                    new Date(studentTask.getCreationDate().getTimeInMillis()));
             Topology topology = studentTask.getTopology();
             int idWAN = addNetwork(
                     idTask,
                     topology.getWAN(), true);
-
-
             List<Pair<Integer, Network>> idLAN = new ArrayList<>();
             final List<Network> laNs = topology.getLANs();
             for (Network lan: laNs){
@@ -280,21 +286,24 @@ public class DBWorker {
         return groups;
     }
 
-    public static List<HashMap<String, String>> getStudents() throws SQLException {
+    public static List<HashMap<String, String>> getStudentsTask() throws SQLException {
         setDbConnector(DBConnector.getInstance());
         List<HashMap<String, String>> students = new ArrayList<>();
 
         query = "SELECT `Студенты`.`Имя` AS `Имя`, " +
                 "`Студенты`.`Фамилия` AS `Фамилия`, " +
-                "`Группы`.`Название` AS `Группа` " +
-                "FROM `Студенты`, `группы`" +
-                "WHERE `Студенты`.`idГруппы` = `Группы`.`idГруппы`";
+                "`Группы`.`Название` AS `Группа`, " +
+                "`Задания`.`Дата создания` AS `Дата создания` " +
+                "FROM `Студенты`, `группы`, `задания`" +
+                "WHERE `Студенты`.`idГруппы` = `Группы`.`idГруппы` " +
+                "AND `Задания`.`idстудента` = `Студенты`.`idстудента`";
         resultSet = statement.executeQuery(query);
         while(resultSet.next()){
             HashMap<String, String> data = new HashMap<>();
             data.put("Имя", resultSet.getString("Имя"));
             data.put("Фамилия", resultSet.getString("Фамилия"));
             data.put("Группа", resultSet.getString("Группа"));
+            data.put("Дата", resultSet.getString("Дата создания"));
             students.add(data);
         }
         return students;

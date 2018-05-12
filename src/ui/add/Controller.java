@@ -7,44 +7,50 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.donntu.databaseworker.DBConnector;
 import org.donntu.databaseworker.DBWorker;
+import ui.Animation;
 import ui.ComboBoxWorker;
+import ui.MessageBox;
 
 import java.net.URL;
 
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 
 
 public class Controller implements Initializable {
     @FXML
-    private ToggleGroup rb;
+    ToggleGroup rb;
 
     @FXML
-    private RadioButton groupRadiobutton;
+    Label successLabel;
 
     @FXML
-    private TextField surnameTextbox;
+    RadioButton groupRadiobutton;
 
     @FXML
-    private TextField groupNameTextbox;
+    TextField surnameTextBox;
 
     @FXML
-    private Button addButton;
+    TextField groupNameTextBox;
 
     @FXML
-    private TextField nameTextbox;
+    Button addButton;
 
     @FXML
-    private RadioButton studentRadiobutton;
+    TextField nameTextBox;
 
     @FXML
-    private ComboBox<String> groupsComboBox;
+    RadioButton studentRadiobutton;
 
     @FXML
-    private VBox studentPane;
+    ComboBox<String> groupsComboBox;
 
     @FXML
-    private HBox groupPane;
+    VBox studentPane;
+
+    @FXML
+    HBox groupPane;
 
     private void radioButtonsSetOnAction(){
         rb.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -64,12 +70,12 @@ public class Controller implements Initializable {
         addButton.setOnAction(event -> {
             if(studentRadiobutton.isSelected()) {
                 boolean empty = false;
-                if (nameTextbox.getText().isEmpty()) {
-                    Animation.shake(nameTextbox);
+                if (nameTextBox.getText().isEmpty()) {
+                    Animation.shake(nameTextBox);
                     empty = true;
                 }
-                if (surnameTextbox.getText().isEmpty()) {
-                    Animation.shake(surnameTextbox);
+                if (surnameTextBox.getText().isEmpty()) {
+                    Animation.shake(surnameTextBox);
                     empty = true;
                 }
                 if (groupsComboBox.getValue() == null) {
@@ -77,30 +83,59 @@ public class Controller implements Initializable {
                     empty = true;
                 }
                 if (!empty) {
-                    System.out.println("Всанармуль");
-                    //DBWorker.addStudent(nameTextbox.getText(), surnameTextbox.getText(), groupsComboBox.getValue());
+                    try {
+                        if(!DBWorker.addStudent(
+                                nameTextBox.getText(),
+                                surnameTextBox.getText(),
+                                groupsComboBox.getValue())){
+                            successLabel.setText("Уже существует в базе");
+                        } else {
+                            successLabel.setText("Успешно добавлено");
+                        }
+                        successLabel.setVisible(true);
+                        Animation.attenuation(successLabel);
+                        nameTextBox.clear();
+                        surnameTextBox.clear();
+                    } catch (SQLException e) {
+                        MessageBox.error("Ошибка",
+                                "",
+                                "Ошибка добавления студента в базу. Проверьте подключение к базе данных.");
+                    }
                 }
             } else {
-                if(groupNameTextbox.getText().isEmpty()){
-                    Animation.shake(groupNameTextbox);
+                if(groupNameTextBox.getText().isEmpty()){
+                    Animation.shake(groupNameTextBox);
                 } else {
-                    System.out.println("Всанармална");
-                    //DBWorker.addGroup(groupNameTextbox.getText());
+                    try {
+                        if(!DBWorker.addGroup(groupNameTextBox.getText())){
+                            successLabel.setText("Уже существует в базе");
+                        } else {
+                            successLabel.setText("Успешно добавлено");
+                        }
+                        successLabel.setVisible(true);
+                        Animation.attenuation(successLabel);
+                        groupNameTextBox.clear();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
     }
 
-
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            successLabel.setVisible(false);
             buttonsSetOnAction();
             DBWorker.setDbConnector(DBConnector.getInstance());
             ComboBoxWorker.fillComboBox(groupsComboBox, DBWorker.getGroups());
             radioButtonsSetOnAction();
             studentRadiobutton.setSelected(true);
+        } catch (SQLException e) {
+            MessageBox.error("Ошибка соединения с базой данных",
+                    "",
+                    "Соединение с базой данных потеряно с ошибкой: \n\t\"" + e.getMessage() + "\"");
         } catch (Exception e) {
             e.printStackTrace();
         }

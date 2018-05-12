@@ -48,12 +48,8 @@
       </AnchorPane>
       <Pane id="slidePane" layoutY="80.0" prefHeight="429.0" prefWidth="270.0" AnchorPane.bottomAnchor="203.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="80.0">
          <children>
-            <Button id="button" fx:id="aboutProgramButton" layoutY="275.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="О программе" />
-            <Button id="button" fx:id="taskButton" layoutY="75.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Сохранить задание" />
+            <Button id="button" fx:id="aboutProgramButton" layoutY="75.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="О программе" />
             <Button id="button" fx:id="addButton" layoutY="25.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Добавить..." />
-            <Button id="button" fx:id="showStudentsButton" layoutY="125.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Показать студентов" />
-            <Button id="button" fx:id="showTasksButton" layoutY="225.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Показать задания" />
-            <Button id="button" fx:id="showGroupsButton" layoutY="175.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Показать группы" />
          </children>
       </Pane>
       <AnchorPane id="mainAnchorPane" layoutX="270.0" layoutY="80.0" prefHeight="357.0" prefWidth="853.0" AnchorPane.bottomAnchor="265.0" AnchorPane.leftAnchor="270.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
