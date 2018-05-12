@@ -7,11 +7,9 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class DBWorker {
@@ -309,4 +307,25 @@ public class DBWorker {
         return students;
     }
 
+    public static List<HashMap<String, String>> getStudentsByGroup(String group) throws SQLException {
+        if(!checkGroupInDB(group)){
+            throw new SQLException("Этой группы не существует в базе");
+        } else {
+            List<HashMap<String, String>> students = new ArrayList<>();
+            int groupID = getGroupID(group);
+            query = "SELECT `Студенты`.`Имя` AS `Имя`, " +
+                    "`Студенты`.`Фамилия` AS `Фамилия` " +
+                    "FROM `Студенты` " +
+                    "WHERE idГруппы = " + groupID + ";";
+            resultSet = statement.executeQuery(query);
+            while(resultSet.next()){
+                HashMap<String, String> data = new HashMap<>();
+                data.put("Имя", resultSet.getString("Имя"));
+                data.put("Фамилия", resultSet.getString("Фамилия"));
+                students.add(data);
+            }
+            return students;
+        }
+
+    }
 }

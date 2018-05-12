@@ -1,0 +1,37 @@
+#main-panel{
+    -fx-background-color:#0b2b36;
+}
+label{
+    -fx-fill:white;
+}
+#add-button {
+     -fx-background-color:#071a21;
+}
+#add-button:hover {
+     -fx-background-color:#132f38;
+} 
+#top-panel{
+    -fx-background-color: #071a21;
+}
+#title-panels{
+    -fx-background-color:#071a21;
+}
+#parameters-label-names{
+    -fx-font-size:15px;
+    -fx-text-fill:white;
+}
+#parametersBG{
+    -fx-background-color:#183640;
+}
+#default-button {
+    -fx-background-color:#375660;
+    -fx-font-size:15px;
+    -fx-text-fill:white;
+}
+#default-button:hover {
+    -fx-background-color:#132f38;
+}
+
+#custom-combo-box{
+    -fx-font-size: 18px;
+}

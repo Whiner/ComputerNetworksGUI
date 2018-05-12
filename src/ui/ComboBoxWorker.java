@@ -16,7 +16,7 @@ public class ComboBoxWorker {
         comboBox.setItems(fillObsList(min, max));
         comboBox.setValue(setValue);
     }
-    public static void fillComboBox(ComboBox<String> comboBox, List<String> list) throws Exception {
+    public static void fillComboBox(ComboBox<String> comboBox, List<String> list) {
         comboBox.getItems().clear();
         ObservableList<String> strings = FXCollections.observableArrayList();
         for (String string: list){

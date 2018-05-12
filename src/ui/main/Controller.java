@@ -19,34 +19,13 @@ public class Controller implements Initializable {
     Button generationButton;
 
     @FXML
+    Button searchButton;
+
+    @FXML
+    TextField searchTextBox;
+
+    @FXML
     Button aboutProgramButton;
-
-    @FXML
-    ComboBox<Integer> cb_WAN_nodes_quantity;
-
-    @FXML
-    ComboBox<Integer> cb_WAN_max_rel_quantity;
-
-    @FXML
-    ComboBox<Integer> cb_WAN_rel_with_LAN_quantity;
-
-    @FXML
-    ComboBox<Integer> cb_LAN_networks_quantity;
-
-    @FXML
-    ComboBox<Integer> cb_LAN_nodes_quantity;
-
-    @FXML
-    ComboBox<Integer> cb_LAN_max_rel_quantity;
-
-    @FXML
-    Slider slider_RAM;
-
-    @FXML
-    TextField textField_RAM;
-
-    @FXML
-    Button defaultButton;
 
     @FXML
     Button addButton;
