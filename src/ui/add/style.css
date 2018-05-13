@@ -13,3 +13,6 @@ label{
 #top-panel{
     -fx-background-color: #071a21;
 }
+ComboBox {
+    -fx-font-size: 18px;
+}

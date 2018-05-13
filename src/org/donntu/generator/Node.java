@@ -14,7 +14,7 @@ public class Node {
     private int ID;
 
 
-    Node(NetworkType networkType, int cellNumber_X, int cellNumber_Y, int ID) {
+    public Node(int cellNumber_X, int cellNumber_Y, int ID) {
         CellNumber_X = cellNumber_X;
         CellNumber_Y = cellNumber_Y;
         this.ID = ID;

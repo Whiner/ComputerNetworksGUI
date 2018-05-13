@@ -5,14 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.donntu.databaseworker.DBConnector;
 import org.donntu.databaseworker.DBWorker;
-import org.donntu.databaseworker.StudentTask;
-import org.donntu.generator.Generator;
-import org.donntu.generator.configs.DefaultConfig;
 import org.donntu.drawer.GeneratorDrawer;
+import org.donntu.generator.StudentTask;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 public class Main extends Application {
     public static Stage primaryStage;
@@ -23,43 +22,23 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root));
         Main.primaryStage = primaryStage;
         //primaryStage.setResizable(false);
-        //primaryStage.setMinHeight(780);
-        //primaryStage.setMinWidth(1200);
-        primaryStage.show();
+        primaryStage.setMinHeight(780);
+        primaryStage.setMinWidth(1200);
+        //primaryStage.show();
 
-        //primaryStage.close();
+        try {
+            final List<StudentTask> tasks = DBWorker.getStudentTasks("АСУ-16", "Егор", "Хохлов");
+            GeneratorDrawer.getInstance().drawAndSaveStudentTask(tasks.get(1), "task");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.exit(0);
     }
 
 
     public static void main(String[] args) {
         launch(args);
-
-        /*try {
-            //DBWorker dbWorker = new DBWorker(new DBConnector());
-            StudentTask studentTask = Generator.generateIndividualTask(
-                    "Алёша", "Попович", "Святая Русб", DefaultConfig.getDefaultConfig());
-            GeneratorDrawer drawer = new GeneratorDrawer(2000, 2000, false);
-            drawer.drawTopology(studentTask.getTopology());
-            drawer.saveImage("task/" + studentTask.getName()
-                    + " " + studentTask.getSurname() + " " + studentTask.getGroup() +
-                    "Прям щас" + ".png");
-            drawer.drawAndSaveStudentTask(studentTask, "task", "Шляпа");
-            //dbWorker.addStudentTask(studentTask);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
-        //pozhiloiClass.pozhiloiMetod();
-
-        /*Desktop desktop = null;
-        if (Desktop.isDesktopSupported()) {
-            desktop = Desktop.getDesktop();
-        }
-        try {
-            desktop.open(new File("E:/Projects/JavaProjects/ComputerNetworksGUI/1.png"));
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }*/
     }
 }

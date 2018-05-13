@@ -1,4 +1,4 @@
-package org.donntu.databaseworker;
+package org.donntu.generator;
 
 import org.donntu.GregorianCalendar;
 import org.donntu.generator.Topology;
@@ -18,6 +18,7 @@ public class StudentTask {
         this.group = group;
         this.creationDate = creationDate;
     }
+    public StudentTask(){}
 
     public StudentTask(GregorianCalendar creationDate, String name, String surname, String group) {
         this.creationDate = creationDate;

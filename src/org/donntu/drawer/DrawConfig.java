@@ -93,22 +93,31 @@ public class DrawConfig {
         return instance;
     }
 
-    private DrawConfig() {}
+    private DrawConfig() {
+        try {
+            setNodeImage(new File("images-fx/2.png"));
+            calcNodeSize();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public int getImageWidth() {
         return imageWidth;
     }
 
-    public void setImageWidth(int imageWidth) {
+    public void setImageWidth(int imageWidth) throws Exception {
         this.imageWidth = imageWidth;
+        calcNodeSize();
     }
 
     public int getImageHeight() {
         return imageHeight;
     }
 
-    public void setImageHeight(int imageHeight) {
+    public void setImageHeight(int imageHeight) throws Exception {
         this.imageHeight = imageHeight;
+        calcNodeSize();
     }
 }

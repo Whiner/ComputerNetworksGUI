@@ -1,16 +1,18 @@
 package org.donntu.drawer;
 
 import javafx.util.Pair;
-import org.donntu.databaseworker.StudentTask;
+import org.donntu.GregorianCalendar;
+import org.donntu.generator.StudentTask;
 import org.donntu.generator.*;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
 import org.donntu.drawer.other.ColorComparator;
 import org.donntu.drawer.other.Coordinates;
 import org.donntu.drawer.other.NodeCoordinatesConvertor;
 import org.donntu.generator.field.Field;
 import org.donntu.generator.field.Section;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
@@ -26,55 +28,41 @@ public class GeneratorDrawer {
     private int height;
     private int width;
     private List<Color> usedColors = new ArrayList<>();
+
     private DrawConfig config;
 
     private static GeneratorDrawer instance;
 
-    public static GeneratorDrawer getInstance() throws Exception {
+    public static GeneratorDrawer getInstance() {
         if (instance == null) {
             instance = new GeneratorDrawer(DrawConfig.getInstance());
         }
         return instance;
     }
 
-    private GeneratorDrawer(DrawConfig config) throws Exception {
-        this.config = config;
-        config.calcNodeSize();
-        this.height = config.getImageHeight();
-        this.width = config.getImageWidth();
+    private void createNewGraphics(){
         bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         graphics2D = (Graphics2D) bufferedImage.getGraphics();
         fillBackground(Color.WHITE);
-        drawSections();
+
+    }
+
+    private GeneratorDrawer(DrawConfig config) {
+        this.config = config;
+        try {
+            config.calcNodeSize();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.height = config.getImageHeight();
+        this.width = config.getImageWidth();
+        createNewGraphics();
     }
 
     public void setConfig(DrawConfig config){
         if(config!= null) {
             this.config = config;
         }
-    }
-
-    public Image getImage() {
-        return SwingFXUtils.toFXImage(bufferedImage, null);
-    }
-
-    public GeneratorDrawer(int height, int width, boolean cells) throws Exception {
-        DrawConfig.getInstance().calcNodeSize();
-        this.height = height;
-        this.width = width;
-        bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        graphics2D = (Graphics2D) bufferedImage.getGraphics();
-        fillBackground(Color.WHITE);
-        if (cells) {
-            drawCells();
-        }
-        drawSections();
-    }
-
-    public GeneratorDrawer(Graphics graphics, int width, int height){
-        graphics2D = (Graphics2D) graphics;
-        this.width = width;
-        this.height = height;
     }
 
     private void drawCells() {
@@ -94,7 +82,6 @@ public class GeneratorDrawer {
     }
 
     private void drawSections() {
-
         Section section = Field.getInstance().getWanSection();
         int y = section.getCells_Count_Y() * DrawConfig.getInstance().getNodeHeight() * 2;
         graphics2D.setColor(Color.BLACK);
@@ -107,12 +94,14 @@ public class GeneratorDrawer {
 
         for (Section t : Field.getInstance().getLanSections()) {
             Color color;
+            int cycleProtect = 0;
             do {
                 color = new Color(ThreadLocalRandom.current().nextInt(0, 256),
                         ThreadLocalRandom.current().nextInt(0, 256),
                         ThreadLocalRandom.current().nextInt(0, 256), 25);
+                cycleProtect++;
             }
-            while (ColorComparator.isContainLikeTone(color, usedColors));
+            while (ColorComparator.isContainLikeTone(color, usedColors) && cycleProtect < 100);
             usedColors.add(color);
             graphics2D.setColor(color);
             int x = t.getBeginCell_X() * DrawConfig.getInstance().getNodeWidth() * 2;
@@ -126,7 +115,7 @@ public class GeneratorDrawer {
                             * t.getCells_Count_X() * 2 - DrawConfig.getInstance().getNodeWidth(),
                     t.getBeginCell_Y() * DrawConfig.getInstance().getNodeHeight() * 2 + DrawConfig.getInstance().getNodeHeight() / 2);
         }
-
+        usedColors.clear();
     }
 
     private void fillBackground(Color color) {
@@ -224,6 +213,7 @@ public class GeneratorDrawer {
             drawPointOnConnection(connection.getToNetworkNode(), connection.getFromNetworkNode());
         }
     }
+
     private void drawAllPointsOnConnection(Network network) {
         for (Node node : network.getNodes()) {
             for (Node connectNode : node.getConnectedNodes()) {
@@ -232,8 +222,9 @@ public class GeneratorDrawer {
         }
     }
 
-
     private void drawTopology(Topology topology) throws Exception {
+        drawCells();
+        drawSections();
         graphics2D.setColor(Color.BLACK);
         drawNetworksConnections(topology);
         for (Network n : topology.getNetworks()) {
@@ -245,8 +236,23 @@ public class GeneratorDrawer {
         }
     }
 
-    public void drawAndSaveStudentTask(StudentTask studentTask, String imageDirectory, String imageName) throws Exception {
+    private boolean createDirectory(String directory){
+        Path path = Paths.get(directory);
+        if(!Files.exists(path)){
+            try {
+                Files.createDirectory(path);
+            } catch (IOException e) {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    public void drawAndSaveStudentTask(StudentTask studentTask, String imageDirectory) throws Exception {
+        Field.getInstance().autoFilling(studentTask.getTopology());
+        createNewGraphics();
         BufferedImage studentTaskBufferedImage = new BufferedImage(width, height + 500, BufferedImage.TYPE_INT_ARGB);
         Graphics2D studentTaskGraphics2D = (Graphics2D) studentTaskBufferedImage.getGraphics();
         studentTaskGraphics2D.setColor(Color.WHITE);
@@ -257,7 +263,7 @@ public class GeneratorDrawer {
         studentTaskGraphics2D.setFont(new Font(Font.DIALOG_INPUT, Font.ITALIC, 50));
         studentTaskGraphics2D.setColor(Color.BLACK);
         studentTaskGraphics2D.drawString(studentTask.getCreationDate().toString(), 5, 50);
-        studentTaskGraphics2D.drawString(studentTask.getName() + " " + studentTask.getSurname() + " \"" + studentTask.getGroup() + "\"", 5, 150);
+        studentTaskGraphics2D.drawString(studentTask.getSurname() + " " + studentTask.getName() + " " + studentTask.getGroup(), 5, 150);
 
         final List<Network> networks = studentTask.getTopology().getNetworks();
         int x = 20;
@@ -270,8 +276,15 @@ public class GeneratorDrawer {
                 studentTaskGraphics2D.drawString(network.getIp().toString(), 50, 300 - 15);
             }
         }
+        createDirectory(imageDirectory);
+        ImageIO.write(studentTaskBufferedImage, "png",
+                new FileOutputStream(
+                        imageDirectory + "/"
+                                + studentTask.getSurname() + " "
+                                + studentTask.getName() + " "
+                                + studentTask.getGroup() + " "
+                                + new GregorianCalendar().toString() + ".png"));
 
-        ImageIO.write(studentTaskBufferedImage, "png", new FileOutputStream(imageDirectory + "/" + imageName + ".png"));
     }
 
     public void saveImage(String imageDirectory) throws IOException {

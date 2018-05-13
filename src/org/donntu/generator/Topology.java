@@ -1,5 +1,7 @@
 package org.donntu.generator;
 
+import sun.nio.ch.Net;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,33 @@ public class Topology {
     private List<Network> networks;
     private boolean isWANExist;
     private int LANQuantity;
+
+
+    public Network getNetworkByID(int ID){
+        for (Network network: networks){
+            if(network.getID() == ID){
+                return network;
+            }
+        }
+        return null;
+    }
+
+    public void setNetworks(List<Network> networks) {
+        isWANExist = false;
+        LANQuantity = 0;
+        for (Network network: networks){
+            if(network.getType() == NetworkType.WAN){
+                if(isWANExist){
+                    continue;
+                } else {
+                    isWANExist = true;
+                }
+            } else {
+                LANQuantity++;
+            }
+        }
+        this.networks = networks;
+    }
 
     public Topology(){
        networks = new ArrayList<>();

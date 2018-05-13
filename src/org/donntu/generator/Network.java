@@ -11,12 +11,26 @@ import java.util.List;
 
 
 public class Network {
+    private int ID;
     private NetworkType type;
     private List<Node> nodes = new ArrayList<>();
     private IP ip = new IP();
-    //private List<Network> connectedWith = new ArrayList<>();
     private List<NetworksConnection> networkConnections = new ArrayList<>();
 
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+    public void setNodes(List<Node> nodes) {
+        this.nodes = nodes;
+    }
+
+    public void setNetworkConnections(List<NetworksConnection> networkConnections) {
+        this.networkConnections = networkConnections;
+    }
 
     public List<NetworksConnection> getNetworkConnections() {
         return networkConnections;
@@ -193,7 +207,7 @@ public class Network {
             ID = nodes.get(nodes.size() - 1).getID() + 1;
         }
 
-        nodes.add(new Node(type, x, y, ID));
+        nodes.add(new Node(x, y, ID));
 
         Node lastAdded = nodes.get(ID);
         lastAdded.setMaxRelationsCount(maxRelationsQuantity);
@@ -245,9 +259,6 @@ public class Network {
         return nodes;
     }
 
-    /*public List<Network> getConnectedWith() {
-        return connectedWith;
-    }*/
 
     public void connectNetworks(Node thisNetworkNode, Network connectedNetwork, Node connectedNode) throws Exception {
         if (thisNetworkNode != null && connectedNetwork != null && connectedNode != null) {

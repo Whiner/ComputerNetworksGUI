@@ -2,7 +2,6 @@ package org.donntu.generator;
 
 import javafx.util.Pair;
 import org.donntu.GregorianCalendar;
-import org.donntu.databaseworker.StudentTask;
 import org.donntu.drawer.DrawConfig;
 import org.donntu.generator.configs.GenerateConfig;
 import org.donntu.generator.field.Field;
@@ -24,8 +23,6 @@ public class Generator { //оболочка для всего
                     generateConfig.getCellsCountY(),
                     generateConfig.getLanQuantity()
             );
-            DrawConfig.getInstance().setNodeImage(new File("images-fx/2.png"));
-            DrawConfig.getInstance().calcNodeSize();
 
             Topology t = TopologyGenerator.generateTopology(
                     generateConfig.getLanQuantity(),
@@ -34,10 +31,8 @@ public class Generator { //оболочка для всего
                     generateConfig.getLanNodesQuantity(),
                     generateConfig.getLanRelationsQuantity(),
                     generateConfig.getNetworksRelationsQuantity());
-            Calendar calendar = Calendar.getInstance();
-            GregorianCalendar gregorianCalendar = new GregorianCalendar();
-            gregorianCalendar.setTime(calendar.getTime());
-            return new StudentTask(t, name, surname, group, gregorianCalendar); //решить вопрос со временем
+
+            return new StudentTask(t, name, surname, group, new GregorianCalendar()); //решить вопрос со временем
         } catch (Exception e) {
             throw new Exception("Генерация прервана с ошибкой: \n" + e.getMessage());
         }

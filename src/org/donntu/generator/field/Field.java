@@ -1,13 +1,16 @@
 package org.donntu.generator.field;
 
+import org.donntu.generator.Network;
 import org.donntu.generator.NetworkType;
+import org.donntu.generator.Node;
+import org.donntu.generator.Topology;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Field {
 
-    private int cellsCountX = 16;
+    private int cellsCountX = 8;
     private int cellsCountY = 8;
 
     private Section wanSection;
@@ -29,12 +32,12 @@ public class Field {
     public void setConfig(int cellsCountX, int cellsCountY, int lan_quantity) throws Exception {
         setCellsCountX(cellsCountX);
         setCellsCountY(cellsCountY);
-        Field.getInstance().AddWAN_Section();
-        CreateLAN_Sections(lan_quantity);
+        Field.getInstance().addWANSection();
+        createLANSections(lan_quantity);
     }
 
-    public boolean AddWAN_Section(){
-        if(wanSection != null)
+    public boolean addWANSection() {
+        if (wanSection != null)
             return false;
         wanSection = new Section("WAN",
                 NetworkType.WAN,
@@ -45,22 +48,22 @@ public class Field {
         return true;
     }
 
-    public void CreateLAN_Sections(int count) throws Exception {
-        if(count < 1){
+    public void createLANSections(int count) throws Exception {
+        if (count < 1) {
             throw new Exception("Отрицательное количество LAN секций");
         }
-        if(lanSections != null && !lanSections.isEmpty()) {
+        if (lanSections != null && !lanSections.isEmpty()) {
             throw new Exception("Пустой указатель или секции уже существуют");
         }
 
         lanSections = new ArrayList<>();
 
-        for (int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++) {
             int beginCell_X = (cellsCountX / count) * i;
             int beginCell_Y = cellsCountY / 2;
             int cells_Count_X = cellsCountX / count;
             int cells_Count_Y = cellsCountY - cellsCountY / 2;
-            if(i == count - 1){
+            if (i == count - 1) {
                 cells_Count_X = cellsCountX - cells_Count_X * (count - 1);
             }
             lanSections.add(new Section(
@@ -70,36 +73,54 @@ public class Field {
                     beginCell_Y,
                     cells_Count_X,
                     cells_Count_Y
-                    ));
+            ));
         }
 
     }
 
-    public void Delete_LAN_Sections(){ //индикатор успеха надо
+    public void deleteLANSections() { //индикатор успеха надо
         lanSections.clear();
         lanSections = null;
     }
-    public void Delete_WAN_Section(){ //индикатор успеха надо
+
+    public void deleteWANSection() { //индикатор успеха надо
         wanSection = null;
     }
 
 
-   /* public int getFieldSize_px() {
-        return fieldSize_px;
-    }
-
-    public void setFieldSize_px(int fieldSize_px) throws Exception {
-        if(fieldSize_px < 0) {
-            throw new Exception("Field size must be positive");
+    public void autoFilling(Topology topology) throws Exception {
+        int maxX = 0;
+        int maxY = 0;
+        final List<Network> networks = topology.getNetworks();
+        for (Network network: networks){
+            final List<Node> nodes = network.getNodes();
+            for (Node node : nodes){
+                if(node.getCellNumber_X() > maxX){
+                    maxX = node.getCellNumber_X();
+                }
+                if(node.getCellNumber_Y() > maxY){
+                    maxY = node.getCellNumber_Y();
+                }
+            }
         }
-        this.fieldSize_px = fieldSize_px;
-    }*/
-
+        if(maxX % 2 != 0) {
+            maxX++;
+        }
+        if(maxY % 2 != 0) {
+            maxY++;
+        }
+        cellsCountX = maxX;
+        cellsCountY = maxY;
+        createLANSections(topology.getLANs().size());
+        if(topology.getWAN() != null) {
+            addWANSection();
+        }
+    }
 
 
     private static Field instance;
 
-    public static Field getInstance(){
+    public static Field getInstance() {
         if (instance == null) {
             instance = new Field();
         }
@@ -107,7 +128,8 @@ public class Field {
     }
 
 
-    private Field() {}
+    private Field() {
+    }
 
 
     public int getCellsCountX() {

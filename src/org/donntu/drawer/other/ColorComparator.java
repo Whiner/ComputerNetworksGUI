@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.List;
 
 public class ColorComparator {
-    private static int likeValue = 50;
+    private static int likeValue = 25;
     public static boolean isLikeTone(Color color1, Color color2){
         return (Math.abs(color1.getRed() - color2.getRed()) < likeValue)
                 || (Math.abs(color1.getGreen() - color2.getGreen()) < likeValue)

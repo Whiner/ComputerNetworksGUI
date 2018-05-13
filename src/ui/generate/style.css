@@ -5,10 +5,10 @@ label{
     -fx-fill:white;
 }
 #add-button {
-     -fx-background-color:#071a21;
+     -fx-background-color:#132f38;
 }
 #add-button:hover {
-     -fx-background-color:#132f38;
+     -fx-background-color:#071a21;
 } 
 #top-panel{
     -fx-background-color: #071a21;
@@ -34,4 +34,11 @@ label{
 
 #custom-combo-box{
     -fx-font-size: 18px;
+}
+#footer {
+    -fx-background-color: #071A21;
+}
+
+#indicator{
+    -fx-text-fill: white;
 }

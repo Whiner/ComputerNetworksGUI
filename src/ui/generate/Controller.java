@@ -4,10 +4,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.util.Pair;
 import org.donntu.databaseworker.DBConnector;
 import org.donntu.databaseworker.DBWorker;
-import org.donntu.databaseworker.StudentTask;
+import org.donntu.generator.StudentTask;
+import org.donntu.drawer.GeneratorDrawer;
 import org.donntu.generator.Generator;
 import org.donntu.generator.RAMCalculator;
 import org.donntu.generator.configs.DefaultConfig;
@@ -19,7 +20,6 @@ import ui.MessageBox;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -48,6 +48,9 @@ public class Controller implements Initializable {
 
     @FXML
     Button defaultButton;
+
+    @FXML
+    Button saveButton;
 
     @FXML
     ComboBox<Integer> cb_WAN_max_rel_quantity;
@@ -130,10 +133,10 @@ public class Controller implements Initializable {
             if(groupComboBox.getValue() != null){
                 studentComboBox.setDisable(false);
                 try {
-                    final List<HashMap<String, String>> studentsByGroup = DBWorker.getStudentsByGroup(groupComboBox.getValue());
+                    final List<Pair<String, String>> studentsByGroup = DBWorker.getStudentsByGroup(groupComboBox.getValue());
                     List<String> students = new ArrayList<>();
-                    for (HashMap<String, String> map: studentsByGroup){
-                        students.add(map.get("Фамилия") + " " + map.get("Имя"));
+                    for (Pair<String, String> map: studentsByGroup){
+                        students.add(map.getValue() + " " + map.getKey());
                     }
                     ComboBoxWorker.fillComboBox(studentComboBox, students);
                 } catch (SQLException e) {
@@ -211,10 +214,10 @@ public class Controller implements Initializable {
                     final String[] splited = studentComboBox.getValue().split(" ");
                     try {
                         StudentTask task = Generator.generateIndividualTask(splited[1], splited[0], groupComboBox.getValue(), config);
+                        GeneratorDrawer.getInstance().drawAndSaveStudentTask(task, "task/" + groupComboBox.getValue());
                         DBWorker.addStudentTask(task);
                         successLabel.setVisible(true);
                         Animation.attenuation(successLabel);
-
                     } catch (SQLException e) {
                         MessageBox.error("Ошибка",
                                 "Занесение в базу данных вызвало ошибку",
@@ -228,9 +231,27 @@ public class Controller implements Initializable {
                 if (groupComboBox.getValue() == null) {
                     Animation.shake(groupComboBox);
                 } else {
-                    //генерация
+                    try {
+                        final List<Pair<String, String>> students = DBWorker.getStudentsByGroup(groupComboBox.getValue());
+                        final List<StudentTask> studentTasks = Generator.generateTasksForGroup(students, groupComboBox.getValue(), config);
+                        for (StudentTask task: studentTasks){
+                            GeneratorDrawer.getInstance().drawAndSaveStudentTask(
+                                    task,
+                                    "task/" + groupComboBox.getValue());
+                            DBWorker.addStudentTask(task);
+                        }
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
             }
+        });
+        saveButton.setOnAction(event -> {
+            //вытащить все из базы по параметрам и сохранить в папку
         });
         defaultButton.setOnAction(event -> {
             config = DefaultConfig.getDefaultConfig();
