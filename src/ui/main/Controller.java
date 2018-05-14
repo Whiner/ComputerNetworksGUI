@@ -26,7 +26,8 @@ import javafx.stage.Stage;
 import mainpackage.Main;
 import org.donntu.GregorianCalendar;
 import org.donntu.databaseworker.DBWorker;
-import org.donntu.generator.StudentTask;
+import org.donntu.databaseworker.Student;
+import org.donntu.databaseworker.StudentTask;
 import ui.MessageBox;
 
 public class Controller implements Initializable {
@@ -50,13 +51,17 @@ public class Controller implements Initializable {
     Button addButton;
 
     @FXML
-    TableView<StudentTask> table;
+    TableView<StudentTask> taskTableView;
 
-    private boolean createdStudentColumns = false;
+    @FXML
+    ListView<String> groupListView;
 
-    private void createTableColumns(){
-        if(!createdStudentColumns) {
-            table.getColumns().clear();
+    @FXML
+    TableView<Student> studentsTableView;
+
+    private void createTaskTable(){
+        if(taskTableView.getColumns().size() == 0) {
+            taskTableView.getColumns().clear();
 
             TableColumn<StudentTask, String> surname = new TableColumn<>("Фамилия");
             TableColumn<StudentTask, String> name = new TableColumn<>("Имя");
@@ -73,13 +78,29 @@ public class Controller implements Initializable {
             group.setMinWidth(200);
             date.setMinWidth(200);
 
-            createdStudentColumns = true;
-            table.getColumns().addAll(group, surname, name, date);
+            taskTableView.getColumns().addAll(group, surname, name, date);
         }
     }
 
-    private void refreshDataOnTable() throws SQLException {
-        table.getItems().clear();
+    private void createStudentsTable(){
+        if(studentsTableView.getColumns().size() == 0) {
+            studentsTableView.getColumns().clear();
+
+            TableColumn<Student, String> surname = new TableColumn<>("Фамилия");
+            TableColumn<Student, String> name = new TableColumn<>("Имя");
+
+            surname.setCellValueFactory(new PropertyValueFactory<>("surname"));
+            name.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+            surname.setMinWidth(200);
+            name.setMinWidth(200);
+
+            studentsTableView.getColumns().addAll(surname, name);
+        }
+    }
+
+    private void refreshDataOnTaskTable() throws SQLException {
+        taskTableView.getItems().clear();
         ObservableList<StudentTask> tableTaskStruct = FXCollections.observableArrayList();
         final List<HashMap<String, String>> students = DBWorker.getStudentsTaskList();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -94,14 +115,32 @@ public class Controller implements Initializable {
             }
             tempCalendar = new GregorianCalendar();
             tempCalendar.setTime(tempDate);
-            tableTaskStruct.add(new StudentTask(
+            StudentTask task = new StudentTask(
                     tempCalendar,
                     record.get("Имя"),
                     record.get("Фамилия"),
-                    record.get("Группа")));
+                    record.get("Группа"));
+            task.setKey(Integer.valueOf(record.get("Ключ")));
+            tableTaskStruct.add(task);
         }
-        table.setItems(tableTaskStruct);
+        taskTableView.setItems(tableTaskStruct);
     } //сомнительно каждый раз по новой загружать в таблицу
+
+    private void refreshDataOnGroupTable() throws SQLException {
+        groupListView.getItems().clear();
+        ObservableList<String> tableTaskStruct = FXCollections.observableArrayList();
+        final List<String> groups = DBWorker.getGroups();
+        tableTaskStruct.addAll(groups);
+        groupListView.setItems(tableTaskStruct);
+    }
+
+    private void refreshDataOnStudentsTable(String group) throws SQLException {
+        studentsTableView.getItems().clear();
+        ObservableList<Student> tableTaskStruct = FXCollections.observableArrayList();
+        final List<Student> students = DBWorker.getStudentsByGroup(group);
+        tableTaskStruct.addAll(students);
+        studentsTableView.setItems(tableTaskStruct);
+    }
 
     private void setOnButtonsActions() {
         addButton.setOnAction(event -> {
@@ -116,10 +155,20 @@ public class Controller implements Initializable {
             Stage newWindow = new Stage();
             newWindow.setTitle("Добавить...");
             newWindow.setScene(secondScene);
-            newWindow.initModality(Modality.WINDOW_MODAL);
-            newWindow.initOwner(Main.primaryStage);
+            //newWindow.initModality(Modality.WINDOW_MODAL);
+            //newWindow.initOwner(Main.primaryStage);
             newWindow.setResizable(false);
             newWindow.show();
+            newWindow.setOnCloseRequest(event1 -> {
+                try {
+                    refreshDataOnGroupTable();
+                    studentsTableView.getItems().clear();
+                } catch (SQLException e) {
+                    MessageBox.error("Ошибка",
+                            "Ошибка обновления списка групп.",
+                            "");
+                }
+            });
         });
 
         generationButton.setOnAction(event -> {
@@ -140,7 +189,7 @@ public class Controller implements Initializable {
             newWindow.show();
             newWindow.setOnCloseRequest(event1 -> {
                 try {
-                    refreshDataOnTable();
+                    refreshDataOnTaskTable();
                 } catch (SQLException e) {
                     MessageBox.error("Ошибка",
                             "Ошибка обновления списка студентов.",
@@ -151,15 +200,57 @@ public class Controller implements Initializable {
         });
     }
 
+    private void setOnTablesAction() {
+        taskTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                if(newValue != null){
+                    StudentTask task = DBWorker.getTaskByID(newValue.getKey());
+                    ui.preview.Controller.setStudentTask(task);
+                    Parent secondaryLayout;
+                    try {
+                        secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/preview/forms.fxml"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    Scene secondScene = new Scene(secondaryLayout);
+                    Stage newWindow = new Stage();
+                    newWindow.setTitle("Просмотр");
+                    newWindow.setScene(secondScene);
+                    newWindow.initModality(Modality.WINDOW_MODAL);
+                    newWindow.initOwner(Main.primaryStage);
+                    newWindow.setResizable(false);
+                    newWindow.show();
+                }
 
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        groupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue != null){
+                try {
+                    refreshDataOnStudentsTable(newValue);
+                } catch (SQLException e) {
+                    MessageBox.error("Ошибка",
+                            "",
+                            "Ошибка заполнения таблицы. Текст ошибки: \n " + e.getMessage());
+                }
+            }
+        });
+    }
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            createTableColumns();
-            refreshDataOnTable();
+            createTaskTable();
+            createStudentsTable();
+            //createGroupTable();
+            refreshDataOnTaskTable();
+            refreshDataOnGroupTable();
             setOnButtonsActions();
+            setOnTablesAction();
         } catch (SQLException e) {
             MessageBox.confirmationWithClose("Ошибка соединения с базой данных",
                     "Продолжить?",

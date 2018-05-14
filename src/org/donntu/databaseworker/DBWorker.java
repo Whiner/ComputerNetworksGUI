@@ -23,12 +23,11 @@ public class DBWorker {
     private DBWorker() {
     }
 
-    public static void setDbConnector(DBConnector dbConnector) throws SQLException {
+    public static void setDBConnector(DBConnector dbConnector) throws SQLException {
         if (dbConnector == null) {
             throw new NullPointerException();
         }
         if (DBWorker.dbConnector != dbConnector) {
-            System.out.println("Сам себя");
             DBWorker.dbConnector = dbConnector;
             if (!dbConnector.isOpen()) {
                 if (!dbConnector.connectToDB()) {
@@ -102,7 +101,7 @@ public class DBWorker {
     }
 
     public static boolean addGroup(String group) throws SQLException {
-        setDbConnector(DBConnector.getInstance());
+        setDBConnector(DBConnector.getInstance());
         if (!checkGroupInDB(group)) {
             query = "INSERT INTO группы(Название) VALUES (\'" + group + "\');";
             statement.execute(query);
@@ -113,7 +112,7 @@ public class DBWorker {
     }
 
     public static boolean addStudent(String name, String surname, String group) throws SQLException {
-        setDbConnector(DBConnector.getInstance());
+        setDBConnector(DBConnector.getInstance());
         if (!checkGroupInDB(group)) {
             addGroup(group);
         }
@@ -206,7 +205,7 @@ public class DBWorker {
     }
 
     public static boolean addStudentTask(StudentTask studentTask) throws NullPointerException, SQLException {
-        setDbConnector(DBConnector.getInstance());
+        setDBConnector(DBConnector.getInstance());
         if (studentTask == null) {
             throw new NullPointerException();
         }
@@ -261,7 +260,7 @@ public class DBWorker {
     }
 
     public static List<String> getGroups() throws SQLException {
-        setDbConnector(DBConnector.getInstance());
+        setDBConnector(DBConnector.getInstance());
         List<String> groups = new ArrayList<>();
         query = "SELECT `Название` FROM `Группы`";
         resultSet = statement.executeQuery(query);
@@ -272,13 +271,14 @@ public class DBWorker {
     }
 
     public static List<HashMap<String, String>> getStudentsTaskList() throws SQLException {
-        setDbConnector(DBConnector.getInstance());
+        setDBConnector(DBConnector.getInstance());
         List<HashMap<String, String>> students = new ArrayList<>();
 
         query = "SELECT `Студенты`.`Имя` AS `Имя`, " +
                 "`Студенты`.`Фамилия` AS `Фамилия`, " +
                 "`Группы`.`Название` AS `Группа`, " +
-                "`Задания`.`Дата создания` AS `Дата создания` " +
+                "`Задания`.`Дата создания` AS `Дата создания`, " +
+                "`Задания`.`idзадания` AS `Ключ` " +
                 "FROM `Студенты`, `группы`, `задания`" +
                 "WHERE `Студенты`.`idГруппы` = `Группы`.`idГруппы` " +
                 "AND `Задания`.`idстудента` = `Студенты`.`idстудента`";
@@ -289,17 +289,18 @@ public class DBWorker {
             data.put("Фамилия", resultSet.getString("Фамилия"));
             data.put("Группа", resultSet.getString("Группа"));
             data.put("Дата", resultSet.getString("Дата создания"));
+            data.put("Ключ", resultSet.getString("Ключ"));
             students.add(data);
         }
         return students;
     }
 
-    public static List<Pair<String, String>> getStudentsByGroup(String group) throws SQLException {
-        setDbConnector(DBConnector.getInstance());
+    public static List<Student> getStudentsByGroup(String group) throws SQLException {
+        setDBConnector(DBConnector.getInstance());
         if (!checkGroupInDB(group)) {
             throw new SQLException("Этой группы не существует в базе");
         } else {
-            List<Pair<String, String>> students = new ArrayList<>();
+            List<Student> students = new ArrayList<>();
             int groupID = getGroupID(group);
             query = "SELECT `Студенты`.`Имя` AS `Имя`, " +
                     "`Студенты`.`Фамилия` AS `Фамилия` " +
@@ -307,10 +308,9 @@ public class DBWorker {
                     "WHERE idГруппы = " + groupID + ";";
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
-                Pair<String, String> data = new Pair<>(
+                students.add(new Student(
                         resultSet.getString("Имя"),
-                        resultSet.getString("Фамилия"));
-                students.add(data);
+                        resultSet.getString("Фамилия")));
             }
             return students;
         }
@@ -443,8 +443,25 @@ public class DBWorker {
         }
     }
 
+    private static Student getInitialsByTaskID(int taskID) throws SQLException {
+        query = "SELECT `студенты`.`Имя`, `студенты`.`Фамилия`, `группы`.`Название` " +
+                "FROM задания, студенты, группы " +
+                "WHERE `idзадания` = \'" + taskID + "\' AND " +
+                "`студенты`.`idстудента` = `задания`.`idстудента` AND " +
+                "`группы`.`idгруппы` = `студенты`.`idгруппы`;";
+        resultSet = statement.executeQuery(query);
+        if(resultSet.next()) {
+            return new Student(resultSet.getString(1),
+                    resultSet.getString(2),
+                    resultSet.getString(3)
+                    );
+        } else {
+            return null;
+        }
+    }
+
     public static List<StudentTask> getStudentTasks(String group, String name, String surname) throws SQLException {
-        setDbConnector(DBConnector.getInstance());
+        setDBConnector(DBConnector.getInstance());
         if (!checkGroupInDB(group)) {
             throw new SQLException("Группа " + group + " не существует в базе");
         }
@@ -457,72 +474,77 @@ public class DBWorker {
             throw new SQLException("Для этого студента нет заданий");
         }
         for (int taskID : tasksID) {
-            final List<Integer> networksID = getNetworksID(taskID);
-            if (networksID == null) {
-                //drop task
-                continue;
-            }
-
-            Topology topology = new Topology();
-            List<Network> networks = new ArrayList<>();
-
-            for (int networkID : networksID) {
-                Network network = getNetworkByID(networkID);
-                network.setID(networkID);
-                network.setNodes(getNodesByNetworkID(networkID));
-                networks.add(network);
-            }
-            final List<NodeConnection> nodeConnections;
             try {
-                nodeConnections = getConnectionsByNetworksID(networksID);
+                studentTasks.add(getTaskByID(taskID));
             } catch (Exception e) {
                 e.printStackTrace();
-                continue;
             }
-
-            if (nodeConnections == null) {
-                continue;
-            }
-            topology.setNetworks(networks);
-            for (NodeConnection connection : nodeConnections) {
-                try {
-                    if (connection.idConnectedNetwork == connection.idNetwork) {
-                        Network network = topology.getNetworkByID(connection.idNetwork);
-                        Network c_network = topology.getNetworkByID(connection.idConnectedNetwork);
-                        network.getNodeByID(connection.idNode).connectNode(
-                                c_network.getNodeByID(connection.idConnectedNode),
-                                false);
-                    } else {
-                        Network network = topology.getNetworkByID(connection.idNetwork);
-                        Network c_network = topology.getNetworkByID(connection.idConnectedNetwork);
-                        network.connectNetworks(
-                                network.getNodeByID(connection.idNode),
-                                c_network,
-                                c_network.getNodeByID(connection.idConnectedNode)
-                        );
-                    }
-
-                } catch (OneselfConnection | NodeRelationsException ignored) {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-
-            StudentTask task = new StudentTask();
-            task.setTopology(topology);
-            task.setName(name);
-            task.setSurname(surname);
-            task.setGroup(group);
-            try {
-                task.setCreationDate(getCreationDate(taskID));
-            } catch (ParseException e) {
-                task.setCreationDate(null);
-                e.printStackTrace();
-            }
-            studentTasks.add(task);
         }
         return studentTasks;
+    }
+
+    public static StudentTask getTaskByID(int taskID) throws Exception {
+        final List<Integer> networksID = getNetworksID(taskID);
+        if (networksID == null) {
+            //drop task
+            throw new Exception("Для этого задания нет сетей");
+        }
+
+        Topology topology = new Topology();
+        List<Network> networks = new ArrayList<>();
+
+        for (int networkID : networksID) {
+            Network network = getNetworkByID(networkID);
+            network.setID(networkID);
+            network.setNodes(getNodesByNetworkID(networkID));
+            networks.add(network);
+        }
+        final List<NodeConnection> nodeConnections;
+        nodeConnections = getConnectionsByNetworksID(networksID);
+        if (nodeConnections == null) {
+            throw new SQLException("Нет соединений в базе данных");
+        }
+        topology.setNetworks(networks);
+        for (NodeConnection connection : nodeConnections) {
+            try {
+                if (connection.idConnectedNetwork == connection.idNetwork) {
+                    Network network = topology.getNetworkByID(connection.idNetwork);
+                    Network c_network = topology.getNetworkByID(connection.idConnectedNetwork);
+                    network.getNodeByID(connection.idNode).connectNode(
+                            c_network.getNodeByID(connection.idConnectedNode),
+                            false);
+                } else {
+                    Network network = topology.getNetworkByID(connection.idNetwork);
+                    Network c_network = topology.getNetworkByID(connection.idConnectedNetwork);
+                    network.connectNetworks(
+                            network.getNodeByID(connection.idNode),
+                            c_network,
+                            c_network.getNodeByID(connection.idConnectedNode)
+                    );
+                }
+
+            } catch (OneselfConnection | NodeRelationsException e) {
+                throw new Exception("Задание повреждено либо было сгенерировано с ошибкой");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        StudentTask task = new StudentTask();
+        task.setTopology(topology);
+
+        Student initials = getInitialsByTaskID(taskID);
+        if(initials == null){
+            return null;
+        }
+        task.setStudent(initials);
+
+        try {
+            task.setCreationDate(getCreationDate(taskID));
+        } catch (ParseException e) {
+            task.setCreationDate(null);
+            e.printStackTrace();
+        }
+        return task;
     }
 }

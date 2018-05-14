@@ -1,5 +1,6 @@
 package org.donntu.generator.field;
 
+import org.donntu.drawer.DrawConfig;
 import org.donntu.generator.Network;
 import org.donntu.generator.NetworkType;
 import org.donntu.generator.Node;
@@ -52,9 +53,6 @@ public class Field {
         if (count < 1) {
             throw new Exception("Отрицательное количество LAN секций");
         }
-        if (lanSections != null && !lanSections.isEmpty()) {
-            throw new Exception("Пустой указатель или секции уже существуют");
-        }
 
         lanSections = new ArrayList<>();
 
@@ -103,18 +101,23 @@ public class Field {
                 }
             }
         }
+
+        maxX = Math.max(maxX, maxY);
         if(maxX % 2 != 0) {
             maxX++;
         }
-        if(maxY % 2 != 0) {
+        /*if(maxY % 2 != 0) {
             maxY++;
-        }
+        }*/
+        maxY = maxX;
+
         cellsCountX = maxX;
         cellsCountY = maxY;
         createLANSections(topology.getLANs().size());
         if(topology.getWAN() != null) {
             addWANSection();
         }
+        DrawConfig.getInstance().calcNodeSize();
     }
 
 

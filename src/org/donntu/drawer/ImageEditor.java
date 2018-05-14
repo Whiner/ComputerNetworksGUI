@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
+import java.io.IOException;
+import java.util.zip.GZIPInputStream;
 
 public class ImageEditor {
     public static Image resizeImage(Image image, int scaledWidth, int scaledHeight, boolean preserveAlpha){
@@ -47,4 +49,5 @@ public class ImageEditor {
     }
 
     private ImageEditor(){}
+
 }

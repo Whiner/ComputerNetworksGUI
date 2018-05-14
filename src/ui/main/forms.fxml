@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -25,47 +26,96 @@
 
 <AnchorPane id="mainPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="713.0" prefWidth="1123.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.main.Controller">
    <children>
-      <AnchorPane id="top-panel" prefHeight="80.0" prefWidth="730.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane id="top-panel" prefHeight="62.0" prefWidth="1123.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label id="label" layoutX="72.0" layoutY="20.0" text="Компьютерные сети" AnchorPane.leftAnchor="72.0">
+            <Label id="label" layoutX="71.0" layoutY="16.0" text="Компьютерные сети" AnchorPane.leftAnchor="71.0">
                <font>
                   <Font name="Raleway Regular" size="12.0" />
                </font>
             </Label>
-            <ImageView fx:id="top_panel_imageView" fitHeight="52.0" fitWidth="52.0" layoutX="14.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0">
+            <ImageView fx:id="top_panel_imageView" fitHeight="44.0" fitWidth="46.0" layoutX="14.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0">
                <image>
                   <Image url="@images/knt.png" />
                </image>
             </ImageView>
-            <TextField fx:id="searchTextBox" layoutX="817.0" layoutY="27.0" prefHeight="25.0" prefWidth="217.0" AnchorPane.rightAnchor="89.0" />
-            <Button id="search_button" fx:id="searchButton" layoutX="1041.0" layoutY="25.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="68.0" text="Поиск" AnchorPane.rightAnchor="14.0" />
-            <ImageView fitHeight="25.0" fitWidth="26.0" layoutX="777.0" layoutY="27.0" pickOnBounds="true" preserveRatio="true" x="6.0" AnchorPane.rightAnchor="315.0">
+            <TextField fx:id="searchTextBox" layoutX="817.0" layoutY="18.0" prefHeight="25.0" prefWidth="217.0" AnchorPane.rightAnchor="89.0" />
+            <Button id="search_button" fx:id="searchButton" layoutX="1041.0" layoutY="16.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="68.0" text="Поиск" AnchorPane.rightAnchor="14.0" />
+            <ImageView fitHeight="25.0" fitWidth="26.0" layoutX="777.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" x="6.0" AnchorPane.rightAnchor="315.0">
                <image>
                   <Image url="@images/magnifier.png" />
                </image>
             </ImageView>
          </children>
       </AnchorPane>
-      <VBox alignment="CENTER" layoutY="80.0" spacing="25.0">
+      <VBox alignment="CENTER" layoutY="63.0" prefHeight="225.0" prefWidth="204.0">
          <children>
+            <ImageView fitHeight="1.0" fitWidth="93.0" pickOnBounds="true" visible="false">
+               <image>
+                  <Image url="@images/separator.png" />
+               </image>
+            </ImageView>
             <Button id="button" fx:id="generationButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Генерация">
                <VBox.margin>
-                  <Insets top="25.0" />
+                  <Insets />
                </VBox.margin>
             </Button>
-            <Button id="button" fx:id="addButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Добавить..." />
+            <ImageView fitHeight="1.0" fitWidth="93.0" pickOnBounds="true">
+               <image>
+                  <Image url="@images/separator.png" />
+               </image>
+            </ImageView>
+            <Button id="button" fx:id="addButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="Добавить" />
+            <ImageView fitHeight="1.0" fitWidth="93.0" pickOnBounds="true">
+               <image>
+                  <Image url="@images/separator.png" />
+               </image>
+            </ImageView>
             <Button id="button" fx:id="aboutProgramButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="270.0" text="О программе" />
+            <ImageView fitHeight="1.0" fitWidth="93.0" pickOnBounds="true" visible="false">
+               <image>
+                  <Image url="@images/separator.png" />
+               </image>
+            </ImageView>
          </children>
       </VBox>
-      <AnchorPane id="mainAnchorPane" layoutX="270.0" layoutY="80.0" prefHeight="634.0" prefWidth="853.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="270.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
+      <VBox id="mainAnchorPane" layoutX="205.0" layoutY="63.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="205.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="63.0">
          <children>
-            <TableView id="dbTable" fx:id="table" layoutX="16.0" layoutY="13.0" prefHeight="342.0" prefWidth="817.0" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="13.0">
-               <columns>
-                  <TableColumn prefWidth="192.0" text="C1" />
-                  <TableColumn prefWidth="209.0" text="C2" />
-               </columns>
-            </TableView>
+            <AnchorPane layoutX="205.0" layoutY="63.0" prefHeight="347.0" prefWidth="918.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="205.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="63.0">
+               <children>
+                  <TableView id="dbTable" fx:id="taskTableView" layoutX="18.0" layoutY="33.0" prefHeight="306.0" prefWidth="882.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="33.0" />
+                  <Label id="label-table-view" layoutX="30.0" layoutY="1.0" text="Задания">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+            <HBox alignment="CENTER" prefHeight="304.0" prefWidth="977.0">
+               <children>
+                  <AnchorPane prefHeight="304.0" prefWidth="288.0">
+                     <children>
+                        <Label id="label-table-view" layoutX="30.0" layoutY="-5.0" text="Группы">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <ListView id="dbTable" fx:id="groupListView" layoutX="18.0" layoutY="60.0" prefHeight="227.0" prefWidth="262.0" AnchorPane.bottomAnchor="17.0" AnchorPane.topAnchor="60.0" />
+                        <Pane id="list-view-panel" layoutX="18.0" layoutY="27.0" prefHeight="33.0" prefWidth="262.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="304.0" prefWidth="627.0">
+                     <children>
+                        <TableView id="dbTable" fx:id="studentsTableView" layoutX="8.0" layoutY="27.0" prefHeight="260.0" prefWidth="602.0" AnchorPane.bottomAnchor="17.0" AnchorPane.topAnchor="27.0" />
+                        <Label id="label-table-view" layoutX="20.0" layoutY="-5.0" text="Студенты">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </HBox>
          </children>
-      </AnchorPane>
+      </VBox>
    </children>
 </AnchorPane>

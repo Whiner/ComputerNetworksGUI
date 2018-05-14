@@ -47,9 +47,6 @@ public class DrawConfig {
         }
     }
 
-
-
-
     public void setNodeImage(Image nodeImage) {
         if (nodeImage == null) {
             throw new NullPointerException();
@@ -84,8 +81,8 @@ public class DrawConfig {
         }
     }
 
-
     protected static DrawConfig instance;
+
     public static DrawConfig getInstance(){
         if (instance == null) {
             instance = new DrawConfig();
@@ -101,7 +98,6 @@ public class DrawConfig {
             e.printStackTrace();
         }
     }
-
 
     public int getImageWidth() {
         return imageWidth;

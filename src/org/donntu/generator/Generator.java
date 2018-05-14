@@ -2,11 +2,11 @@ package org.donntu.generator;
 
 import javafx.util.Pair;
 import org.donntu.GregorianCalendar;
-import org.donntu.drawer.DrawConfig;
+import org.donntu.databaseworker.Student;
+import org.donntu.databaseworker.StudentTask;
 import org.donntu.generator.configs.GenerateConfig;
 import org.donntu.generator.field.Field;
 
-import java.io.File;
 import java.util.*;
 
 public class Generator { //оболочка для всего
@@ -39,17 +39,17 @@ public class Generator { //оболочка для всего
     }
 
     public static List<StudentTask> generateTasksForGroup(
-            List<Pair<String, String>> namesAndSurnames,
+            List<Student> namesAndSurnames,
             String group,
             GenerateConfig generateConfig) {
         List<StudentTask> tasks = new ArrayList<>();
 
-        for (Pair<String, String> nameAndSurname: namesAndSurnames){
+        for (Student nameAndSurname: namesAndSurnames){
             try {
                 tasks.add(
                         generateIndividualTask(
-                                nameAndSurname.getKey(),
-                                nameAndSurname.getValue(),
+                                nameAndSurname.getName(),
+                                nameAndSurname.getSurname(),
                                 group,
                                 generateConfig)
                 );

@@ -41,9 +41,26 @@
             </Button>
          </children>
       </Pane>
-      <VBox fx:id="studentPane" alignment="TOP_CENTER" layoutX="1.0" layoutY="64.0" prefHeight="310.0" prefWidth="701.0" spacing="10.0" visible="false">
+      <VBox fx:id="studentPane" alignment="TOP_CENTER" layoutX="1.0" layoutY="64.0" prefHeight="310.0" prefWidth="701.0" spacing="10.0">
          <children>
             <HBox alignment="CENTER" prefHeight="80.0" prefWidth="674.0" spacing="30.0">
+               <children>
+                  <Label prefHeight="27.0" prefWidth="76.0" text="Фамилия" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="surnameTextBox" prefHeight="25.0" prefWidth="240.0">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="80.0" prefWidth="674.0" spacing="30.0">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
                <children>
                   <Label text="Имя" textFill="WHITE">
                      <font>
@@ -59,26 +76,6 @@
                      </HBox.margin>
                   </TextField>
                </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="80.0" prefWidth="674.0" spacing="30.0">
-               <children>
-                  <Label prefHeight="27.0" prefWidth="76.0" text="Фамилия" textFill="WHITE">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </Label>
-                  <TextField fx:id="surnameTextBox" prefHeight="25.0" prefWidth="240.0">
-                     <font>
-                        <Font size="17.0" />
-                     </font>
-                  </TextField>
-               </children>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
             </HBox>
             <HBox alignment="CENTER" prefHeight="80.0" prefWidth="674.0" spacing="30.0">
                <children>
@@ -105,7 +102,7 @@
             <Blend />
          </effect>
       </VBox>
-      <HBox fx:id="groupPane" alignment="CENTER" layoutX="1.0" layoutY="64.0" prefHeight="310.0" prefWidth="700.0" spacing="40.0">
+      <HBox fx:id="groupPane" alignment="CENTER" layoutX="1.0" layoutY="64.0" prefHeight="310.0" prefWidth="700.0" spacing="40.0" visible="false">
          <children>
             <Label text="Название группы" textFill="WHITE">
                <font>

@@ -7,7 +7,8 @@ import javafx.scene.layout.HBox;
 import javafx.util.Pair;
 import org.donntu.databaseworker.DBConnector;
 import org.donntu.databaseworker.DBWorker;
-import org.donntu.generator.StudentTask;
+import org.donntu.databaseworker.Student;
+import org.donntu.databaseworker.StudentTask;
 import org.donntu.drawer.GeneratorDrawer;
 import org.donntu.generator.Generator;
 import org.donntu.generator.RAMCalculator;
@@ -133,10 +134,10 @@ public class Controller implements Initializable {
             if(groupComboBox.getValue() != null){
                 studentComboBox.setDisable(false);
                 try {
-                    final List<Pair<String, String>> studentsByGroup = DBWorker.getStudentsByGroup(groupComboBox.getValue());
+                    final List<Student> studentsByGroup = DBWorker.getStudentsByGroup(groupComboBox.getValue());
                     List<String> students = new ArrayList<>();
-                    for (Pair<String, String> map: studentsByGroup){
-                        students.add(map.getValue() + " " + map.getKey());
+                    for (Student student: studentsByGroup){
+                        students.add(student.getSurname() + " " + student.getName());
                     }
                     ComboBoxWorker.fillComboBox(studentComboBox, students);
                 } catch (SQLException e) {
@@ -214,7 +215,10 @@ public class Controller implements Initializable {
                     final String[] splited = studentComboBox.getValue().split(" ");
                     try {
                         StudentTask task = Generator.generateIndividualTask(splited[1], splited[0], groupComboBox.getValue(), config);
-                        GeneratorDrawer.getInstance().drawAndSaveStudentTask(task, "task/" + groupComboBox.getValue());
+                        GeneratorDrawer.saveImage(
+                                "task/" + groupComboBox.getValue(),
+                                task.toString(),
+                                GeneratorDrawer.drawStudentTask(task));
                         DBWorker.addStudentTask(task);
                         successLabel.setVisible(true);
                         Animation.attenuation(successLabel);
@@ -232,12 +236,13 @@ public class Controller implements Initializable {
                     Animation.shake(groupComboBox);
                 } else {
                     try {
-                        final List<Pair<String, String>> students = DBWorker.getStudentsByGroup(groupComboBox.getValue());
+                        final List<Student> students = DBWorker.getStudentsByGroup(groupComboBox.getValue());
                         final List<StudentTask> studentTasks = Generator.generateTasksForGroup(students, groupComboBox.getValue(), config);
                         for (StudentTask task: studentTasks){
-                            GeneratorDrawer.getInstance().drawAndSaveStudentTask(
-                                    task,
-                                    "task/" + groupComboBox.getValue());
+                            GeneratorDrawer.saveImage(
+                                    "task/" + groupComboBox.getValue(),
+                                    task.toString(),
+                                    GeneratorDrawer.drawStudentTask(task));
                             DBWorker.addStudentTask(task);
                         }
 
@@ -274,7 +279,7 @@ public class Controller implements Initializable {
             fillSlider();
             buttonsSetOnAction();
 
-            DBWorker.setDbConnector(DBConnector.getInstance());
+            DBWorker.setDBConnector(DBConnector.getInstance());
 
             ComboBoxWorker.fillComboBox(groupComboBox, DBWorker.getGroups());
 

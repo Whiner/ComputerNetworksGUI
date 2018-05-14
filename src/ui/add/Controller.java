@@ -85,9 +85,9 @@ public class Controller implements Initializable {
                 if (!empty) {
                     try {
                         if(!DBWorker.addStudent(
-                                nameTextBox.getText(),
-                                surnameTextBox.getText(),
-                                groupsComboBox.getValue())){
+                                nameTextBox.getText().trim(),
+                                surnameTextBox.getText().trim(),
+                                groupsComboBox.getValue().trim())){
                             successLabel.setText("Уже существует в базе");
                         } else {
                             successLabel.setText("Успешно добавлено");
@@ -107,13 +107,14 @@ public class Controller implements Initializable {
                     Animation.shake(groupNameTextBox);
                 } else {
                     try {
-                        if(!DBWorker.addGroup(groupNameTextBox.getText())){
+                        if(!DBWorker.addGroup(groupNameTextBox.getText().trim())){
                             successLabel.setText("Уже существует в базе");
                         } else {
                             successLabel.setText("Успешно добавлено");
                         }
                         successLabel.setVisible(true);
                         Animation.attenuation(successLabel);
+                        ComboBoxWorker.fillComboBox(groupsComboBox, DBWorker.getGroups());
                         groupNameTextBox.clear();
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -128,7 +129,7 @@ public class Controller implements Initializable {
         try {
             successLabel.setVisible(false);
             buttonsSetOnAction();
-            DBWorker.setDbConnector(DBConnector.getInstance());
+            DBWorker.setDBConnector(DBConnector.getInstance());
             ComboBoxWorker.fillComboBox(groupsComboBox, DBWorker.getGroups());
             radioButtonsSetOnAction();
             studentRadiobutton.setSelected(true);

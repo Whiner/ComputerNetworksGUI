@@ -1,6 +1,6 @@
 #button{
     -fx-background-color:#183640;
-    -fx-font-size:18px;
+    -fx-font-size:17px;
     -fx-text-fill:white;
 }
 
@@ -53,9 +53,19 @@
 #main_panel{
     -fx-background-color:#deebf8;
 }
+#label-table-view{
+    -fx-font-size:20px;
+}
+
+#list-view-panel{
+    -fx-background-color: linear-gradient(#f5f5f5, #d5d1d8);
+    -fx-border-color: rgba(0, 0, 0, 0.18);
+    -fx-border-width: 0.5px;
+}
+
 
 #label{
-    -fx-font-size:26px;
+    -fx-font-size:20px;
     -fx-text-fill:white;
 }
 #open-slide-button:hover{

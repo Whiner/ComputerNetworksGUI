@@ -5,13 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.donntu.databaseworker.DBWorker;
-import org.donntu.drawer.GeneratorDrawer;
-import org.donntu.generator.StudentTask;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
 
 public class Main extends Application {
     public static Stage primaryStage;
@@ -24,17 +19,23 @@ public class Main extends Application {
         //primaryStage.setResizable(false);
         primaryStage.setMinHeight(780);
         primaryStage.setMinWidth(1200);
-        //primaryStage.show();
+        primaryStage.show();
 
-        try {
-            final List<StudentTask> tasks = DBWorker.getStudentTasks("АСУ-16", "Егор", "Хохлов");
-            GeneratorDrawer.getInstance().drawAndSaveStudentTask(tasks.get(1), "task");
+        /*try {
+            final List<StudentTask> tasks = DBWorker.getStudentTasks("АСУ-16", "Игорь", "Ввэдэнский");
+            GeneratorDrawer.saveImage(
+                    "task",
+                     tasks.get(0).getSurname() + " "
+                            + tasks.get(0).getName() + " "
+                            + tasks.get(0).getGroup() + " "
+                            + new GregorianCalendar().toString(),
+                    GeneratorDrawer.drawStudentTask(tasks.get(1)));
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.exit(0);
+        System.exit(0);*/
     }
 
 

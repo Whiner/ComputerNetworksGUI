@@ -11,7 +11,6 @@ public class Topology {
     private boolean isWANExist;
     private int LANQuantity;
 
-
     public Network getNetworkByID(int ID){
         for (Network network: networks){
             if(network.getID() == ID){

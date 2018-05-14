@@ -1,15 +1,21 @@
-package org.donntu.generator;
+package org.donntu.databaseworker;
 
 import org.donntu.GregorianCalendar;
 import org.donntu.generator.Topology;
 
 
-public class StudentTask {
+public class StudentTask extends Student{
+    private int key;
     private Topology topology;
     private GregorianCalendar creationDate;
-    private String name;
-    private String surname;
-    private String group;
+
+    public int getKey() {
+        return key;
+    }
+
+    public void setKey(int key) {
+        this.key = key;
+    }
 
     public StudentTask(Topology topology, String name, String surname, String group, GregorianCalendar creationDate) {
         this.topology = topology;
@@ -65,5 +71,19 @@ public class StudentTask {
 
     public void setCreationDate(GregorianCalendar creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public void setStudent(Student student){
+        this.name = student.name;
+        this.surname = student.surname;
+        this.group = student.group;
+    }
+
+    @Override
+    public String toString() {
+        return surname + " "
+                + name + " "
+                + group + " "
+                + new GregorianCalendar().toString();
     }
 }
