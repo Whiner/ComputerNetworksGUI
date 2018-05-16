@@ -25,6 +25,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mainpackage.Main;
 import org.donntu.GregorianCalendar;
+import org.donntu.databaseworker.DBConnector;
 import org.donntu.databaseworker.DBWorker;
 import org.donntu.databaseworker.Student;
 import org.donntu.databaseworker.StudentTask;
@@ -59,6 +60,20 @@ public class Controller implements Initializable {
     @FXML
     TableView<Student> studentsTableView;
 
+    @FXML
+    MenuItem showTask;
+
+    @FXML
+    MenuItem taskDelete;
+
+    @FXML
+    MenuItem studentDelete;
+
+    @FXML
+    MenuItem groupDelete;
+
+
+
     private void createTaskTable(){
         if(taskTableView.getColumns().size() == 0) {
             taskTableView.getColumns().clear();
@@ -73,7 +88,7 @@ public class Controller implements Initializable {
             group.setCellValueFactory(new PropertyValueFactory<>("group"));
             date.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
 
-            surname.setMinWidth(200);
+            surname.setMinWidth(400);
             name.setMinWidth(200);
             group.setMinWidth(200);
             date.setMinWidth(200);
@@ -200,31 +215,74 @@ public class Controller implements Initializable {
         });
     }
 
-    private void setOnTablesAction() {
-        taskTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                if(newValue != null){
-                    StudentTask task = DBWorker.getTaskByID(newValue.getKey());
-                    ui.preview.Controller.setStudentTask(task);
-                    Parent secondaryLayout;
-                    try {
-                        secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/preview/forms.fxml"));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                    Scene secondScene = new Scene(secondaryLayout);
-                    Stage newWindow = new Stage();
-                    newWindow.setTitle("Просмотр");
-                    newWindow.setScene(secondScene);
-                    newWindow.initModality(Modality.WINDOW_MODAL);
-                    newWindow.initOwner(Main.primaryStage);
-                    newWindow.setResizable(false);
-                    newWindow.show();
+    private void setOnActionContextMenu(){
+        studentDelete.setOnAction(event -> {
+            if(MessageBox.confirmation("Удалить студента из базы?") == ButtonType.OK){
+                try {
+                    final Student selectedItem = studentsTableView.getSelectionModel().getSelectedItem();
+                    DBWorker.deleteStudent(selectedItem.getName(), selectedItem.getSurname(), groupListView.getSelectionModel().getSelectedItem());
+                    refreshDataOnStudentsTable(groupListView.getSelectionModel().getSelectedItem());
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
+            }
+        });
 
+        groupDelete.setOnAction(event -> {
+            if(MessageBox.confirmation("Удалить группу из базы? Все студенты находящиеся в этой группе будут так же удалены.") == ButtonType.OK){
+                try {
+                    DBWorker.deleteGroup(groupListView.getSelectionModel().getSelectedItem());
+                    refreshDataOnGroupTable();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        taskDelete.setOnAction(event ->{
+            if(MessageBox.confirmation("Удалить задание?") == ButtonType.OK){
+                try {
+                    DBWorker.deleteTaskByID(taskTableView.getSelectionModel().getSelectedItem().getKey());
+                    refreshDataOnTaskTable();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        showTask.setOnAction(event -> {
+            try {
+                StudentTask task = DBWorker.getTaskByID(taskTableView.getSelectionModel().getSelectedItem().getKey());
+                ui.preview.Controller.setStudentTask(task);
+                Parent secondaryLayout;
+                try {
+                    secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/preview/forms.fxml"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                Scene secondScene = new Scene(secondaryLayout);
+                Stage newWindow = new Stage();
+                newWindow.setTitle("Просмотр");
+                newWindow.setScene(secondScene);
+                newWindow.initModality(Modality.WINDOW_MODAL);
+                newWindow.initOwner(Main.primaryStage);
+                newWindow.setResizable(false);
+                newWindow.show();
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        });
+    }
+
+    private void setOnTablesAction() {
+
+        taskTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue != null){
+                taskDelete.setDisable(false);
+                showTask.setDisable(false);
+            } else {
+                taskDelete.setDisable(true);
+                showTask.setDisable(true);
             }
         });
         groupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -244,13 +302,16 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            DBWorker.setDBConnector(DBConnector.getInstance());
             createTaskTable();
             createStudentsTable();
-            //createGroupTable();
             refreshDataOnTaskTable();
             refreshDataOnGroupTable();
             setOnButtonsActions();
             setOnTablesAction();
+            taskDelete.setDisable(true);
+            showTask.setDisable(true);
+            setOnActionContextMenu();
         } catch (SQLException e) {
             MessageBox.confirmationWithClose("Ошибка соединения с базой данных",
                     "Продолжить?",

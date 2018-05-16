@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.SplittableRandom;
 
 
 public class DBWorker {
@@ -25,7 +26,7 @@ public class DBWorker {
 
     public static void setDBConnector(DBConnector dbConnector) throws SQLException {
         if (dbConnector == null) {
-            throw new NullPointerException();
+            throw new SQLException("Необходимо установить коннектор");
         }
         if (DBWorker.dbConnector != dbConnector) {
             DBWorker.dbConnector = dbConnector;
@@ -92,7 +93,9 @@ public class DBWorker {
     private static boolean checkStudentInDB(String name, String surname, String group) {
         try {
             query = "SELECT Имя, Фамилия FROM студенты " +
-                    "WHERE `Имя` = \'" + name + "\' AND `Фамилия` = \'" + surname + "\' AND `idГруппы` = \'" + getGroupID(group) + "\';";
+                    "WHERE `Имя` = \'" + name + "\' " +
+                    "AND `Фамилия` = \'" + surname + "\' " +
+                    "AND `idГруппы` = \'" + getGroupID(group) + "\';";
             resultSet = statement.executeQuery(query);
             return resultSet.next();
         } catch (SQLException e) {
@@ -101,7 +104,7 @@ public class DBWorker {
     }
 
     public static boolean addGroup(String group) throws SQLException {
-        setDBConnector(DBConnector.getInstance());
+        setDBConnector(dbConnector);
         if (!checkGroupInDB(group)) {
             query = "INSERT INTO группы(Название) VALUES (\'" + group + "\');";
             statement.execute(query);
@@ -112,7 +115,7 @@ public class DBWorker {
     }
 
     public static boolean addStudent(String name, String surname, String group) throws SQLException {
-        setDBConnector(DBConnector.getInstance());
+        setDBConnector(dbConnector);
         if (!checkGroupInDB(group)) {
             addGroup(group);
         }
@@ -205,7 +208,7 @@ public class DBWorker {
     }
 
     public static boolean addStudentTask(StudentTask studentTask) throws NullPointerException, SQLException {
-        setDBConnector(DBConnector.getInstance());
+        setDBConnector(dbConnector);
         if (studentTask == null) {
             throw new NullPointerException();
         }
@@ -260,7 +263,7 @@ public class DBWorker {
     }
 
     public static List<String> getGroups() throws SQLException {
-        setDBConnector(DBConnector.getInstance());
+        setDBConnector(dbConnector);
         List<String> groups = new ArrayList<>();
         query = "SELECT `Название` FROM `Группы`";
         resultSet = statement.executeQuery(query);
@@ -271,7 +274,7 @@ public class DBWorker {
     }
 
     public static List<HashMap<String, String>> getStudentsTaskList() throws SQLException {
-        setDBConnector(DBConnector.getInstance());
+        setDBConnector(dbConnector);
         List<HashMap<String, String>> students = new ArrayList<>();
 
         query = "SELECT `Студенты`.`Имя` AS `Имя`, " +
@@ -296,7 +299,7 @@ public class DBWorker {
     }
 
     public static List<Student> getStudentsByGroup(String group) throws SQLException {
-        setDBConnector(DBConnector.getInstance());
+        setDBConnector(dbConnector);
         if (!checkGroupInDB(group)) {
             throw new SQLException("Этой группы не существует в базе");
         } else {
@@ -317,7 +320,7 @@ public class DBWorker {
     }
 
     public static List<Integer> getNetworksID(int taskID) throws SQLException {
-
+        setDBConnector(dbConnector);
         query = "SELECT idСети FROM сети " +
                 "WHERE `idзадания` = \'" + taskID + "\';";
 
@@ -461,7 +464,7 @@ public class DBWorker {
     }
 
     public static List<StudentTask> getStudentTasks(String group, String name, String surname) throws SQLException {
-        setDBConnector(DBConnector.getInstance());
+        setDBConnector(dbConnector);
         if (!checkGroupInDB(group)) {
             throw new SQLException("Группа " + group + " не существует в базе");
         }
@@ -484,9 +487,9 @@ public class DBWorker {
     }
 
     public static StudentTask getTaskByID(int taskID) throws Exception {
+        setDBConnector(dbConnector);
         final List<Integer> networksID = getNetworksID(taskID);
         if (networksID == null) {
-            //drop task
             throw new Exception("Для этого задания нет сетей");
         }
 
@@ -546,5 +549,40 @@ public class DBWorker {
             e.printStackTrace();
         }
         return task;
+    }
+
+    public static void deleteTaskByID(int taskID) throws SQLException {
+        setDBConnector(dbConnector);
+        query = "DELETE " +
+                "FROM задания " +
+                "WHERE `idзадания` = \'" + taskID + "\';";
+        statement.executeUpdate(query);
+    }
+
+    public static void deleteStudent(String name, String surname, String group) throws SQLException {
+        setDBConnector(dbConnector);
+        if(checkStudentInDB(name, surname, group)){
+            query = "DELETE " +
+                    "FROM студенты " +
+                    "WHERE `Имя` = \'" + name + "\' " +
+                    "AND `Фамилия` = \'" + surname + "\' " +
+                    "AND `idГруппы` = \'" + getGroupID(group) + "\';";
+            statement.executeUpdate(query);
+        } else {
+            throw new SQLException("Студента " + surname + " " + name + " из " + group + " не существует в базе");
+        }
+
+    }
+
+    public static void deleteGroup(String group) throws SQLException {
+        setDBConnector(dbConnector);
+        if(checkGroupInDB(group)) {
+            query = "DELETE " +
+                    "FROM группы " +
+                    "WHERE `название` = \'" + group + "\';";
+            statement.executeUpdate(query);
+        } else {
+            throw new SQLException("Группы " + group + " не существует в базе");
+        }
     }
 }

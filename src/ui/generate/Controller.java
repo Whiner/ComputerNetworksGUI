@@ -18,6 +18,7 @@ import ui.Animation;
 import ui.ComboBoxWorker;
 import ui.MessageBox;
 
+import javax.swing.*;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -82,6 +83,10 @@ public class Controller implements Initializable {
 
     @FXML
     ComboBox<Integer> cb_LAN_networks_quantity;
+
+    @FXML
+    ProgressIndicator progressBar;
+
 
     private GenerateConfig config = DefaultConfig.getDefaultConfig();
 
@@ -199,6 +204,35 @@ public class Controller implements Initializable {
 
     }
 
+    private class ProgressIndicatorWorker {
+        private double step;
+        private double currentProgress;
+
+        ProgressIndicatorWorker(int stepsCount){
+            step = 100 / stepsCount;
+            currentProgress = 0;
+        }
+
+        void start(){
+            progressBar.setVisible(true);
+            progressBar.setProgress(0.0);
+        }
+
+        void addStep(){
+            if(currentProgress >= 100){
+                progressBar.setVisible(false);
+            } else {
+                if(currentProgress >= 100 - step){
+                    currentProgress = 100;
+                } else {
+                    currentProgress += step;
+                }
+                progressBar.setProgress(currentProgress);
+            }
+        }
+
+    }
+
     private void buttonsSetOnAction() {
         generateButton.setOnAction(event -> {
             if (studentRadiobutton.isSelected()) {
@@ -238,16 +272,16 @@ public class Controller implements Initializable {
                     try {
                         final List<Student> students = DBWorker.getStudentsByGroup(groupComboBox.getValue());
                         final List<StudentTask> studentTasks = Generator.generateTasksForGroup(students, groupComboBox.getValue(), config);
+                        ProgressIndicatorWorker progress = new ProgressIndicatorWorker(studentTasks.size());
+                        progress.start();
                         for (StudentTask task: studentTasks){
                             GeneratorDrawer.saveImage(
                                     "task/" + groupComboBox.getValue(),
                                     task.toString(),
                                     GeneratorDrawer.drawStudentTask(task));
                             DBWorker.addStudentTask(task);
+                            progress.addStep();
                         }
-
-                    } catch (SQLException e) {
-                        e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -255,9 +289,11 @@ public class Controller implements Initializable {
                 }
             }
         });
+
         saveButton.setOnAction(event -> {
             //вытащить все из базы по параметрам и сохранить в папку
         });
+
         defaultButton.setOnAction(event -> {
             config = DefaultConfig.getDefaultConfig();
             try {
@@ -273,6 +309,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            progressBar.setVisible(false);
             successLabel.setVisible(false);
             comboBoxesActions();
             fillComboBoxes();

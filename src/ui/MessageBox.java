@@ -1,5 +1,6 @@
 package ui;
 
+import com.sun.jnlp.ApiDialog;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -37,5 +38,13 @@ public class MessageBox {
         {
             System.exit(0);
         }
+    }
+
+    public static ButtonType confirmation(String text){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Подтвердите");
+        alert.setHeaderText("Вы уверены?");
+        alert.setContentText(text);
+        return alert.showAndWait().get();
     }
 }
