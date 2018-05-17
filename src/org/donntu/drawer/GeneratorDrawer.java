@@ -9,6 +9,8 @@ import org.donntu.drawer.other.NodeCoordinatesConvertor;
 import org.donntu.generator.field.Field;
 import org.donntu.generator.field.Section;
 
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.awt.image.RenderedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -175,13 +177,119 @@ public class GeneratorDrawer {
             drawNodeName(node);
         }
     }
+    enum Direction {Up, Down}
+
+    private static void drawCurve(Direction direction, Node from, Node to) throws Exception {
+        if (from != null && to != null) {
+            tempGraphics2D.setColor(Color.BLACK);
+            Coordinates from_c;
+            Coordinates to_c;
+
+            int arc_x;
+            int arc_y;
+            int arc_width;
+            int arc_height;
+            int arc_startAngle;
+            int arc_angle;
+
+
+            if(from.getCellNumber_X() < to.getCellNumber_X()){
+                from_c = NodeCoordinatesConvertor.getCenter(from);
+                to_c = NodeCoordinatesConvertor.getCenter(to);
+            } else {
+                from_c = NodeCoordinatesConvertor.getCenter(to);
+                to_c = NodeCoordinatesConvertor.getCenter(from);
+            }
+
+            int t_x = Math.abs(from_c.getX() - to_c.getX());
+            int t_y = Math.abs(from_c.getY() - to_c.getY());
+
+            if(t_x == 0 || t_y == 0) {
+                arc_angle = 180;
+                if(t_x == 0) { // если вертикально
+                    if (from.getCellNumber_Y() < to.getCellNumber_Y()) {
+                        from_c = NodeCoordinatesConvertor.getCenter(from);
+                        to_c = NodeCoordinatesConvertor.getCenter(to);
+                    } else {
+                        from_c = NodeCoordinatesConvertor.getCenter(to);
+                        to_c = NodeCoordinatesConvertor.getCenter(from);
+                    }
+                    arc_height = Math.abs(from_c.getY() - to_c.getY());
+                    arc_width  = arc_height / 2;
+
+                    arc_x = from_c.getX() - arc_width / 2;
+                    arc_y = from_c.getY();
+
+                    if(direction == Direction.Up){
+                        arc_startAngle = 270;
+                    } else {
+                        arc_startAngle = 90;
+                    }
+
+
+                } else { // если горизонтально
+
+                    arc_width = Math.abs(from_c.getX() - to_c.getX());
+                    arc_height = arc_width / 2;
+
+                    arc_x = from_c.getX();
+                    arc_y = from_c.getY() - arc_height / 2;
+
+                    if(direction == Direction.Up){
+                        arc_startAngle = 0;
+                    } else {
+                        arc_startAngle = 180;
+                    }
+                }
+
+            } else if(t_x == t_y) { // наискось
+
+                arc_x = from_c.getX();
+                arc_y = from_c.getY();
+                arc_width = Math.abs(from_c.getX() - to_c.getX()) * 2;
+                arc_height = Math.abs(from_c.getY() - to_c.getY()) * 2;
+                arc_angle = 90;
+                if(from_c.getY() < to_c.getY()){
+                   if(direction == Direction.Up){
+                       arc_startAngle = 0; //норм
+                       arc_x = arc_x - arc_width / 2;
+                   } else {
+                       arc_y = arc_y - arc_height / 2;
+                       arc_startAngle = 180;
+                   }
+                } else {
+                    if(direction == Direction.Up){
+                        arc_startAngle = 90; //норм
+                        arc_y = arc_y - arc_height / 2;
+                    } else {
+                        arc_x = arc_x - arc_width / 2;
+                        arc_y = arc_y - arc_height;
+                        arc_startAngle = 270; //норм
+                    }
+                }
+
+            } else {
+                throw new Exception("Узлы должны находиться на одной линии по горизонтали, вертикали или наискось");
+            }
+
+            tempGraphics2D.drawArc(arc_x, arc_y, arc_width, arc_height, arc_startAngle, arc_angle);
+        }
+    }
 
     private static void drawAllConnections(Network network) {
         tempGraphics2D.setColor(Color.BLACK);
         List<Pair<Node, Node>> pairList = network.getUniqueConnections();
-
         for (Pair<Node, Node> pair : pairList) {
-            drawConnection(pair.getKey(), pair.getValue());
+            try {
+                if (network.checkRelationIntersection(pair.getKey(), pair.getValue())) {
+                    drawCurve(Direction.Down, pair.getKey(), pair.getValue());
+                } else {
+                    drawConnection(pair.getKey(), pair.getValue());
+                }
+            } catch (Exception e) {
+                drawConnection(pair.getKey(), pair.getValue());
+            }
+
             drawPointOnConnection(pair.getKey(), pair.getValue());
             drawPointOnConnection(pair.getValue(), pair.getKey());
         }
@@ -234,10 +342,10 @@ public class GeneratorDrawer {
         }
     }
 
-    public static Image drawStudentTask(StudentTask studentTask) throws Exception {
+    public static Image drawStudentTask(StudentTask studentTask) throws Exception { //попробовать сделать под декоратор
         Field.getInstance().autoFilling(studentTask.getTopology());
         refresh();
-        BufferedImage studentTaskBufferedImage = new BufferedImage(config.getImageWidth(), config.getImageHeight() + 500, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage studentTaskBufferedImage = new BufferedImage(config.getImageWidth(), config.getImageHeight() + 400, BufferedImage.TYPE_INT_ARGB);
         Graphics2D studentTaskGraphics2D = (Graphics2D) studentTaskBufferedImage.getGraphics();
         studentTaskGraphics2D.setColor(Color.WHITE);
         studentTaskGraphics2D.fillRect(0, 0, studentTaskBufferedImage.getWidth(), studentTaskBufferedImage.getHeight());
@@ -266,12 +374,16 @@ public class GeneratorDrawer {
 
     public static void saveImage(String imageDirectory, String imageName, Image image) throws IOException {
         createDirectory(imageDirectory);
-        ImageIO.write((RenderedImage) image, "png",
-                new FileOutputStream(
-                        imageDirectory + "/" + imageName + ".png"));
-        /*+ studentTask.getSurname() + " "
-                + studentTask.getName() + " "
-                + studentTask.getGroup() + " "
-                + new GregorianCalendar().toString()*/
+        String finallyPath = imageDirectory + "/" + imageName + ".png";
+        Path path = Paths.get(finallyPath);
+
+        int index = 1;
+        while(Files.exists(path)){
+            finallyPath = imageDirectory + "/" + imageName + "(" + index++ + ")" + ".png";
+            path = Paths.get(finallyPath);
+        }
+
+        ImageIO.write((RenderedImage) image, "png", new FileOutputStream(finallyPath));
+
     }
 }

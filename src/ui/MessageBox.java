@@ -34,7 +34,7 @@ public class MessageBox {
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(confirmationText);
-        if(alert.showAndWait().get() == ButtonType.OK)
+        if(alert.showAndWait().get() != ButtonType.OK)
         {
             System.exit(0);
         }

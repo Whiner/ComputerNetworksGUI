@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -88,7 +89,7 @@ public class Controller implements Initializable {
             group.setCellValueFactory(new PropertyValueFactory<>("group"));
             date.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
 
-            surname.setMinWidth(400);
+            surname.setMinWidth(300);
             name.setMinWidth(200);
             group.setMinWidth(200);
             date.setMinWidth(200);
@@ -107,8 +108,8 @@ public class Controller implements Initializable {
             surname.setCellValueFactory(new PropertyValueFactory<>("surname"));
             name.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-            surname.setMinWidth(200);
-            name.setMinWidth(200);
+            surname.setMinWidth(300);
+            name.setMinWidth(300);
 
             studentsTableView.getColumns().addAll(surname, name);
         }
@@ -217,11 +218,12 @@ public class Controller implements Initializable {
 
     private void setOnActionContextMenu(){
         studentDelete.setOnAction(event -> {
-            if(MessageBox.confirmation("Удалить студента из базы?") == ButtonType.OK){
+            if(MessageBox.confirmation("Удалить студента из базы? Все задания, связанные с этими студентами так же удалятся.") == ButtonType.OK){
                 try {
                     final Student selectedItem = studentsTableView.getSelectionModel().getSelectedItem();
                     DBWorker.deleteStudent(selectedItem.getName(), selectedItem.getSurname(), groupListView.getSelectionModel().getSelectedItem());
                     refreshDataOnStudentsTable(groupListView.getSelectionModel().getSelectedItem());
+                    refreshDataOnTaskTable();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -229,10 +231,12 @@ public class Controller implements Initializable {
         });
 
         groupDelete.setOnAction(event -> {
-            if(MessageBox.confirmation("Удалить группу из базы? Все студенты находящиеся в этой группе будут так же удалены.") == ButtonType.OK){
+            if(MessageBox.confirmation("Удалить группу из базы? " +
+                    "Все студенты и их задания находящиеся в этой группе будут так же удалены.") == ButtonType.OK){
                 try {
                     DBWorker.deleteGroup(groupListView.getSelectionModel().getSelectedItem());
                     refreshDataOnGroupTable();
+                    refreshDataOnTaskTable();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -302,23 +306,21 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            setOnButtonsActions();
+            taskDelete.setDisable(true);
+            showTask.setDisable(true);
             DBWorker.setDBConnector(DBConnector.getInstance());
             createTaskTable();
             createStudentsTable();
             refreshDataOnTaskTable();
             refreshDataOnGroupTable();
-            setOnButtonsActions();
             setOnTablesAction();
-            taskDelete.setDisable(true);
-            showTask.setDisable(true);
             setOnActionContextMenu();
         } catch (SQLException e) {
-            MessageBox.confirmationWithClose("Ошибка соединения с базой данных",
-                    "Продолжить?",
-                    "Работа с базой данных завершена с ошибкой: \n\t \"" + e.getMessage() +
-                            "\"\nНажмите \"ОК\", чтобы продолжить работу с программой. " +
-                            "Данные не будут сохранены в базу и будут существовать только на вашем компьютере.");
-            addButton.setDisable(true);
+            MessageBox.error("Ошибка соединения с базой данных",
+                    "",
+                    "Работа с базой данных завершена с ошибкой: \n\t \" " + e.getMessage() + "\"");
+            System.exit(-1);
         }
     }
 

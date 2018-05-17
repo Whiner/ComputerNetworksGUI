@@ -17,17 +17,17 @@ public class TopologyGenerator {
 
 
     private static Network generateNodes(int nodeCount, int maxNodeRelationsCount, Section section) throws Exception {
-        if(nodeCount <= 0) {
+        if (nodeCount <= 0) {
             throw new Exception("Количество узлов должно быть больше 0");
         }
-        if(maxNodeRelationsCount <= 0) {
+        if (maxNodeRelationsCount <= 0) {
             throw new NodeRelationsException("Максимальное количество связей должно быть больше 0");
         }
-        if(section == null) {
+        if (section == null) {
             throw new NullPointerException();
         }
         int t_NodeCount = nodeCount;
-        if(section.getCells_Count_X() * section.getCells_Count_Y() < nodeCount) {
+        if (section.getCells_Count_X() * section.getCells_Count_Y() < nodeCount) {
             t_NodeCount = section.getCells_Count_X() * section.getCells_Count_Y();
         }
 
@@ -35,7 +35,7 @@ public class TopologyGenerator {
 
         int i = 0;
         int tries = 0;
-        while(i < t_NodeCount && !network.isAllHaveMaxRelations()){
+        while (i < t_NodeCount && !network.isAllHaveMaxRelations()) {
             tries++;
             int x = ThreadLocalRandom.current().nextInt(
                     section.getBeginCell_X(),
@@ -45,31 +45,32 @@ public class TopologyGenerator {
                     section.getBeginCell_Y() + section.getCells_Count_Y());
 
 
-            if(network.getByCoord(x, y) != null){
+            if (network.getByCoord(x, y) != null) {
                 continue;
             }
             List<Integer> connectWith = new ArrayList<>();
             int connectQuantity;
-            if(i == 0){
+            if (i == 0) {
                 connectQuantity = 0;
-            }
-            else{
+            } else {
                 connectQuantity = ThreadLocalRandom.current().nextInt(1, Math.min(i, maxNodeRelationsCount) + 1);
             }
 
-            for(int j = 0; j < connectQuantity; j++){
+            for (int j = 0; j < connectQuantity; j++) {
                 int randomConnectNode;
                 do {
                     randomConnectNode = ThreadLocalRandom.current().nextInt(0, i);
                 } while (connectWith.contains(randomConnectNode));
                 connectWith.add(randomConnectNode);
             }
-            try{
+            try {
                 network.addNode(x, y, connectWith, maxNodeRelationsCount);
-            } catch (NodeExistException e){
+            } catch (NodeExistException e) {
+                System.out.println(e.getMessage());
                 continue;
-            } catch (NodeInterseptionException e){
-                if(tries > 1000){
+            } catch (NodeInterseptionException e) {
+                System.out.println(e.getMessage());
+                if (tries > 1000) {
                     break;
                 } else {
                     continue;
@@ -85,13 +86,13 @@ public class TopologyGenerator {
     }
 
     public static Network generateWAN(int nodeCount, int maxNodeRelationsCount) throws Exception {
-        if(nodeCount <= 0) {
+        if (nodeCount <= 0) {
             throw new Exception("Количество узлов должно быть больше 0");
         }
-        if(maxNodeRelationsCount <= 0) {
+        if (maxNodeRelationsCount <= 0) {
             throw new NodeRelationsException("Максимальное количество связей должно быть больше 0");
         }
-        if(Field.getInstance().getWanSection() == null) {
+        if (Field.getInstance().getWanSection() == null) {
             throw new NullPointerException("WAN section is null");
         }
 
@@ -102,33 +103,33 @@ public class TopologyGenerator {
                 nodeCount,
                 maxNodeRelationsCount,
                 Field.getInstance().getWanSection());
-            network.setType(NetworkType.WAN);
+        network.setType(NetworkType.WAN);
+        network.doCycleConnection();
         return network;
 
 
     }
 
     public static Network generateLAN(int nodeCount, int maxNodeRelationsCount) throws Exception {
-        if(nodeCount <= 0){
+        if (nodeCount <= 0) {
             throw new Exception("Количество узлов должно быть больше 0");
         }
-        if(maxNodeRelationsCount <= 0) {
+        if (maxNodeRelationsCount <= 0) {
             throw new NodeRelationsException("Максимальное количество связей должно быть больше 0");
         }
-        if(Field.getInstance().getLanSections().isEmpty()) {
+        if (Field.getInstance().getLanSections().isEmpty()) {
             throw new NullPointerException("Не созданы LAN секции, в которые можно поместить сеть");
         }
 
         Section t_Section = null;
-        for(Section t: Field.getInstance().getLanSections()){ // перенести в Field
-            if(!t.isFill())
-            {
+        for (Section t : Field.getInstance().getLanSections()) { // перенести в Field
+            if (!t.isFill()) {
                 t_Section = t;
                 break;
             }
         }
 
-        if(t_Section == null) {
+        if (t_Section == null) {
             throw new SectionException("Все LAN секции заполнены");
         }
 
@@ -137,21 +138,25 @@ public class TopologyGenerator {
                 maxNodeRelationsCount,
                 t_Section);
         network.setType(NetworkType.LAN);
+        network.doCycleConnection();
         return network;
     }
 
     public static void connectNetworks(Network firstNetwork, Network secondNetwork, int connectionsQuantity) throws Exception {
-        if(firstNetwork == null || secondNetwork == null){
+        if (firstNetwork == null || secondNetwork == null) {
             throw new NullPointerException();
         }
-        if(connectionsQuantity < 1){
+        if (connectionsQuantity < 1) {
             throw new Exception("Некорректное количество связей");
         }
 
         class Connected {
             private Node first;
             private Node second;
-            private Connected(){}
+
+            private Connected() {
+            }
+
             private Connected(Node f, Node s) {
                 first = f;
                 second = s;
@@ -180,7 +185,7 @@ public class TopologyGenerator {
                 for (Node s : secondNetwork.getNodes()) {
                     int length = (int) Math.sqrt(Math.pow(f.getCellNumber_X() - s.getCellNumber_X(), 2)
                             + Math.pow(f.getCellNumber_Y() - s.getCellNumber_Y(), 2)); // расстояние между точками
-                    if (length <= lastLength && !connectedNodes.contains(new Connected(f, s) )) {
+                    if (length <= lastLength && !connectedNodes.contains(new Connected(f, s))) {
                         lastConnected.first = f;
                         lastConnected.second = s;
                         lastLength = length;
@@ -188,10 +193,8 @@ public class TopologyGenerator {
                 }
             }
 
-            //lastConnected.first.connectNode(lastConnected.second, true);
             connectedNodes.add(lastConnected);
             firstNetwork.connectNetworks(lastConnected.first, secondNetwork, lastConnected.second);
-            //secondNetwork.connectNetworks(firstNetwork);
         }
 
     }
@@ -202,14 +205,14 @@ public class TopologyGenerator {
             int wan_relations_quantity,
             int lan_node_quantity,
             int lan_relations_quantity,
-            int networks_relations){
+            int networks_relations) {
 
         try {
             Topology t = new Topology();
             t.AddNetwork(TopologyGenerator.generateWAN(
                     wan_node_quantity,
                     wan_relations_quantity));
-            for (int i = 0; i < lan_quantity; i++){
+            for (int i = 0; i < lan_quantity; i++) {
                 t.AddNetwork(generateLAN(
                         lan_node_quantity,
                         lan_relations_quantity));
@@ -218,7 +221,7 @@ public class TopologyGenerator {
                         t.getNetworks().get(i + 1),
                         networks_relations);
             }
-            for (Network network: t.getNetworks()){
+            for (Network network : t.getNetworks()) {
                 generateIPForNetwork(network);
             }
             return t;
@@ -229,15 +232,15 @@ public class TopologyGenerator {
     }
 
     public static void generateIPForNetwork(Network network) throws Exception {
-        if(network.getNodes().size() == 0){
+        if (network.getNodes().size() == 0) {
             throw new NodeExistException("Пустая сеть");
         }
         IP ip = network.getIp();
 
-        if(network.getType() == NetworkType.LAN){
+        if (network.getType() == NetworkType.LAN) {
             int firstOctet = 0;
             int lowerSecondOctet = 0, upperSecondOctet = 0;
-            switch (ThreadLocalRandom.current().nextInt(1, 3)){
+            switch (ThreadLocalRandom.current().nextInt(1, 3)) {
                 case 1:
                     firstOctet = 10;
                     lowerSecondOctet = 0;
@@ -256,32 +259,31 @@ public class TopologyGenerator {
             }
             ip.setFirst(firstOctet);
             ip.setSecond(ThreadLocalRandom.current().nextInt(lowerSecondOctet, upperSecondOctet));
-            ip.setThird(ThreadLocalRandom.current().nextInt(0, 255));
         } else {
             ip.setFirst(ThreadLocalRandom.current().nextInt(0, 255));
             ip.setSecond(ThreadLocalRandom.current().nextInt(0, 255));
-            ip.setThird(ThreadLocalRandom.current().nextInt(0, 255));
         }
 
         int relationsCount = network.getCountRelations();
         int needAddresses = relationsCount * 4 + network.getNetworkConnections().size() * 4 + 2;
+        int thirdOctet;
+        if (needAddresses > 255 / 2) {
+            thirdOctet = ThreadLocalRandom.current().nextInt(0, 255 - 100);
+        } else {
+            thirdOctet = ThreadLocalRandom.current().nextInt(0, 255);
+        }
+        ip.setThird(thirdOctet);
         int fourthOctet = ThreadLocalRandom.current().nextInt(0, 255 - needAddresses);
+
         ip.setFourth(fourthOctet);
 
-        for (int i = 32; i > 0; i --){
-            if(Math.pow(2, 32 - i) > needAddresses){
+        for (int i = 32; i > 0; i--) {
+            if (Math.pow(2, 32 - i) > needAddresses) {
                 ip.setMask(i);
                 break;
             }
         }
 
-        System.out.println(network.getType());
-        System.out.println(
-                ip.getFirst() + "."
-                        + ip.getSecond() + "."
-                        + ip.getThird() + "."
-                        + ip.getFourth() + "/"
-                        + ip.getMask());
     }
 
 

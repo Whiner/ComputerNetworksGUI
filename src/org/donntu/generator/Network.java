@@ -61,9 +61,6 @@ public class Network {
         this.ip = ip;
     }
 
-    public Node getLastNode(){
-        return nodes.get(nodes.size() - 1);
-    }
     public void setMaxNodeRelations(int maxNodeRelations) throws Exception {
         for(Node t: nodes){
             t.setMaxRelationsCount(maxNodeRelations);
@@ -97,7 +94,7 @@ public class Network {
     }
 
 
-    private boolean checkRelationIntersection(Node from, Node to){
+    public boolean checkRelationIntersection(Node from, Node to){
         int t_x = Math.abs(from.getCellNumber_X() - to.getCellNumber_X());
         int t_y = Math.abs(from.getCellNumber_Y() - to.getCellNumber_Y());
         if(t_x == 0) {
@@ -138,7 +135,7 @@ public class Network {
         return false;
     }
 
-    private boolean checkNodeIntersection(int x, int y){
+    public boolean checkNodeIntersection(int x, int y){
         List<Pair<Node, Node>> uniqueRelations = getUniqueConnections();
 
         for (Pair<Node, Node> link: uniqueRelations){
@@ -187,6 +184,16 @@ public class Network {
         return false;
     }
 
+    public void doCycleConnection() throws Exception {
+        if(nodes.isEmpty()){
+            throw new Exception("Нет узлов");
+        }
+        GraphWorker graphWorker = new GraphWorker();
+        if(!graphWorker.searchCycle(nodes.get(0))){
+            graphWorker.doCycle(this);
+        }
+    }
+
     public void addNode(int x, int y, List<Integer> connectWith, int maxRelationsQuantity) throws Exception {
 
         if(maxRelationsQuantity <= 0){
@@ -195,10 +202,11 @@ public class Network {
         if(getByCoord(x, y) != null){
             throw new NodeExistException("В этой ячейке уже существует узел");
         }
-        //System.out.println(x + "/" + y + "----------------");
+
         if(checkNodeIntersection(x, y)){
             throw new NodeInterseptionException("Этот узел будет пересекаться с соединениями других");
         }
+
         int ID;
         if(nodes.isEmpty()) {
             ID = 0;
@@ -212,23 +220,19 @@ public class Network {
         Node lastAdded = nodes.get(ID);
         lastAdded.setMaxRelationsCount(maxRelationsQuantity);
 
-        //int con = connectWith.size();
-
         for (int i = 0; i < connectWith.size(); i++) {
             Node ConnectingNode = getNodeByID(connectWith.get(i));
             if (ConnectingNode != null) {
                 try {
                     if (checkRelationIntersection(lastAdded, ConnectingNode)) {
                         if (lastAdded.getRelationsCount() == 0 && i == connectWith.size() - 1) {
-                            throw new NodeRelationsException("");
+                            throw new NodeRelationsException("Пересечение с узлами");
                         }
-                        //con--;
                         continue;
                     }
                     lastAdded.connectNode(ConnectingNode, false);
                 }
                 catch(OneselfConnection | NodeRelationsException e) {
-                    //con--;
                    if(lastAdded.getRelationsCount() == 0 && i == connectWith.size() - 1){
                        nodes.remove(lastAdded);
                        throw new NodeExistException("Узел был удален т.к. не соединился ни с одним уже существующим");
@@ -236,7 +240,6 @@ public class Network {
                 }
             }
         }
-       // System.out.println("Conn " + con + "/" + connectWith.size());
     }
 
     public int size(){

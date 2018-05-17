@@ -13,7 +13,7 @@ public class GregorianCalendar extends java.util.GregorianCalendar {
 
     @Override
     public String toString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy г.");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy г");
         return dateFormat.format(getTime());
     }
 
