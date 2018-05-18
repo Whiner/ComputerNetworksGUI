@@ -403,9 +403,9 @@ public class DBWorker {
         }
     }
 
-    private static List<NodeConnection> getConnectionsByNetworksID(List<Integer> idNetworks) throws Exception {
+    private static List<NodeConnection> getConnectionsByNetworksID(List<Integer> idNetworks) throws SQLException {
         if (idNetworks.size() == 0) {
-            throw new Exception("Нужен хотя бы один ID сети");
+            throw new SQLException("Нужен хотя бы один ID сети");
         }
 
         List<NodeConnection> nodeConnections = new ArrayList<>();
@@ -486,11 +486,11 @@ public class DBWorker {
         return studentTasks;
     }
 
-    public static StudentTask getTaskByID(int taskID) throws Exception {
+    public static StudentTask getTaskByID(int taskID) throws SQLException {
         setDBConnector(dbConnector);
         final List<Integer> networksID = getNetworksID(taskID);
         if (networksID == null) {
-            throw new Exception("Для этого задания нет сетей");
+            throw new SQLException("Для этого задания нет сетей");
         }
 
         Topology topology = new Topology();
@@ -527,7 +527,7 @@ public class DBWorker {
                 }
 
             } catch (OneselfConnection | NodeRelationsException e) {
-                throw new Exception("Задание повреждено либо было сгенерировано с ошибкой");
+                throw new SQLException("Задание повреждено либо было сгенерировано с ошибкой");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -572,6 +572,23 @@ public class DBWorker {
             throw new SQLException("Студента " + surname + " " + name + " из " + group + " не существует в базе");
         }
 
+    }
+
+    public static List<StudentTask> getAllTasks() throws SQLException {
+        setDBConnector(dbConnector);
+        query = "SELECT `idзадания` " +
+                "FROM `задания`";
+
+        resultSet = statement.executeQuery(query);
+        List<StudentTask> tasks = new ArrayList<>();
+        List<Integer> id = new ArrayList<>();
+        while(resultSet.next()){
+            id.add(resultSet.getInt(1));
+        }
+        for (Integer i: id){
+            tasks.add(getTaskByID(i));
+        }
+        return tasks;
     }
 
     public static void deleteGroup(String group) throws SQLException {

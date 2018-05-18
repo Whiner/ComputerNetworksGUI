@@ -77,11 +77,9 @@ public class TopologyGenerator {
                 }
             }
             i++;
-            //drawer.drawNetwork(network);
-            //drawer.saveImage("test.png");
+
         }
         section.setFill();
-        //System.out.println("Node tries " + tries + "/" + nodeCount);
         return network;
     }
 
@@ -222,7 +220,21 @@ public class TopologyGenerator {
                         networks_relations);
             }
             for (Network network : t.getNetworks()) {
-                generateIPForNetwork(network);
+                boolean enter;
+                do {
+                    enter = false;
+                    generateIPForNetwork(network);
+                    for (Network network1 : t.getNetworks()) {
+                        if(network == network1 || network1.getIp().isEmpty()){
+                            continue;
+                        }
+                        if (network1.getIp() != null && network.getIp().isEnter(network1.getIp())){
+                            enter = true;
+                            break;
+                        }
+                    }
+                } while(enter);
+
             }
             return t;
         } catch (Exception e) { //че то ловить
@@ -266,13 +278,8 @@ public class TopologyGenerator {
 
         int relationsCount = network.getCountRelations();
         int needAddresses = relationsCount * 4 + network.getNetworkConnections().size() * 4 + 2;
-        int thirdOctet;
-        if (needAddresses > 255 / 2) {
-            thirdOctet = ThreadLocalRandom.current().nextInt(0, 255 - 100);
-        } else {
-            thirdOctet = ThreadLocalRandom.current().nextInt(0, 255);
-        }
-        ip.setThird(thirdOctet);
+
+        ip.setThird(ThreadLocalRandom.current().nextInt(0, 255));
         int fourthOctet = ThreadLocalRandom.current().nextInt(0, 255 - needAddresses);
 
         ip.setFourth(fourthOctet);

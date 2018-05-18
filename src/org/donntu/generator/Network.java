@@ -94,7 +94,7 @@ public class Network {
     }
 
 
-    public boolean checkRelationIntersection(Node from, Node to){
+    public boolean checkRelationIntersection(Node from, Node to){  //при соединении
         int t_x = Math.abs(from.getCellNumber_X() - to.getCellNumber_X());
         int t_y = Math.abs(from.getCellNumber_Y() - to.getCellNumber_Y());
         if(t_x == 0) {
@@ -127,7 +127,7 @@ public class Network {
                 step_y = 1;
             }
                 for (int i = 1; i < t_x; i++){
-                    if(getByCoord(start_x + step_x, start_y + step_y) != null) {
+                    if(getByCoord(start_x + step_x * i, start_y + step_y * i) != null) {
                         return true;
                     }
                 }
@@ -135,7 +135,7 @@ public class Network {
         return false;
     }
 
-    public boolean checkNodeIntersection(int x, int y){
+    public boolean checkNodeIntersection(int x, int y){ //при создании узла
         List<Pair<Node, Node>> uniqueRelations = getUniqueConnections();
 
         for (Pair<Node, Node> link: uniqueRelations){
@@ -174,7 +174,7 @@ public class Network {
                 }
 
                 for (int i = 1; i < t_x; i++) {
-                    if ((start_x + step_x) == x && (start_y + step_y) == y) {
+                    if ((start_x + step_x * i) == x && (start_y + step_y * i) == y) {
                         return true;
                     }
                 }
@@ -307,4 +307,12 @@ public class Network {
         result = 31 * result + ip.hashCode();
         return result;
     }
+
+    public boolean isLike(Network network){
+        if(network.getNodes().size() == this.nodes.size()){
+            return network.getUniqueConnections().size() == this.getUniqueConnections().size();
+        }
+        return false;
+    }
+
 }

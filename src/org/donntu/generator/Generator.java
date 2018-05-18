@@ -25,14 +25,14 @@ public class Generator { //оболочка для всего
             );
 
             Topology t = TopologyGenerator.generateTopology(
-                    generateConfig.getLanQuantity(),
-                    generateConfig.getWanNodesQuantity(),
-                    generateConfig.getWanRelationsQuantity(),
-                    generateConfig.getLanNodesQuantity(),
-                    generateConfig.getLanRelationsQuantity(),
-                    generateConfig.getNetworksRelationsQuantity());
+                        generateConfig.getLanQuantity(),
+                        generateConfig.getWanNodesQuantity(),
+                        generateConfig.getWanRelationsQuantity(),
+                        generateConfig.getLanNodesQuantity(),
+                        generateConfig.getLanRelationsQuantity(),
+                        generateConfig.getNetworksRelationsQuantity());
 
-            return new StudentTask(t, name, surname, group, new GregorianCalendar()); //решить вопрос со временем
+            return new StudentTask(t, name, surname, group, new GregorianCalendar());
         } catch (Exception e) {
             throw new Exception("Генерация прервана с ошибкой: \n" + e.getMessage());
         }

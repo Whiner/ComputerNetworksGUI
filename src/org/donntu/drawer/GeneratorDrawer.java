@@ -9,8 +9,6 @@ import org.donntu.drawer.other.NodeCoordinatesConvertor;
 import org.donntu.generator.field.Field;
 import org.donntu.generator.field.Section;
 
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
 import java.awt.image.RenderedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -225,8 +223,6 @@ public class GeneratorDrawer {
                     } else {
                         arc_startAngle = 90;
                     }
-
-
                 } else { // если горизонтально
 
                     arc_width = Math.abs(from_c.getX() - to_c.getX());
@@ -243,7 +239,6 @@ public class GeneratorDrawer {
                 }
 
             } else if(t_x == t_y) { // наискось
-
                 arc_x = from_c.getX();
                 arc_y = from_c.getY();
                 arc_width = Math.abs(from_c.getX() - to_c.getX()) * 2;
@@ -271,7 +266,6 @@ public class GeneratorDrawer {
             } else {
                 throw new Exception("Узлы должны находиться на одной линии по горизонтали, вертикали или наискось");
             }
-
             tempGraphics2D.drawArc(arc_x, arc_y, arc_width, arc_height, arc_startAngle, arc_angle);
         }
     }
@@ -282,14 +276,15 @@ public class GeneratorDrawer {
         for (Pair<Node, Node> pair : pairList) {
             try {
                 if (network.checkRelationIntersection(pair.getKey(), pair.getValue())) {
-                    drawCurve(Direction.Down, pair.getKey(), pair.getValue());
-                } else {
-                    drawConnection(pair.getKey(), pair.getValue());
+                    if(ThreadLocalRandom.current().nextInt(0, 1) == 0){
+                        drawCurve(Direction.Up, pair.getKey(), pair.getValue());
+                    } else {
+                        drawCurve(Direction.Down, pair.getKey(), pair.getValue());
+                    }
+                    continue;
                 }
-            } catch (Exception e) {
-                drawConnection(pair.getKey(), pair.getValue());
-            }
-
+            } catch (Exception ignored) {}
+            drawConnection(pair.getKey(), pair.getValue());
             drawPointOnConnection(pair.getKey(), pair.getValue());
             drawPointOnConnection(pair.getValue(), pair.getKey());
         }
@@ -300,6 +295,16 @@ public class GeneratorDrawer {
         tempGraphics2D.setColor(Color.BLACK);
         final List<NetworksConnection> uniqueNetworksConnections = topology.getUniqueNetworksConnections();
         for (NetworksConnection connection: uniqueNetworksConnections){
+            try {
+                if (topology.checkRelationIntersection(connection)) {
+                    if(ThreadLocalRandom.current().nextInt(0, 1) == 0){
+                        drawCurve(Direction.Up, connection.getFromNetworkNode(), connection.getToNetworkNode());
+                    } else {
+                        drawCurve(Direction.Down, connection.getFromNetworkNode(), connection.getToNetworkNode());
+                    }
+                    continue;
+                }
+            } catch (Exception ignored) {}
             drawConnection(connection.getFromNetworkNode(), connection.getToNetworkNode());
             drawPointOnConnection(connection.getFromNetworkNode(), connection.getToNetworkNode());
             drawPointOnConnection(connection.getToNetworkNode(), connection.getFromNetworkNode());
@@ -321,7 +326,7 @@ public class GeneratorDrawer {
         drawNetworksConnections(topology);
         for (Network n : topology.getNetworks()) {
             drawAllConnections(n);
-            drawAllPointsOnConnection(n);
+            //drawAllPointsOnConnection(n);
         }
         for (Network n : topology.getNetworks()) {
             drawAllNodes(n);

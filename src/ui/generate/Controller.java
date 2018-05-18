@@ -10,8 +10,7 @@ import org.donntu.databaseworker.DBWorker;
 import org.donntu.databaseworker.Student;
 import org.donntu.databaseworker.StudentTask;
 import org.donntu.drawer.GeneratorDrawer;
-import org.donntu.generator.Generator;
-import org.donntu.generator.RAMCalculator;
+import org.donntu.generator.*;
 import org.donntu.generator.configs.DefaultConfig;
 import org.donntu.generator.configs.GenerateConfig;
 import ui.Animation;
@@ -22,6 +21,7 @@ import javax.swing.*;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -245,15 +245,46 @@ public class Controller implements Initializable {
                     Animation.shake(studentComboBox);
                     empty = true;
                 }
-                if(!empty){
+                if(!empty) {
                     final String[] splited = studentComboBox.getValue().split(" ");
                     try {
-                        StudentTask task = Generator.generateIndividualTask(splited[1], splited[0], groupComboBox.getValue(), config);
+                        //StudentTask task = Generator.generateIndividualTask(splited[1], splited[0], groupComboBox.getValue(), config);
+                        StudentTask task = DBWorker.getTaskByID(38);
+                        final List<StudentTask> allTasks = DBWorker.getAllTasks();
+
+                        for (int i = 0; i < allTasks.size(); i++) {
+                            if(allTasks.get(i).getCreationDate().get(Calendar.YEAR)
+                                    != task.getCreationDate().get(Calendar.YEAR)){
+                                continue;
+                            }
+                            final TopologyCompareCriteria criteria = task.getTopology().whatIsLike(allTasks.get(i).getTopology());
+                            if (criteria.isWan() && criteria.isLan()) {
+                                List<IP> ip = new ArrayList<>();
+                                for (Network network: task.getTopology().getNetworks()) {
+                                    ip.add(network.getIp().getCopy());
+                                }
+                                task = Generator.generateIndividualTask(splited[1], splited[0], groupComboBox.getValue(), config);
+                                int j = 0;
+                                for (Network network: task.getTopology().getNetworks()) {
+                                    network.setIp(ip.get(j++));
+                                }
+                                i = -1;
+                                continue;
+                            }
+                            if (criteria.isIp()) {
+                                for (Network network : task.getTopology().getNetworks()) {
+                                    TopologyGenerator.generateIPForNetwork(network);
+                                }
+                                i = -1;
+                            }
+                        }
+
+
                         GeneratorDrawer.saveImage(
                                 "task/" + groupComboBox.getValue(),
                                 task.toString(),
                                 GeneratorDrawer.drawStudentTask(task));
-                        DBWorker.addStudentTask(task);
+                        //DBWorker.addStudentTask(task);
                         successLabel.setVisible(true);
                         Animation.attenuation(successLabel);
                     } catch (SQLException e) {
@@ -272,6 +303,23 @@ public class Controller implements Initializable {
                     try {
                         final List<Student> students = DBWorker.getStudentsByGroup(groupComboBox.getValue());
                         final List<StudentTask> studentTasks = Generator.generateTasksForGroup(students, groupComboBox.getValue(), config);
+                        final List<StudentTask> allTasks = DBWorker.getAllTasks();
+                        for (StudentTask task: studentTasks) {
+                            for (int i = 0; i < allTasks.size(); i++) {
+                                final TopologyCompareCriteria criteria = task.getTopology().whatIsLike(allTasks.get(i).getTopology());
+                                if (criteria.isWan() && criteria.isLan()) {
+                                    task = Generator.generateIndividualTask(task.getName(), task.getSurname(), task.getGroup(), config);
+                                    i = -1;
+                                    continue;
+                                }
+                                if (criteria.isIp()) {
+                                    for (Network network : task.getTopology().getNetworks()) {
+                                        TopologyGenerator.generateIPForNetwork(network);
+                                    }
+                                    i = -1;
+                                }
+                            }
+                        }
                         ProgressIndicatorWorker progress = new ProgressIndicatorWorker(studentTasks.size());
                         progress.start();
                         for (StudentTask task: studentTasks){
