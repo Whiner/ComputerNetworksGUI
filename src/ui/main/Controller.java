@@ -179,6 +179,7 @@ public class Controller implements Initializable {
                 try {
                     refreshDataOnGroupTable();
                     studentsTableView.getItems().clear();
+                    //refreshDataOnStudentsTable(groupListView.getSelectionModel().getSelectedItem());
                 } catch (SQLException e) {
                     MessageBox.error("Ошибка",
                             "Ошибка обновления списка групп.",

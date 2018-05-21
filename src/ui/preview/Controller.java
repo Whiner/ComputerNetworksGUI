@@ -51,7 +51,7 @@ public class Controller implements Initializable {
         saveButton.setOnAction(event -> {
             if(awtImage != null){
                 try {
-                    GeneratorDrawer.saveImage("task/" + studentTask.getGroup(),
+                    GeneratorDrawer.saveImage("task/" + studentTask.getGroup() + "/" + studentTask.getCreationDate().toString(),
                             studentTask.toString(),
                             awtImage);
                 } catch (IOException e) {

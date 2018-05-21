@@ -602,4 +602,19 @@ public class DBWorker {
             throw new SQLException("Группы " + group + " не существует в базе");
         }
     }
+
+    public static List<StudentTask> getTasksByGroup(String group) throws SQLException {
+        setDBConnector(dbConnector);
+        List<StudentTask> tasks = new ArrayList<>();
+        final List<Student> students = getStudentsByGroup(group);
+        for (Student student: students){
+            final List<Integer> tasksID = getTasksID(student.getName(), student.getSurname(), group);
+            if(tasksID != null) {
+                for (Integer i : tasksID) {
+                    tasks.add(getTaskByID(i));
+                }
+            }
+        }
+        return tasks;
+    }
 }

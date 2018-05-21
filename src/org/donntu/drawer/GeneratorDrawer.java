@@ -10,6 +10,7 @@ import org.donntu.generator.field.Field;
 import org.donntu.generator.field.Section;
 
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -333,18 +334,33 @@ public class GeneratorDrawer {
         }
     }
 
-    private static boolean createDirectory(String directory){
-        Path path = Paths.get(directory);
-        if(!Files.exists(path)){
-            try {
-                Files.createDirectory(path);
-            } catch (IOException e) {
-                return false;
-            }
-            return true;
+    private static boolean createDirectory(String directory) {
+
+        File path = new File(directory);
+
+        if(!path.exists()){
+            return path.mkdirs();
         } else {
             return false;
         }
+
+
+        /*String[] splited = directory.split("/");
+        String cur = "";
+
+        for (String folder : splited) {
+            cur = cur.concat("/" + folder);
+            Path path = Paths.get(cur);
+            if (!Files.exists(path)) {
+                try {
+                    Files.createDirectory(path);
+                } catch (IOException e) {
+                    return false;
+                }
+            }
+        }
+
+        return true;*/
     }
 
     public static Image drawStudentTask(StudentTask studentTask) throws Exception { //попробовать сделать под декоратор
@@ -389,6 +405,6 @@ public class GeneratorDrawer {
         }
 
         ImageIO.write((RenderedImage) image, "png", new FileOutputStream(finallyPath));
-
+        clear();
     }
 }

@@ -1,6 +1,5 @@
 package org.donntu.generator;
 
-import javafx.util.Pair;
 import org.donntu.GregorianCalendar;
 import org.donntu.databaseworker.Student;
 import org.donntu.databaseworker.StudentTask;
@@ -27,10 +26,10 @@ public class Generator { //оболочка для всего
             Topology t = TopologyGenerator.generateTopology(
                         generateConfig.getLanQuantity(),
                         generateConfig.getWanNodesQuantity(),
-                        generateConfig.getWanRelationsQuantity(),
+                        generateConfig.getWanPortsQuantity(),
                         generateConfig.getLanNodesQuantity(),
-                        generateConfig.getLanRelationsQuantity(),
-                        generateConfig.getNetworksRelationsQuantity());
+                        generateConfig.getLanPortsQuantity(),
+                        generateConfig.getNetworksPortsQuantity());
 
             return new StudentTask(t, name, surname, group, new GregorianCalendar());
         } catch (Exception e) {

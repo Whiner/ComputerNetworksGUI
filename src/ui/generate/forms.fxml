@@ -72,8 +72,8 @@
                                     </Pane>
                                     <Label id="parameters-label-names" layoutX="14.0" layoutY="63.0" text="Количество узлов" />
                                     <ComboBox fx:id="cb_WAN_nodes_quantity" layoutX="268.0" layoutY="59.0" prefHeight="25.0" prefWidth="68.0" visibleRowCount="5" />
-                                    <Label id="parameters-label-names" layoutX="14.0" layoutY="101.0" text="Максимальное количество портов" />
-                                    <ComboBox fx:id="cb_WAN_max_rel_quantity" layoutX="268.0" layoutY="98.0" prefHeight="25.0" prefWidth="68.0" visibleRowCount="5">
+                                    <Label id="parameters-label-names" layoutX="14.0" layoutY="112.0" text="Максимальное количество портов" />
+                                    <ComboBox fx:id="cb_WAN_max_ports_quantity" layoutX="268.0" layoutY="109.0" prefHeight="25.0" prefWidth="68.0" visibleRowCount="5">
                                        <tooltip>
                                           <Tooltip text="При указании малого количества связей велика вероятность того, что сгенерируются не все узлы">
                                              <font>
@@ -82,8 +82,8 @@
                                           </Tooltip>
                                        </tooltip>
                                     </ComboBox>
-                                    <Label id="parameters-label-names" layoutX="14.0" layoutY="141.0" text="Количество связей с LAN" />
-                                    <ComboBox fx:id="cb_WAN_rel_with_LAN_quantity" layoutX="268.0" layoutY="138.0" prefHeight="25.0" prefWidth="68.0" visibleRowCount="5" />
+                                    <Label id="parameters-label-names" layoutX="14.0" layoutY="164.0" text="Количество связей с LAN" />
+                                    <ComboBox fx:id="cb_WAN_ports_with_LAN_quantity" layoutX="268.0" layoutY="161.0" prefHeight="25.0" prefWidth="68.0" visibleRowCount="5" />
                                  </children>
                               </Pane>
                            </children>
@@ -108,12 +108,12 @@
                                           </Label>
                                        </children>
                                     </Pane>
-                                    <Label id="parameters-label-names" layoutX="20.0" layoutY="141.0" text="Количество сетей LAN" />
-                                    <ComboBox fx:id="cb_LAN_networks_quantity" layoutX="268.0" layoutY="141.0" prefHeight="10.0" prefWidth="68.0" visibleRowCount="5" />
+                                    <Label id="parameters-label-names" layoutX="20.0" layoutY="165.0" text="Количество сетей LAN" />
+                                    <ComboBox fx:id="cb_LAN_networks_quantity" layoutX="268.0" layoutY="165.0" prefHeight="10.0" prefWidth="68.0" visibleRowCount="5" />
                                     <Label id="parameters-label-names" layoutX="20.0" layoutY="60.0" text="Количество узлов" />
                                     <ComboBox fx:id="cb_LAN_nodes_quantity" layoutX="268.0" layoutY="62.0" prefHeight="10.0" prefWidth="68.0" visibleRowCount="5" />
-                                    <Label id="parameters-label-names" layoutX="20.0" layoutY="100.0" text="Максимальное количество портов" />
-                                    <ComboBox fx:id="cb_LAN_max_rel_quantity" layoutX="268.0" layoutY="101.0" prefHeight="10.0" prefWidth="68.0" visibleRowCount="5">
+                                    <Label id="parameters-label-names" layoutX="20.0" layoutY="109.0" text="Максимальное количество портов" />
+                                    <ComboBox fx:id="cb_LAN_max_ports_quantity" layoutX="268.0" layoutY="110.0" prefHeight="10.0" prefWidth="68.0" visibleRowCount="5">
                                        <tooltip>
                                           <Tooltip text="При указании малого количества связей велика вероятность того, что сгенерируются не все узлы">
                                              <font>

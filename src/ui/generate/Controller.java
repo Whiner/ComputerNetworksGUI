@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.util.Pair;
 import org.donntu.databaseworker.DBConnector;
 import org.donntu.databaseworker.DBWorker;
 import org.donntu.databaseworker.Student;
@@ -17,7 +16,7 @@ import ui.Animation;
 import ui.ComboBoxWorker;
 import ui.MessageBox;
 
-import javax.swing.*;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -55,10 +54,10 @@ public class Controller implements Initializable {
     Button saveButton;
 
     @FXML
-    ComboBox<Integer> cb_WAN_max_rel_quantity;
+    ComboBox<Integer> cb_WAN_max_ports_quantity;
 
     @FXML
-    ComboBox<Integer> cb_LAN_max_rel_quantity;
+    ComboBox<Integer> cb_LAN_max_ports_quantity;
 
     @FXML
     Slider slider_RAM;
@@ -79,7 +78,7 @@ public class Controller implements Initializable {
     HBox groupPane;
 
     @FXML
-    ComboBox<Integer> cb_WAN_rel_with_LAN_quantity;
+    ComboBox<Integer> cb_WAN_ports_with_LAN_quantity;
 
     @FXML
     ComboBox<Integer> cb_LAN_networks_quantity;
@@ -121,17 +120,17 @@ public class Controller implements Initializable {
         cb_WAN_nodes_quantity.setOnHidden(event ->
                 config.setWanNodesQuantity(cb_WAN_nodes_quantity.getValue())
         );
-        cb_WAN_max_rel_quantity.setOnHidden(event ->
-                config.setWanRelationsQuantity(cb_WAN_max_rel_quantity.getValue()));
-        cb_WAN_rel_with_LAN_quantity.setOnHidden(event ->
-                config.setNetworksRelationsQuantity(cb_WAN_rel_with_LAN_quantity.getValue()));
+        cb_WAN_max_ports_quantity.setOnHidden(event ->
+                config.setWanPortsQuantity(cb_WAN_max_ports_quantity.getValue()));
+        cb_WAN_ports_with_LAN_quantity.setOnHidden(event ->
+                config.setNetworksPortsQuantity(cb_WAN_ports_with_LAN_quantity.getValue()));
         cb_LAN_networks_quantity.setOnHidden(event -> {
             config.setLanQuantity(cb_LAN_networks_quantity.getValue());
             slider_RAM.setValue(slider_RAM.getValue() - 1);
             slider_RAM.setValue(slider_RAM.getValue() + 1);
         });
-        cb_LAN_max_rel_quantity.setOnHidden(event ->
-                config.setLanRelationsQuantity(cb_LAN_max_rel_quantity.getValue()));
+        cb_LAN_max_ports_quantity.setOnHidden(event ->
+                config.setLanPortsQuantity(cb_LAN_max_ports_quantity.getValue()));
         cb_LAN_nodes_quantity.setOnHidden(event ->
                 config.setLanNodesQuantity(cb_LAN_nodes_quantity.getValue()));
 
@@ -155,11 +154,11 @@ public class Controller implements Initializable {
 
     private void fillComboBoxes() throws Exception {
         ComboBoxWorker.fillComboBox(3, 10, config.getWanNodesQuantity(), cb_WAN_nodes_quantity);
-        ComboBoxWorker.fillComboBox(2, 5, config.getWanRelationsQuantity(), cb_WAN_max_rel_quantity );
-        ComboBoxWorker.fillComboBox(1, 3, config.getNetworksRelationsQuantity(), cb_WAN_rel_with_LAN_quantity );
+        ComboBoxWorker.fillComboBox(2, 5, config.getWanPortsQuantity(), cb_WAN_max_ports_quantity);
+        ComboBoxWorker.fillComboBox(1, 3, config.getNetworksPortsQuantity(), cb_WAN_ports_with_LAN_quantity);
         ComboBoxWorker.fillComboBox(3, 10, config.getLanNodesQuantity(), cb_LAN_nodes_quantity);
-        ComboBoxWorker.fillComboBox(2, 5, config.getLanRelationsQuantity(), cb_LAN_max_rel_quantity);
-        ComboBoxWorker.fillComboBox(1, 3, config.getLanQuantity(), cb_LAN_networks_quantity);
+        ComboBoxWorker.fillComboBox(2, 5, config.getLanPortsQuantity(), cb_LAN_max_ports_quantity);
+        ComboBoxWorker.fillComboBox(2, 3, config.getLanQuantity(), cb_LAN_networks_quantity);
     }
 
     private void fillSlider(){
@@ -195,6 +194,9 @@ public class Controller implements Initializable {
                     config.getLanQuantity());
             config.setLanNodesQuantity(quantity);
             try {
+                if(quantity < 3){
+                    quantity = 3;
+                }
                 ComboBoxWorker.fillComboBox(3, quantity, quantity, cb_LAN_nodes_quantity);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -248,8 +250,8 @@ public class Controller implements Initializable {
                 if(!empty) {
                     final String[] splited = studentComboBox.getValue().split(" ");
                     try {
-                        //StudentTask task = Generator.generateIndividualTask(splited[1], splited[0], groupComboBox.getValue(), config);
-                        StudentTask task = DBWorker.getTaskByID(38);
+                        StudentTask task = Generator.generateIndividualTask(splited[1], splited[0], groupComboBox.getValue(), config);
+                        //StudentTask task = DBWorker.getTaskByID(38);
                         final List<StudentTask> allTasks = DBWorker.getAllTasks();
 
                         for (int i = 0; i < allTasks.size(); i++) {
@@ -284,7 +286,8 @@ public class Controller implements Initializable {
                                 "task/" + groupComboBox.getValue(),
                                 task.toString(),
                                 GeneratorDrawer.drawStudentTask(task));
-                        //DBWorker.addStudentTask(task);
+                        DBWorker.addStudentTask(task);
+                        successLabel.setText("Успешно сгенерировано");
                         successLabel.setVisible(true);
                         Animation.attenuation(successLabel);
                     } catch (SQLException e) {
@@ -324,7 +327,7 @@ public class Controller implements Initializable {
                         progress.start();
                         for (StudentTask task: studentTasks){
                             GeneratorDrawer.saveImage(
-                                    "task/" + groupComboBox.getValue(),
+                                    "task/" + groupComboBox.getValue() + "/" + task.getCreationDate().toString(),
                                     task.toString(),
                                     GeneratorDrawer.drawStudentTask(task));
                             DBWorker.addStudentTask(task);
@@ -339,7 +342,73 @@ public class Controller implements Initializable {
         });
 
         saveButton.setOnAction(event -> {
-            //вытащить все из базы по параметрам и сохранить в папку
+            if(studentRadiobutton.isSelected()) {
+                boolean empty = false;
+                if (groupComboBox.getSelectionModel().getSelectedItem() == null) {
+                    Animation.shake(groupComboBox);
+                    empty = true;
+                }
+                if (studentComboBox.getSelectionModel().getSelectedItem() == null) {
+                    Animation.shake(studentComboBox);
+                    empty = true;
+                }
+                if (!empty) {
+                    try {
+                        String[] splited = studentComboBox.getSelectionModel().getSelectedItem().split(" ");
+                        final List<StudentTask> tasks = DBWorker.getStudentTasks(
+                                groupComboBox.getSelectionModel().getSelectedItem(),
+                                splited[1],
+                                splited[0]);
+                        for (StudentTask task : tasks) {
+                            GeneratorDrawer.saveImage("task/" + groupComboBox.getValue() + "/" + task.getSurname() + " " + task.getName(),
+                                    task.toString(),
+                                    GeneratorDrawer.drawStudentTask(task));
+                        }
+
+                        successLabel.setText("Успешно сохранено");
+                        successLabel.setVisible(true);
+                        Animation.attenuation(successLabel);
+                    } catch (SQLException e) {
+                        MessageBox.error("Ошибка",
+                                "",
+                                "Ошибка считывания заданий с базы. Проверьте подключение к базе данных."
+                                        + "\n Текст ошибки: \"" + e.getMessage() + "\"");
+                    } catch (Exception e) {
+                        MessageBox.error("Ошибка",
+                                "",
+                                "Ошибка сохранения заданий" +
+                                        "\n Текст ошибки: \"" + e.getMessage() + "\"");
+                    }
+                }
+            } else {
+                if (groupComboBox.getSelectionModel().getSelectedItem() == null) {
+                    Animation.shake(groupComboBox);
+                } else {
+                    try {
+
+                        final List<StudentTask> tasks = DBWorker.getTasksByGroup(groupComboBox.getSelectionModel().getSelectedItem());
+                        for (StudentTask task : tasks) {
+                            GeneratorDrawer.saveImage("task/" + groupComboBox.getValue() + "/" + task.getSurname() + " " + task.getName(),
+                                    task.toString(),
+                                    GeneratorDrawer.drawStudentTask(task));
+                        }
+
+                        successLabel.setText("Успешно сохранено");
+                        successLabel.setVisible(true);
+                        Animation.attenuation(successLabel);
+                    } catch (SQLException e) {
+                        MessageBox.error("Ошибка",
+                                "",
+                                "Ошибка считывания заданий с базы. Проверьте подключение к базе данных."
+                                        + "\n Текст ошибки: \"" + e.getMessage() + "\"");
+                    } catch (Exception e) {
+                        MessageBox.error("Ошибка",
+                                "",
+                                "Ошибка сохранения заданий" +
+                                        "\n Текст ошибки: \"" + e.getMessage() + "\"");
+                    }
+                }
+            }
         });
 
         defaultButton.setOnAction(event -> {
@@ -363,11 +432,8 @@ public class Controller implements Initializable {
             fillComboBoxes();
             fillSlider();
             buttonsSetOnAction();
-
             DBWorker.setDBConnector(DBConnector.getInstance());
-
             ComboBoxWorker.fillComboBox(groupComboBox, DBWorker.getGroups());
-
             radioButtonsSetOnAction();
             studentRadiobutton.setSelected(true);
         } catch (SQLException e) {

@@ -1,17 +1,12 @@
 package org.donntu.generator.configs;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-
 public class GenerateConfig {
     private int wanNodesQuantity;
-    private int wanRelationsQuantity;
+    private int wanPortsQuantity;
     private int lanQuantity;
     private int lanNodesQuantity;
-    private int lanRelationsQuantity;
-    private int networksRelationsQuantity;
+    private int lanPortsQuantity;
+    private int networksPortsQuantity;
     private int cellsCountX;
     private int cellsCountY;
 
@@ -26,12 +21,12 @@ public class GenerateConfig {
         this.wanNodesQuantity = wanNodesQuantity;
     }
 
-    public int getWanRelationsQuantity() {
-        return wanRelationsQuantity;
+    public int getWanPortsQuantity() {
+        return wanPortsQuantity;
     }
 
-    public void setWanRelationsQuantity(int wanRelationsQuantity) {
-        this.wanRelationsQuantity = wanRelationsQuantity;
+    public void setWanPortsQuantity(int wanPortsQuantity) {
+        this.wanPortsQuantity = wanPortsQuantity;
     }
 
     public int getLanQuantity() {
@@ -50,20 +45,20 @@ public class GenerateConfig {
         this.lanNodesQuantity = lanNodesQuantity;
     }
 
-    public int getLanRelationsQuantity() {
-        return lanRelationsQuantity;
+    public int getLanPortsQuantity() {
+        return lanPortsQuantity;
     }
 
-    public void setLanRelationsQuantity(int lanRelationsQuantity) {
-        this.lanRelationsQuantity = lanRelationsQuantity;
+    public void setLanPortsQuantity(int lanRelationsQuantity) {
+        this.lanPortsQuantity = lanRelationsQuantity;
     }
 
-    public int getNetworksRelationsQuantity() {
-        return networksRelationsQuantity;
+    public int getNetworksPortsQuantity() {
+        return networksPortsQuantity;
     }
 
-    public void setNetworksRelationsQuantity(int networksRelationsQuantity) {
-        this.networksRelationsQuantity = networksRelationsQuantity;
+    public void setNetworksPortsQuantity(int networksPortsQuantity) {
+        this.networksPortsQuantity = networksPortsQuantity;
     }
 
     public int getCellsCountX() {

@@ -1,35 +1,33 @@
 package org.donntu.generator.configs;
 
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-
 public class DefaultConfig{
     private static GenerateConfig config;
+
     public static GenerateConfig getDefaultConfig(){
         config = new GenerateConfig();
         buildCellsCount();
         buildLANSettings();
         buildWANSettings();
-        buildNetworkRelations();
+        buildNetworkPorts();
         return config;
     }
+
     private DefaultConfig() {}
 
 
     private static void buildWANSettings() {
         config.setWanNodesQuantity(6);
-        config.setWanRelationsQuantity(3);
+        config.setWanPortsQuantity(3);
     }
 
     private static void buildLANSettings() {
         config.setLanQuantity(2);
         config.setLanNodesQuantity(4);
-        config.setLanRelationsQuantity(2);
+        config.setLanPortsQuantity(3);
     }
 
-    private static void buildNetworkRelations() {
-        config.setNetworksRelationsQuantity(1);
+    private static void buildNetworkPorts() {
+        config.setNetworksPortsQuantity(1);
     }
 
     private static void buildCellsCount() {
