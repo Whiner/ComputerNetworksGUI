@@ -6,6 +6,8 @@ import org.donntu.generator.*;
 import org.donntu.generator.generatorException.NodeRelationsException;
 import org.donntu.generator.generatorException.OneselfConnection;
 
+import javax.swing.plaf.ColorUIResource;
+import java.io.FileNotFoundException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,10 +18,13 @@ import java.util.SplittableRandom;
 
 
 public class DBWorker {
+    enum CurrentStatement{NETWORK, NODE, TASK, CONNECTION, NONE};
     private static DBConnector dbConnector;
     private static Statement statement;
     private static String query;
     private static ResultSet resultSet;
+    private static PreparedStatement preparedStatement;
+    private static CurrentStatement currentStatement = CurrentStatement.NONE;
 
     private DBWorker() {
     }
@@ -31,11 +36,18 @@ public class DBWorker {
         if (DBWorker.dbConnector != dbConnector) {
             DBWorker.dbConnector = dbConnector;
             if (!dbConnector.isOpen()) {
-                if (!dbConnector.connectToDB()) {
-                    throw new SQLException("Соединение не установлено");
+                try {
+                    if (!dbConnector.connectToDB()) {
+                        throw new SQLException("Соединение не установлено");
+                    }
+                } catch (FileNotFoundException e) {
+                    throw new SQLException("Файл с параметрами базы не найден");
+                } catch (Exception e){
+                    throw new SQLException("Файл с параметрами базы поврежден");
                 }
             }
             statement = dbConnector.getConnection().createStatement();
+
         }
     }
 
@@ -141,7 +153,7 @@ public class DBWorker {
         query = "INSERT INTO задания(idстудента, `Дата создания`) " +
                 "VALUE (\'" + idStudent + "\',\'" + new Date(date.getTimeInMillis()) + "\');";
         statement.execute(query);
-        resultSet = statement.executeQuery("SELECT last_insert_id() AS \'last_id\' FROM задания");
+        resultSet = statement.executeQuery("SELECT MAX(idзадания) AS last_id FROM задания");
         resultSet.next();
         return resultSet.getInt("last_id");
 
@@ -152,12 +164,13 @@ public class DBWorker {
                 "VALUES ('" + idNetworkFrom + "','" + idNodeFrom + "','" + idNetworkTo
                 + "','" + idNodeTo + "');";
         statement.execute(query);
-        resultSet = statement.executeQuery("SELECT last_insert_id() AS last_id FROM `задания`");
+        resultSet = statement.executeQuery("SELECT MAX(idсоединения) AS last_id FROM `соединения`");
         resultSet.next();
         return resultSet.getInt("last_id");
     }
 
     private static int addNetwork(int idTask, Network network, boolean addNodes) throws SQLException {
+
         final IP ip = network.getIp();
         query = "INSERT INTO сети(`Тип сети`, `Первый октет`,`Второй октет`,`Третий октет`,`Четвертый октет`,`Маска`, idЗадания)" +
                 "VALUES (\'" + network.getType() + "\',\'" + ip.getFirst()
@@ -167,48 +180,75 @@ public class DBWorker {
                 + "\',\'" + ip.getMask()
                 + "\',\'" + idTask + "\');";
         statement.execute(query);
-        resultSet = statement.executeQuery("SELECT last_insert_id() AS last_id FROM `задания`");
+        resultSet = statement.executeQuery("SELECT MAX(idсети) AS last_id FROM `сети`");
         resultSet.next();
         final int lastNetworkID = resultSet.getInt("last_id");
+
         if (addNodes) {
             final List<Node> nodes = network.getNodes();
             for (Node node : nodes) {
                 addNode(lastNetworkID, node);
             }
+            preparedStatement.executeBatch();
             final List<Pair<Node, Node>> connections = network.getUniqueConnections();
             for (Pair<Node, Node> pair : connections) {
                 addNodeConnection(lastNetworkID, pair.getKey().getID(), lastNetworkID, pair.getValue().getID());
             }
+            preparedStatement.executeBatch();
         }
         return lastNetworkID;
     }
 
-    private static int addNodeConnection(int idNetworkFrom, int idFrom, int idNetworkTo, int idTo) throws SQLException {
-        query = "INSERT INTO `соединения`(`idузла`,`idсоединенного узла`,`idсети`, `idсети соединенного узла`)" +
+    private static void addNodeConnection(int idNetworkFrom, int idFrom, int idNetworkTo, int idTo) throws SQLException {
+        if(currentStatement != CurrentStatement.CONNECTION){
+            query = "INSERT INTO `соединения`(`idузла`,`idсоединенного узла`,`idсети`, `idсети соединенного узла`)" +
+                    "VALUES (?,?,?,?)";
+            preparedStatement = dbConnector.getConnection().prepareStatement(query);
+            currentStatement = CurrentStatement.CONNECTION;
+        }
+        /*query = "INSERT INTO `соединения`(`idузла`,`idсоединенного узла`,`idсети`, `idсети соединенного узла`)" +
                 "VALUES (\'" + idFrom + "\', " +
                 "\'" + idTo + "\', " +
                 "\'" + idNetworkFrom + "\', " +
-                "\'" + idNetworkTo + "\');";
-        statement.execute(query);
-        resultSet = statement.executeQuery("SELECT last_insert_id() AS last_id FROM `узлы`");
-        resultSet.next();
-        return resultSet.getInt("last_id");
+                "\'" + idNetworkTo + "\');";*/
+        //statement.execute(query);
+        preparedStatement.setInt(1, idFrom);
+        preparedStatement.setInt(2, idTo);
+        preparedStatement.setInt(3, idNetworkFrom);
+        preparedStatement.setInt(4, idNetworkTo);
+
+        preparedStatement.addBatch();
+        //resultSet = statement.executeQuery("SELECT MAX(idсоединения) AS last_id FROM `соединения`");
+        //resultSet.next();
+        //return resultSet.getInt("last_id");
     }
 
-    private static int addNode(int idNetwork, Node node) throws SQLException {
-        query = "INSERT INTO `узлы`(`idСети`,`НомерУзла`,`X`,`Y`)" +
+    private static void addNode(int idNetwork, Node node) throws SQLException {
+        if(currentStatement != CurrentStatement.NODE){
+            query = "INSERT INTO `узлы`(`idСети`,`НомерУзла`,`X`,`Y`) " +
+            "VALUES (?,?,?,?)";
+            preparedStatement = dbConnector.getConnection().prepareStatement(query);
+            currentStatement = CurrentStatement.NODE;
+        }
+        /*query = "INSERT INTO `узлы`(`idСети`,`НомерУзла`,`X`,`Y`) " +
                 "VALUES (\'" + idNetwork + "\', " +
                 "\'" + node.getID() + "\', " +
                 "\'" + node.getCellNumber_X() + " \'," +
-                "\'" + node.getCellNumber_Y() + "\');";
-        statement.execute(query);
-        resultSet = statement.executeQuery("SELECT last_insert_id() AS last_id FROM `узлы`");
-        resultSet.next();
-        return resultSet.getInt("last_id");
+                "\'" + node.getCellNumber_Y() + "\');";*/
+        preparedStatement.setInt(1, idNetwork);
+        preparedStatement.setInt(2, node.getID());
+        preparedStatement.setInt(3, node.getCellNumber_X());
+        preparedStatement.setInt(4, node.getCellNumber_Y());
+        preparedStatement.addBatch();
+        //statement.execute(query);
+        //resultSet = statement.executeQuery("SELECT MAX(idузла) AS last_id FROM `узлы`"); //
+        //resultSet.next();
+        //return resultSet.getInt("last_id");
     }
 
     public static boolean addStudentTask(StudentTask studentTask) throws NullPointerException, SQLException {
         setDBConnector(dbConnector);
+        dbConnector.getConnection().setAutoCommit(false);
         if (studentTask == null) {
             throw new NullPointerException();
         }
@@ -259,6 +299,7 @@ public class DBWorker {
             e.printStackTrace();
             return false;
         }
+        dbConnector.getConnection().commit();
         return true;
     }
 
@@ -313,7 +354,8 @@ public class DBWorker {
             while (resultSet.next()) {
                 students.add(new Student(
                         resultSet.getString("Имя"),
-                        resultSet.getString("Фамилия")));
+                        resultSet.getString("Фамилия"),
+                        group));
             }
             return students;
         }
@@ -616,5 +658,25 @@ public class DBWorker {
             }
         }
         return tasks;
+    }
+
+    public static void deleteTasksByStudent(Student student) throws SQLException {
+        setDBConnector(dbConnector);
+        int id = getStudentID(student.getName(), student.getSurname(), student.getGroup());
+
+        query = "DELETE " +
+                "FROM networksdb.задания " +
+                "WHERE idстудента = " + id;
+        statement.executeUpdate(query);
+    }
+
+    public static void deleteTasksByGroup(String group) throws SQLException {
+        setDBConnector(dbConnector);
+        final List<Student> students = getStudentsByGroup(group);
+
+        for (Student student: students){
+            deleteTasksByStudent(student);
+        }
+
     }
 }

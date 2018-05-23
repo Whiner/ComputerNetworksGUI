@@ -16,7 +16,7 @@ import java.util.List;
 public class Model {
 
     public static void generateIndividual(String group, String name, String surname, GenerateConfig config) throws Exception {
-        StudentTask task = Generator.generateIndividualTask(surname, name, group, config);
+        StudentTask task = Generator.generateIndividualTask(name, surname, group, config);
         final List<StudentTask> allTasks = DBWorker.getAllTasks();
 
         for (int i = 0; i < allTasks.size(); i++) {
@@ -30,7 +30,7 @@ public class Model {
                 for (Network network : task.getTopology().getNetworks()) {
                     ip.add(network.getIp().getCopy());
                 }
-                task = Generator.generateIndividualTask(surname, name, group, config);
+                task = Generator.generateIndividualTask(name, surname, group, config);
                 int j = 0;
                 for (Network network : task.getTopology().getNetworks()) {
                     network.setIp(ip.get(j++));
@@ -76,7 +76,8 @@ public class Model {
 
         /*ToDBThread toDBThread = new ToDBThread(studentTasks);
         toDBThread.start();*/
-
+        //batch insert
+        //preparedStatement
 
 
         for (StudentTask task : studentTasks) {

@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import java.lang.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
 <AnchorPane id="main-panel" prefHeight="588.0" prefWidth="1183.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.generate.Controller">
    <children>
       <Pane id="top-panel" prefHeight="60.0" prefWidth="700.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
@@ -166,7 +162,7 @@
                         <Font size="19.0" />
                      </font>
                   </Label>
-                  <ProgressIndicator id="indicator" fx:id="progressBar" layoutX="1122.0" layoutY="9.0" prefHeight="52.0" prefWidth="47.0" progress="0.0" style="-fx-text-fill: white;" AnchorPane.rightAnchor="14.0" />
+                  <ProgressIndicator id="indicator" fx:id="progressBar" layoutX="1122.0" layoutY="9.0" prefHeight="52.0" prefWidth="47.0" progress="0.0" style="-fx-text-fill: white;" visible="false" AnchorPane.rightAnchor="14.0" />
                   <Button id="add-button" fx:id="saveButton" layoutX="14.0" layoutY="19.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="123.0" text="Сохранить все" textFill="WHITE" AnchorPane.leftAnchor="14.0">
                      <font>
                         <Font size="15.0" />

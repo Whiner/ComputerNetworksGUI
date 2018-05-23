@@ -4,45 +4,41 @@ import com.sun.jnlp.ApiDialog;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import org.donntu.databaseworker.DBConnector;
+import org.donntu.databaseworker.DBWorker;
+
+import java.sql.SQLException;
 
 public class MessageBox {
-    public static void error(String title, String header, String errorText){
+    public static void error(String errorText){
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setTitle("Ошибка");
         alert.setContentText(errorText);
         alert.showAndWait();
     }
-    public static void criticalError(String title, String header, String errorText){
+    public static void criticalError(String errorText){
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setTitle("Критическая ошибка");
         alert.setContentText(errorText);
         alert.showAndWait();
+        try {
+            DBConnector.getInstance().closeConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         System.exit(-1);
     }
-    public static void information(String title, String header, String infoText){
+    public static void information(String infoText){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setTitle("Внимание!");
         alert.setContentText(infoText);
         alert.showAndWait();
     }
 
-    public static void confirmationWithClose(String title, String header, String confirmationText){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(confirmationText);
-        if(alert.showAndWait().get() != ButtonType.OK)
-        {
-            System.exit(0);
-        }
-    }
 
     public static ButtonType confirmation(String text){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Подтвердите");
+        alert.setTitle("Подтверждение");
         alert.setHeaderText("Вы уверены?");
         alert.setContentText(text);
         return alert.showAndWait().get();

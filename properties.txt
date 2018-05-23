@@ -1,4 +1,6 @@
-networks
-localhost
-Admin
-admin
+DBMS_Name: mysql
+hostname: localhost
+port: 3306
+login: root
+password: root
+dbname: networksdb

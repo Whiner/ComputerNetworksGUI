@@ -11,6 +11,7 @@ import org.donntu.drawer.ImageEditor;
 import org.donntu.databaseworker.StudentTask;
 import ui.MessageBox;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -51,13 +52,12 @@ public class Controller implements Initializable {
         saveButton.setOnAction(event -> {
             if(awtImage != null){
                 try {
-                    GeneratorDrawer.saveImage("task/" + studentTask.getGroup() + "/" + studentTask.getCreationDate().toString(),
+                    GeneratorDrawer.saveImage("task/" + studentTask.getGroup() + "/" + studentTask.getSurname() + " " + studentTask.getName(),
                             studentTask.toString(),
                             awtImage);
+                    MessageBox.information("Сохранено!");
                 } catch (IOException e) {
-                    MessageBox.error("Ошибка",
-                            "Ошибка сохранения",
-                            "Сохранение произошло с ошибкой: \n " + e.getMessage());
+                    MessageBox.error( "Сохранение произошло с ошибкой: \n " + e.getMessage());
                 }
             }
         });

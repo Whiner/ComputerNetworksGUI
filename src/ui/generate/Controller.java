@@ -230,12 +230,10 @@ public class Controller implements Initializable {
                         successLabel.setVisible(true);
                         Animation.attenuation(successLabel);
                     } catch (SQLException e) {
-                        MessageBox.error("Ошибка",
-                                "Занесение в базу данных вызвало ошибку",
+                        MessageBox.error("Занесение в базу данных вызвало ошибку/\n" +
                                 "Текст ошибки: \n \"" + e.getMessage() + "\"");
                     } catch (Exception e) {
-                        MessageBox.error("Ошибка","",
-                                "Текст ошибки: \n \"" + e.getMessage() + "\"");
+                        MessageBox.error("Текст ошибки: \n \"" + e.getMessage() + "\"");
                     }
                 }
 
@@ -287,14 +285,10 @@ public class Controller implements Initializable {
 
                         Animation.attenuation(successLabel);
                     } catch (SQLException e) {
-                        MessageBox.error("Ошибка",
-                                "",
-                                "Ошибка считывания заданий с базы. Проверьте подключение к базе данных."
+                        MessageBox.error("Ошибка считывания заданий с базы. Проверьте подключение к базе данных."
                                         + "\n Текст ошибки: \"" + e.getMessage() + "\"");
                     } catch (Exception e) {
-                        MessageBox.error("Ошибка",
-                                "",
-                                "Ошибка сохранения заданий" +
+                        MessageBox.error("Ошибка сохранения заданий" +
                                         "\n Текст ошибки: \"" + e.getMessage() + "\"");
                     }
                 }
@@ -314,14 +308,10 @@ public class Controller implements Initializable {
                         successLabel.setVisible(true);
                         Animation.attenuation(successLabel);
                     } catch (SQLException e) {
-                        MessageBox.error("Ошибка",
-                                "",
-                                "Ошибка считывания заданий с базы. Проверьте подключение к базе данных."
+                        MessageBox.error("Ошибка считывания заданий с базы. Проверьте подключение к базе данных."
                                         + "\n Текст ошибки: \"" + e.getMessage() + "\"");
                     } catch (Exception e) {
-                        MessageBox.error("Ошибка",
-                                "",
-                                "Ошибка сохранения заданий" +
+                        MessageBox.error("Ошибка сохранения заданий" +
                                         "\n Текст ошибки: \"" + e.getMessage() + "\"");
                     }
                 }
@@ -354,9 +344,7 @@ public class Controller implements Initializable {
             radioButtonsSetOnAction();
             studentRadiobutton.setSelected(true);
         } catch (SQLException e) {
-            MessageBox.error("Ошибка соединения с базой данных",
-                    "",
-                    "Соединение с базой данных потеряно с ошибкой: \n\t\"" + e.getMessage() + "\"");
+            MessageBox.error( "Соединение с базой данных потеряно с ошибкой: \n\t\"" + e.getMessage() + "\"");
         } catch (Exception e) {
             e.printStackTrace();
         }

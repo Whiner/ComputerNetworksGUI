@@ -97,9 +97,7 @@ public class Controller implements Initializable {
                         nameTextBox.clear();
                         surnameTextBox.clear();
                     } catch (SQLException e) {
-                        MessageBox.error("Ошибка",
-                                "",
-                                "Ошибка добавления студента в базу. Проверьте подключение к базе данных.");
+                        MessageBox.error("Ошибка добавления студента в базу. Проверьте подключение к базе данных.");
                     }
                 }
             } else {
@@ -134,9 +132,7 @@ public class Controller implements Initializable {
             radioButtonsSetOnAction();
             studentRadiobutton.setSelected(true);
         } catch (SQLException e) {
-            MessageBox.error("Ошибка соединения с базой данных",
-                    "",
-                    "Соединение с базой данных потеряно с ошибкой: \n\t\"" + e.getMessage() + "\"");
+            MessageBox.error("Соединение с базой данных потеряно с ошибкой: \n\t\"" + e.getMessage() + "\"");
         } catch (Exception e) {
             e.printStackTrace();
         }

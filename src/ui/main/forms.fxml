@@ -1,29 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.geometry.Point3D?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
-
 <AnchorPane id="mainPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="713.0" prefWidth="1123.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.main.Controller">
    <children>
       <AnchorPane id="top-panel" prefHeight="62.0" prefWidth="1123.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -38,9 +19,9 @@
                   <Image url="@images/knt.png" />
                </image>
             </ImageView>
-            <TextField fx:id="searchTextBox" layoutX="817.0" layoutY="18.0" prefHeight="25.0" prefWidth="217.0" AnchorPane.rightAnchor="89.0" />
-            <Button id="search_button" fx:id="searchButton" layoutX="1041.0" layoutY="16.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="68.0" text="Поиск" AnchorPane.rightAnchor="14.0" />
-            <ImageView fitHeight="25.0" fitWidth="26.0" layoutX="777.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" x="6.0" AnchorPane.rightAnchor="315.0">
+            <TextField fx:id="searchTextBox" layoutX="817.0" layoutY="18.0" prefHeight="25.0" prefWidth="217.0" visible="false" AnchorPane.rightAnchor="89.0" />
+            <Button id="search_button" fx:id="searchButton" layoutX="1041.0" layoutY="16.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="68.0" text="Поиск" visible="false" AnchorPane.rightAnchor="14.0" />
+            <ImageView fitHeight="25.0" fitWidth="26.0" layoutX="777.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" visible="false" x="6.0" AnchorPane.rightAnchor="315.0">
                <image>
                   <Image url="@images/magnifier.png" />
                </image>
@@ -95,6 +76,7 @@
                         <ContextMenu>
                           <items>
                             <MenuItem id="MenuItem" fx:id="studentDelete" mnemonicParsing="false" text="Удалить студента" />
+                              <MenuItem id="MenuItem" fx:id="deleteAllTasksForStudent" mnemonicParsing="false" text="Удалить все задания для студента" />
                           </items>
                         </ContextMenu>
                      </contextMenu></TableView>
@@ -113,7 +95,6 @@
                           <items>
                               <MenuItem id="MenuItem" fx:id="showTask" mnemonicParsing="false" text="Показать задание" />
                             <MenuItem id="MenuItem" fx:id="taskDelete" mnemonicParsing="false" text="Удалить задание" />
-                              <MenuItem id="MenuItem" fx:id="updateTasks" mnemonicParsing="false" text="Обновить задания" />
                           </items>
                         </ContextMenu>
                      </contextMenu></TableView>
@@ -136,10 +117,11 @@
                         <ContextMenu>
                           <items>
                             <MenuItem id="MenuItem" fx:id="groupDelete" mnemonicParsing="false" text="Удалить группу" />
+                              <MenuItem id="MenuItem" fx:id="deleteAllTasksForGroup" mnemonicParsing="false" text="Удалить все задания для группы" />
                           </items>
                         </ContextMenu>
                      </contextMenu></ListView>
-                  <Pane id="list-view-panel" layoutX="19.0" layoutY="31.0" prefHeight="33.0" prefWidth="262.0" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="31.0" />
+                  <Pane id="list-view-panel" layoutX="19.0" layoutY="30.0" prefHeight="34.0" prefWidth="262.0" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="30.0" />
                </children>
             </AnchorPane>
          </children>

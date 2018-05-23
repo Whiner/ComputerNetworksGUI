@@ -66,11 +66,10 @@ public class TopologyGenerator {
             try {
                 network.addNode(x, y, connectWith, maxNodeRelationsCount);
             } catch (NodeExistException e) {
-                System.out.println(e.getMessage());
-                continue;
+                                continue;
             } catch (NodeInterseptionException e) {
-                System.out.println(e.getMessage());
                 if (tries > 1000) {
+                    System.out.println("Защита от вечного цикла сработала");
                     break;
                 } else {
                     continue;

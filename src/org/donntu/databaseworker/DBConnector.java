@@ -1,5 +1,7 @@
 package org.donntu.databaseworker;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.*;
 
 public class DBConnector {
@@ -20,9 +22,13 @@ public class DBConnector {
         }
 
     }
-    public boolean connectToDB()  {
+    public boolean connectToDB() throws Exception {
+        PropertiesReader propertiesReader = new PropertiesReader(new File("properties.txt"));
         try {
-            url = "jdbc:mysql://localhost:3306/networksdb?autoReconnect=true&useSSL=false";
+            url = "jdbc:" + propertiesReader.getDBMS_Name() +
+                    "://" + propertiesReader.getHostname() + ":"
+                    + propertiesReader.getPort() + "/"
+                    + propertiesReader.getDbname() + "?autoReconnect=true&useSSL=false";
             login = "root";
             password = "root";
 

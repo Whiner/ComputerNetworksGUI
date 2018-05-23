@@ -74,7 +74,11 @@ public class Controller implements Initializable {
     @FXML
     MenuItem groupDelete;
 
+    @FXML
+    MenuItem deleteAllTasksForStudent;
 
+    @FXML
+    MenuItem deleteAllTasksForGroup;
 
     private void createTaskTable(){
         if(taskTableView.getColumns().size() == 0) {
@@ -175,9 +179,7 @@ public class Controller implements Initializable {
                                 refreshDataOnGroupTable();
                                 studentsTableView.getItems().clear();
                             } catch (SQLException e) {
-                                MessageBox.error("Ошибка",
-                                        "Ошибка обновления списка групп.",
-                                        "");
+                                MessageBox.error("Ошибка обновления списка групп.");
                             }
                         });
             } catch (IOException e) {
@@ -205,9 +207,7 @@ public class Controller implements Initializable {
                 try {
                     refreshDataOnTaskTable();
                 } catch (SQLException e) {
-                    MessageBox.error("Ошибка",
-                            "Ошибка обновления списка студентов.",
-                            "");
+                    MessageBox.error("Ошибка обновления списка студентов.");
                 }
             });
 
@@ -268,6 +268,7 @@ public class Controller implements Initializable {
                 }
             }
         });
+
         showTask.setOnAction(event -> {
             try {
                 StudentTask task = DBWorker.getTaskByID(taskTableView.getSelectionModel().getSelectedItem().getKey());
@@ -291,6 +292,31 @@ public class Controller implements Initializable {
                 e.printStackTrace();
             }
         });
+
+        deleteAllTasksForGroup.setOnAction(event ->{
+            if(MessageBox.confirmation(
+                            "Удалить задания для этой группы?") == ButtonType.OK){
+                try {
+                    DBWorker.deleteTasksByGroup(groupListView.getSelectionModel().getSelectedItem());
+                    refreshDataOnTaskTable();
+                } catch (SQLException e) {
+                   MessageBox.error("Ошибка удаления. Текст ошибки: \n " + e.getMessage());
+                }
+            }
+
+        });
+
+        deleteAllTasksForStudent.setOnAction(event -> {
+            if(MessageBox.confirmation(
+                    "Удалить задания для этого студента?") == ButtonType.OK){
+                try {
+                    DBWorker.deleteTasksByStudent(studentsTableView.getSelectionModel().getSelectedItem());
+                    refreshDataOnTaskTable();
+                } catch (SQLException e) {
+                    MessageBox.error("Ошибка удаления. Текст ошибки: \n " + e.getMessage());
+                }
+            }
+        });
     }
 
     private void setOnTablesAction() {
@@ -309,9 +335,7 @@ public class Controller implements Initializable {
                 try {
                     refreshDataOnStudentsTable(newValue);
                 } catch (SQLException e) {
-                    MessageBox.error("Ошибка",
-                            "",
-                            "Ошибка заполнения таблицы. Текст ошибки: \n " + e.getMessage());
+                    MessageBox.error("Ошибка заполнения таблицы. Текст ошибки: \n " + e.getMessage());
                 }
             }
         });
@@ -332,10 +356,7 @@ public class Controller implements Initializable {
             setOnTablesAction();
             setOnActionContextMenu();
         } catch (SQLException e) {
-            MessageBox.error("Ошибка соединения с базой данных",
-                    "",
-                    "Работа с базой данных завершена с ошибкой: \n\t \" " + e.getMessage() + "\"");
-            System.exit(-1);
+            MessageBox.criticalError("Работа с базой данных завершена с ошибкой: \n\t \" " + e.getMessage() + "\"");
         }
     }
 
