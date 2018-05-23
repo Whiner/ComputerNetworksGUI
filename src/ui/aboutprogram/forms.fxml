@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="main-panel" prefHeight="271.0" prefWidth="604.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.aboutprogram.Controller">
+   <children>
+      <Pane id="header" prefHeight="47.0" prefWidth="604.0">
+         <children>
+            <Label layoutX="195.0" layoutY="7.0" text="Компьютерные сети" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font size="23.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+      <Label layoutX="24.0" layoutY="80.0" prefHeight="123.0" prefWidth="556.0" text="Программа создана студентом группы ИС-16&#10;кафедры АСУ ДонНТУ.&#10;&#10;Исходный  код доступен по ссылке&#10;" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Arial Italic" size="25.0" />
+         </font>
+      </Label>
+      <Hyperlink fx:id="hyperlink" ellipsisString="https://github.com/Whiner/ComputerNetworksGUI/tree/algorithm_second_variant" layoutX="213.0" layoutY="216.0" text="Исходный код" textAlignment="CENTER">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </Hyperlink>
+   </children>
+</AnchorPane>

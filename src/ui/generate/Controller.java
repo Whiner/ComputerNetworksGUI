@@ -1,5 +1,6 @@
 package ui.generate;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -16,7 +17,10 @@ import ui.Animation;
 import ui.ComboBoxWorker;
 import ui.MessageBox;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -206,35 +210,6 @@ public class Controller implements Initializable {
 
     }
 
-    private class ProgressIndicatorWorker {
-        private double step;
-        private double currentProgress;
-
-        ProgressIndicatorWorker(int stepsCount){
-            step = 100 / stepsCount;
-            currentProgress = 0;
-        }
-
-        void start(){
-            progressBar.setVisible(true);
-            progressBar.setProgress(0.0);
-        }
-
-        void addStep(){
-            if(currentProgress >= 100){
-                progressBar.setVisible(false);
-            } else {
-                if(currentProgress >= 100 - step){
-                    currentProgress = 100;
-                } else {
-                    currentProgress += step;
-                }
-                progressBar.setProgress(currentProgress);
-            }
-        }
-
-    }
-
     private void buttonsSetOnAction() {
         generateButton.setOnAction(event -> {
             if (studentRadiobutton.isSelected()) {
@@ -248,45 +223,9 @@ public class Controller implements Initializable {
                     empty = true;
                 }
                 if(!empty) {
-                    final String[] splited = studentComboBox.getValue().split(" ");
-                    try {
-                        StudentTask task = Generator.generateIndividualTask(splited[1], splited[0], groupComboBox.getValue(), config);
-                        //StudentTask task = DBWorker.getTaskByID(38);
-                        final List<StudentTask> allTasks = DBWorker.getAllTasks();
-
-                        for (int i = 0; i < allTasks.size(); i++) {
-                            if(allTasks.get(i).getCreationDate().get(Calendar.YEAR)
-                                    != task.getCreationDate().get(Calendar.YEAR)){
-                                continue;
-                            }
-                            final TopologyCompareCriteria criteria = task.getTopology().whatIsLike(allTasks.get(i).getTopology());
-                            if (criteria.isWan() && criteria.isLan()) {
-                                List<IP> ip = new ArrayList<>();
-                                for (Network network: task.getTopology().getNetworks()) {
-                                    ip.add(network.getIp().getCopy());
-                                }
-                                task = Generator.generateIndividualTask(splited[1], splited[0], groupComboBox.getValue(), config);
-                                int j = 0;
-                                for (Network network: task.getTopology().getNetworks()) {
-                                    network.setIp(ip.get(j++));
-                                }
-                                i = -1;
-                                continue;
-                            }
-                            if (criteria.isIp()) {
-                                for (Network network : task.getTopology().getNetworks()) {
-                                    TopologyGenerator.generateIPForNetwork(network);
-                                }
-                                i = -1;
-                            }
-                        }
-
-
-                        GeneratorDrawer.saveImage(
-                                "task/" + groupComboBox.getValue(),
-                                task.toString(),
-                                GeneratorDrawer.drawStudentTask(task));
-                        DBWorker.addStudentTask(task);
+                    try{
+                        final String[] splited = studentComboBox.getValue().split(" ");
+                        Model.generateIndividual(groupComboBox.getValue(), splited[1], splited[0], config);
                         successLabel.setText("Успешно сгенерировано");
                         successLabel.setVisible(true);
                         Animation.attenuation(successLabel);
@@ -295,7 +234,8 @@ public class Controller implements Initializable {
                                 "Занесение в базу данных вызвало ошибку",
                                 "Текст ошибки: \n \"" + e.getMessage() + "\"");
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        MessageBox.error("Ошибка","",
+                                "Текст ошибки: \n \"" + e.getMessage() + "\"");
                     }
                 }
 
@@ -304,35 +244,10 @@ public class Controller implements Initializable {
                     Animation.shake(groupComboBox);
                 } else {
                     try {
-                        final List<Student> students = DBWorker.getStudentsByGroup(groupComboBox.getValue());
-                        final List<StudentTask> studentTasks = Generator.generateTasksForGroup(students, groupComboBox.getValue(), config);
-                        final List<StudentTask> allTasks = DBWorker.getAllTasks();
-                        for (StudentTask task: studentTasks) {
-                            for (int i = 0; i < allTasks.size(); i++) {
-                                final TopologyCompareCriteria criteria = task.getTopology().whatIsLike(allTasks.get(i).getTopology());
-                                if (criteria.isWan() && criteria.isLan()) {
-                                    task = Generator.generateIndividualTask(task.getName(), task.getSurname(), task.getGroup(), config);
-                                    i = -1;
-                                    continue;
-                                }
-                                if (criteria.isIp()) {
-                                    for (Network network : task.getTopology().getNetworks()) {
-                                        TopologyGenerator.generateIPForNetwork(network);
-                                    }
-                                    i = -1;
-                                }
-                            }
-                        }
-                        ProgressIndicatorWorker progress = new ProgressIndicatorWorker(studentTasks.size());
-                        progress.start();
-                        for (StudentTask task: studentTasks){
-                            GeneratorDrawer.saveImage(
-                                    "task/" + groupComboBox.getValue() + "/" + task.getCreationDate().toString(),
-                                    task.toString(),
-                                    GeneratorDrawer.drawStudentTask(task));
-                            DBWorker.addStudentTask(task);
-                            progress.addStep();
-                        }
+                        Model.generateByGroup(groupComboBox.getValue(), config);
+                        successLabel.setText("Успешно сгенерировано");
+                        successLabel.setVisible(true);
+                        Animation.attenuation(successLabel);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -354,19 +269,22 @@ public class Controller implements Initializable {
                 }
                 if (!empty) {
                     try {
+                        successLabel.setText("Сохранение...");
+                        successLabel.setVisible(true);
+                        Animation.attenuation(successLabel);
                         String[] splited = studentComboBox.getSelectionModel().getSelectedItem().split(" ");
                         final List<StudentTask> tasks = DBWorker.getStudentTasks(
                                 groupComboBox.getSelectionModel().getSelectedItem(),
                                 splited[1],
                                 splited[0]);
                         for (StudentTask task : tasks) {
-                            GeneratorDrawer.saveImage("task/" + groupComboBox.getValue() + "/" + task.getSurname() + " " + task.getName(),
-                                    task.toString(),
-                                    GeneratorDrawer.drawStudentTask(task));
+                            task.setGroup(groupComboBox.getValue());
                         }
-
-                        successLabel.setText("Успешно сохранено");
+                        SaveThread thread = new SaveThread(tasks);
+                        thread.start();
+                        successLabel.setText("Сохранение в фоновом \nрежиме");
                         successLabel.setVisible(true);
+
                         Animation.attenuation(successLabel);
                     } catch (SQLException e) {
                         MessageBox.error("Ошибка",
@@ -388,12 +306,11 @@ public class Controller implements Initializable {
 
                         final List<StudentTask> tasks = DBWorker.getTasksByGroup(groupComboBox.getSelectionModel().getSelectedItem());
                         for (StudentTask task : tasks) {
-                            GeneratorDrawer.saveImage("task/" + groupComboBox.getValue() + "/" + task.getSurname() + " " + task.getName(),
-                                    task.toString(),
-                                    GeneratorDrawer.drawStudentTask(task));
+                            task.setGroup(groupComboBox.getValue());
                         }
-
-                        successLabel.setText("Успешно сохранено");
+                        SaveThread thread = new SaveThread(tasks);
+                        thread.start();
+                        successLabel.setText("Сохранение в фоновом \nрежиме");
                         successLabel.setVisible(true);
                         Animation.attenuation(successLabel);
                     } catch (SQLException e) {

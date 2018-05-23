@@ -31,6 +31,7 @@ import org.donntu.databaseworker.DBWorker;
 import org.donntu.databaseworker.Student;
 import org.donntu.databaseworker.StudentTask;
 import ui.MessageBox;
+import ui.NewWindowCreator;
 
 public class Controller implements Initializable {
 
@@ -140,7 +141,7 @@ public class Controller implements Initializable {
             tableTaskStruct.add(task);
         }
         taskTableView.setItems(tableTaskStruct);
-    } //сомнительно каждый раз по новой загружать в таблицу
+    }
 
     private void refreshDataOnGroupTable() throws SQLException {
         groupListView.getItems().clear();
@@ -160,32 +161,28 @@ public class Controller implements Initializable {
 
     private void setOnButtonsActions() {
         addButton.setOnAction(event -> {
-            Parent secondaryLayout;
             try {
-                secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/add/forms.fxml"));
+                NewWindowCreator.create(
+                        "/ui/add/forms.fxml",
+                        "Добавить",
+                        false,
+                        false,
+                        Main.primaryStage,
+                        700,
+                        450,
+                        event1 -> {
+                            try {
+                                refreshDataOnGroupTable();
+                                studentsTableView.getItems().clear();
+                            } catch (SQLException e) {
+                                MessageBox.error("Ошибка",
+                                        "Ошибка обновления списка групп.",
+                                        "");
+                            }
+                        });
             } catch (IOException e) {
                 e.printStackTrace();
-                return;
             }
-            Scene secondScene = new Scene(secondaryLayout, 700, 460);
-            Stage newWindow = new Stage();
-            newWindow.setTitle("Добавить...");
-            newWindow.setScene(secondScene);
-            //newWindow.initModality(Modality.WINDOW_MODAL);
-            //newWindow.initOwner(Main.primaryStage);
-            newWindow.setResizable(false);
-            newWindow.show();
-            newWindow.setOnCloseRequest(event1 -> {
-                try {
-                    refreshDataOnGroupTable();
-                    studentsTableView.getItems().clear();
-                    //refreshDataOnStudentsTable(groupListView.getSelectionModel().getSelectedItem());
-                } catch (SQLException e) {
-                    MessageBox.error("Ошибка",
-                            "Ошибка обновления списка групп.",
-                            "");
-                }
-            });
         });
 
         generationButton.setOnAction(event -> {
@@ -214,6 +211,23 @@ public class Controller implements Initializable {
                 }
             });
 
+        });
+        aboutProgramButton.setOnAction(event -> {
+            Parent secondaryLayout;
+            try {
+                secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/aboutprogram/forms.fxml"));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            Scene secondScene = new Scene(secondaryLayout);
+            Stage newWindow = new Stage();
+            newWindow.setTitle("О программе");
+            newWindow.setScene(secondScene);
+            newWindow.initModality(Modality.WINDOW_MODAL);
+            newWindow.initOwner(Main.primaryStage);
+            newWindow.setResizable(false);
+            newWindow.show();
         });
     }
 

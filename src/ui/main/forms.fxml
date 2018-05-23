@@ -113,6 +113,7 @@
                           <items>
                               <MenuItem id="MenuItem" fx:id="showTask" mnemonicParsing="false" text="Показать задание" />
                             <MenuItem id="MenuItem" fx:id="taskDelete" mnemonicParsing="false" text="Удалить задание" />
+                              <MenuItem id="MenuItem" fx:id="updateTasks" mnemonicParsing="false" text="Обновить задания" />
                           </items>
                         </ContextMenu>
                      </contextMenu></TableView>
