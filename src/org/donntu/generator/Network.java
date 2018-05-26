@@ -225,7 +225,7 @@ public class Network {
             if (ConnectingNode != null) {
                 try {
                     if (checkRelationIntersection(lastAdded, ConnectingNode)) {
-                        if (lastAdded.getRelationsCount() == 0 && i == connectWith.size() - 1) {
+                        if (lastAdded.getRelationsCount() == 0 && i == connectWith.size() - 1) { // лишнее походу
                             throw new NodeRelationsException("Пересечение с узлами");
                         }
                         continue;

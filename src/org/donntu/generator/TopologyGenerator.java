@@ -26,6 +26,7 @@ public class TopologyGenerator {
         if (section == null) {
             throw new NullPointerException();
         }
+		//проверку на заполненность секции перенести сюда
         int t_NodeCount = nodeCount;
         if (section.getCells_Count_X() * section.getCells_Count_Y() < nodeCount) {
             t_NodeCount = section.getCells_Count_X() * section.getCells_Count_Y();
@@ -204,7 +205,7 @@ public class TopologyGenerator {
             int lan_relations_quantity,
             int networks_relations) {
 
-        try {
+        try { // очищать все секции перед генерацией
             Topology t = new Topology();
             t.AddNetwork(TopologyGenerator.generateWAN(
                     wan_node_quantity,
@@ -236,7 +237,7 @@ public class TopologyGenerator {
 
             }
             return t;
-        } catch (Exception e) { //че то ловить
+        } catch (Exception e) { //ловить заполненные секции
             e.printStackTrace();
         }
         return null;

@@ -29,8 +29,8 @@ public class DBConnector {
                     "://" + propertiesReader.getHostname() + ":"
                     + propertiesReader.getPort() + "/"
                     + propertiesReader.getDbname() + "?autoReconnect=true&useSSL=false";
-            login = "root";
-            password = "root";
+            login = propertiesReader.getLogin();
+            password = propertiesReader.getPassword();
 
             connection = DriverManager.getConnection(url, login, password);
 
