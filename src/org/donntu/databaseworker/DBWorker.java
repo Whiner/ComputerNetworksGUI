@@ -6,7 +6,6 @@ import org.donntu.generator.*;
 import org.donntu.generator.generatorException.NodeRelationsException;
 import org.donntu.generator.generatorException.OneselfConnection;
 
-import javax.swing.plaf.ColorUIResource;
 import java.io.FileNotFoundException;
 import java.sql.*;
 import java.text.ParseException;
@@ -14,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.SplittableRandom;
 
 
 public class DBWorker {
@@ -66,14 +64,14 @@ public class DBWorker {
         return false;
     }
 
-    private static Integer getGroupID(String group) {
+    private static Long getGroupID(String group) {
         if (group != null && !group.isEmpty()) {
             try {
                 query = "SELECT idГруппы,Название FROM группы " +
                         "WHERE (`Название` = \'" + group + "\');";
                 resultSet = statement.executeQuery(query);
                 if (resultSet.next()) {
-                    return resultSet.getInt(1);
+                    return resultSet.getLong(1);
                 } else {
                     return null;
                 }
@@ -84,14 +82,14 @@ public class DBWorker {
         return null;
     }
 
-    private static Integer getStudentID(String name, String surname, String group) {
+    private static Long getStudentID(String name, String surname, String group) {
         if (name != null && !name.isEmpty() && surname != null && !surname.isEmpty()) {
             try {
                 query = "SELECT `idстудента` FROM студенты " +
                         "WHERE `Имя` = \'" + name + "\' AND `Фамилия` = \'" + surname + "\' AND `idГруппы` = \'" + getGroupID(group) + "\';";
                 resultSet = statement.executeQuery(query);
                 if (resultSet.next()) {
-                    return resultSet.getInt(1);
+                    return resultSet.getLong(1);
                 } else {
                     return null;
                 }
@@ -141,9 +139,9 @@ public class DBWorker {
         return true;
     }
 
-    private static Integer addTaskForStudent(String name, String surname, String group, GregorianCalendar date) throws SQLException {
+    private static Long addTaskForStudent(String name, String surname, String group, GregorianCalendar date) throws SQLException {
 
-        Integer idStudent = getStudentID(name, surname, group);
+        Long idStudent = getStudentID(name, surname, group);
         if (idStudent == null) {
             addStudent(name, surname, group);
             idStudent = getStudentID(name, surname, group);
@@ -155,21 +153,21 @@ public class DBWorker {
         statement.execute(query);
         resultSet = statement.executeQuery("SELECT MAX(idзадания) AS last_id FROM задания");
         resultSet.next();
-        return resultSet.getInt("last_id");
+        return resultSet.getLong("last_id");
 
     }
 
-    private static int addNetworksConnection(int idNetworkFrom, int idNetworkTo, int idNodeFrom, int idNodeTo) throws SQLException {
+    private static long addNetworksConnection(long idNetworkFrom, long idNetworkTo, long idNodeFrom, long idNodeTo) throws SQLException {
         query = "INSERT INTO соединения(`idсети`, `idузла`,`idсети соединенного узла`,`idсоединенного узла`)\n" +
                 "VALUES ('" + idNetworkFrom + "','" + idNodeFrom + "','" + idNetworkTo
                 + "','" + idNodeTo + "');";
         statement.execute(query);
         resultSet = statement.executeQuery("SELECT MAX(idсоединения) AS last_id FROM `соединения`");
         resultSet.next();
-        return resultSet.getInt("last_id");
+        return resultSet.getLong("last_id");
     }
 
-    private static int addNetwork(int idTask, Network network, boolean addNodes) throws SQLException {
+    private static long addNetwork(long idTask, Network network, boolean addNodes) throws SQLException {
 
         final IP ip = network.getIp();
         query = "INSERT INTO сети(`Тип сети`, `Первый октет`,`Второй октет`,`Третий октет`,`Четвертый октет`,`Маска`, idЗадания)" +
@@ -182,7 +180,7 @@ public class DBWorker {
         statement.execute(query);
         resultSet = statement.executeQuery("SELECT MAX(idсети) AS last_id FROM `сети`");
         resultSet.next();
-        final int lastNetworkID = resultSet.getInt("last_id");
+        final long lastNetworkID = resultSet.getLong("last_id");
 
         if (addNodes) {
             final List<Node> nodes = network.getNodes();
@@ -199,7 +197,7 @@ public class DBWorker {
         return lastNetworkID;
     }
 
-    private static void addNodeConnection(int idNetworkFrom, int idFrom, int idNetworkTo, int idTo) throws SQLException {
+    private static void addNodeConnection(long idNetworkFrom, long idFrom, long idNetworkTo, long idTo) throws SQLException {
         if(currentStatement != CurrentStatement.CONNECTION){
             query = "INSERT INTO `соединения`(`idузла`,`idсоединенного узла`,`idсети`, `idсети соединенного узла`)" +
                     "VALUES (?,?,?,?)";
@@ -212,10 +210,10 @@ public class DBWorker {
                 "\'" + idNetworkFrom + "\', " +
                 "\'" + idNetworkTo + "\');";*/
         //statement.execute(query);
-        preparedStatement.setInt(1, idFrom);
-        preparedStatement.setInt(2, idTo);
-        preparedStatement.setInt(3, idNetworkFrom);
-        preparedStatement.setInt(4, idNetworkTo);
+        preparedStatement.setLong(1, idFrom);
+        preparedStatement.setLong(2, idTo);
+        preparedStatement.setLong(3, idNetworkFrom);
+        preparedStatement.setLong(4, idNetworkTo);
 
         preparedStatement.addBatch();
         //resultSet = statement.executeQuery("SELECT MAX(idсоединения) AS last_id FROM `соединения`");
@@ -223,7 +221,7 @@ public class DBWorker {
         //return resultSet.getInt("last_id");
     }
 
-    private static void addNode(int idNetwork, Node node) throws SQLException {
+    private static void addNode(long idNetwork, Node node) throws SQLException {
         if(currentStatement != CurrentStatement.NODE){
             query = "INSERT INTO `узлы`(`idСети`,`НомерУзла`,`X`,`Y`) " +
             "VALUES (?,?,?,?)";
@@ -235,7 +233,7 @@ public class DBWorker {
                 "\'" + node.getID() + "\', " +
                 "\'" + node.getCellNumber_X() + " \'," +
                 "\'" + node.getCellNumber_Y() + "\');";*/
-        preparedStatement.setInt(1, idNetwork);
+        preparedStatement.setLong(1, idNetwork);
         preparedStatement.setInt(2, node.getID());
         preparedStatement.setInt(3, node.getCellNumber_X());
         preparedStatement.setInt(4, node.getCellNumber_Y());
@@ -253,19 +251,18 @@ public class DBWorker {
             throw new NullPointerException();
         }
         try {
-
             addGroup(studentTask.getGroup());
             addStudent(studentTask.getName(), studentTask.getSurname(), studentTask.getGroup());
-            int idTask = addTaskForStudent(
+            long idTask = addTaskForStudent(
                     studentTask.getName(),
                     studentTask.getSurname(),
                     studentTask.getGroup(),
                     studentTask.getCreationDate());
             Topology topology = studentTask.getTopology();
-            int idWAN = addNetwork(
+            long idWAN = addNetwork(
                     idTask,
                     topology.getWAN(), true);
-            List<Pair<Integer, Network>> idLAN = new ArrayList<>();
+            List<Pair<Long, Network>> idLAN = new ArrayList<>();
             final List<Network> laNs = topology.getLANs();
             for (Network lan : laNs) {
                 idLAN.add(new Pair<>(addNetwork(idTask, lan, true), lan));
@@ -281,7 +278,7 @@ public class DBWorker {
                 }
 
                 int index = 0;
-                for (Pair<Integer, Network> pair : idLAN) {
+                for (Pair<Long, Network> pair : idLAN) {
                     if (pair.getValue().equals(networksConnection.getToNetwork())) {
                         break;
                     }
@@ -345,7 +342,7 @@ public class DBWorker {
             throw new SQLException("Этой группы не существует в базе");
         } else {
             List<Student> students = new ArrayList<>();
-            int groupID = getGroupID(group);
+            long groupID = getGroupID(group);
             query = "SELECT `Студенты`.`Имя` AS `Имя`, " +
                     "`Студенты`.`Фамилия` AS `Фамилия` " +
                     "FROM `Студенты` " +
@@ -361,15 +358,15 @@ public class DBWorker {
         }
     }
 
-    public static List<Integer> getNetworksID(int taskID) throws SQLException {
+    public static List<Long> getNetworksID(long taskID) throws SQLException {
         setDBConnector(dbConnector);
         query = "SELECT idСети FROM сети " +
                 "WHERE `idзадания` = \'" + taskID + "\';";
 
         resultSet = statement.executeQuery(query);
-        List<Integer> id = new ArrayList<>();
+        List<Long> id = new ArrayList<>();
         while (resultSet.next()) {
-            id.add(resultSet.getInt(1));
+            id.add(resultSet.getLong(1));
         }
 
         if (id.isEmpty()) {
@@ -379,16 +376,16 @@ public class DBWorker {
         }
     }
 
-    private static List<Integer> getTasksID(String name, String surname, String group) throws SQLException {
-        int ID = getStudentID(name, surname, group);
+    private static List<Long> getTasksID(String name, String surname, String group) throws SQLException {
+        long ID = getStudentID(name, surname, group);
         query = "SELECT idзадания " +
                 "FROM задания " +
                 "WHERE `idстудента` = \'" + ID + "\';";
 
         resultSet = statement.executeQuery(query);
-        List<Integer> id = new ArrayList<>();
+        List<Long> id = new ArrayList<>();
         while (resultSet.next()) {
-            id.add(resultSet.getInt(1));
+            id.add(resultSet.getLong(1));
         }
 
         if (id.isEmpty()) {
@@ -398,7 +395,7 @@ public class DBWorker {
         }
     }
 
-    private static Network getNetworkByID(int networkID) throws SQLException {
+    private static Network getNetworkByID(Long networkID) throws SQLException {
         query = "SELECT `Тип сети`, `Первый октет`,`Второй октет`, `Третий октет`, `Четвертый октет`, `Маска`" +
                 "FROM сети " +
                 "WHERE `idСети` = \'" + networkID + "\';";
@@ -412,7 +409,8 @@ public class DBWorker {
                 network.setType(NetworkType.LAN);
             }
             try {
-                network.setIp(new IP(resultSet.getInt(2),
+                network.setIp(new IP(
+                        resultSet.getInt(2),
                         resultSet.getInt(3),
                         resultSet.getInt(4),
                         resultSet.getInt(5),
@@ -426,7 +424,7 @@ public class DBWorker {
         }
     }
 
-    private static List<Node> getNodesByNetworkID(int NetworkID) throws SQLException {
+    private static List<Node> getNodesByNetworkID(long NetworkID) throws SQLException {
         query = "SELECT `НомерУзла`,`X`,`Y` " +
                 "FROM узлы " +
                 "WHERE `idСети` = \'" + NetworkID + "\';";
@@ -445,14 +443,14 @@ public class DBWorker {
         }
     }
 
-    private static List<NodeConnection> getConnectionsByNetworksID(List<Integer> idNetworks) throws SQLException {
+    private static List<NodeConnection> getConnectionsByNetworksID(List<Long> idNetworks) throws SQLException {
         if (idNetworks.size() == 0) {
             throw new SQLException("Нужен хотя бы один ID сети");
         }
 
         List<NodeConnection> nodeConnections = new ArrayList<>();
 
-        for (int idNetwork : idNetworks) {
+        for (long idNetwork : idNetworks) {
             query = "SELECT `idузла`, `idсети`, `idсоединенного узла`,`idсети соединенного узла` " +
                     "FROM  соединения " +
                     "WHERE `idСети` = \'" + idNetwork + "\' OR `idсоединенного узла` = \'" + idNetwork + "\';";
@@ -461,9 +459,9 @@ public class DBWorker {
                 nodeConnections.add(
                         new NodeConnection(
                                 resultSet.getInt(1),
-                                resultSet.getInt(2),
+                                resultSet.getLong(2),
                                 resultSet.getInt(3),
-                                resultSet.getInt(4)));
+                                resultSet.getLong(4)));
             }
         }
         if (nodeConnections.isEmpty()) {
@@ -473,7 +471,7 @@ public class DBWorker {
         }
     }
 
-    private static GregorianCalendar getCreationDate(int taskID) throws SQLException, ParseException {
+    private static GregorianCalendar getCreationDate(long taskID) throws SQLException, ParseException {
         query = "SELECT `дата создания`" +
                 "FROM задания " +
                 "WHERE `idзадания` = \'" + taskID + "\';";
@@ -488,7 +486,7 @@ public class DBWorker {
         }
     }
 
-    private static Student getInitialsByTaskID(int taskID) throws SQLException {
+    private static Student getInitialsByTaskID(long taskID) throws SQLException {
         query = "SELECT `студенты`.`Имя`, `студенты`.`Фамилия`, `группы`.`Название` " +
                 "FROM задания, студенты, группы " +
                 "WHERE `idзадания` = \'" + taskID + "\' AND " +
@@ -513,12 +511,12 @@ public class DBWorker {
         if (!checkStudentInDB(name, surname, group)) {
             throw new SQLException("Студент " + surname + " " + name + " не существует в базе");
         }
-        final List<Integer> tasksID = getTasksID(name, surname, group);
+        final List<Long> tasksID = getTasksID(name, surname, group);
         List<StudentTask> studentTasks = new ArrayList<>();
         if (tasksID == null) {
             throw new SQLException("Для этого студента нет заданий");
         }
-        for (int taskID : tasksID) {
+        for (Long taskID : tasksID) {
             try {
                 studentTasks.add(getTaskByID(taskID));
             } catch (Exception e) {
@@ -528,9 +526,9 @@ public class DBWorker {
         return studentTasks;
     }
 
-    public static StudentTask getTaskByID(int taskID) throws SQLException {
+    public static StudentTask getTaskByID(long taskID) throws SQLException {
         setDBConnector(dbConnector);
-        final List<Integer> networksID = getNetworksID(taskID);
+        final List<Long> networksID = getNetworksID(taskID);
         if (networksID == null) {
             throw new SQLException("Для этого задания нет сетей");
         }
@@ -538,7 +536,7 @@ public class DBWorker {
         Topology topology = new Topology();
         List<Network> networks = new ArrayList<>();
 
-        for (int networkID : networksID) {
+        for (Long networkID : networksID) {
             Network network = getNetworkByID(networkID);
             network.setID(networkID);
             network.setNodes(getNodesByNetworkID(networkID));
@@ -650,9 +648,9 @@ public class DBWorker {
         List<StudentTask> tasks = new ArrayList<>();
         final List<Student> students = getStudentsByGroup(group);
         for (Student student: students){
-            final List<Integer> tasksID = getTasksID(student.getName(), student.getSurname(), group);
+            final List<Long> tasksID = getTasksID(student.getName(), student.getSurname(), group);
             if(tasksID != null) {
-                for (Integer i : tasksID) {
+                for (Long i : tasksID) {
                     tasks.add(getTaskByID(i));
                 }
             }
@@ -662,7 +660,7 @@ public class DBWorker {
 
     public static void deleteTasksByStudent(Student student) throws SQLException {
         setDBConnector(dbConnector);
-        int id = getStudentID(student.getName(), student.getSurname(), student.getGroup());
+        long id = getStudentID(student.getName(), student.getSurname(), student.getGroup());
 
         query = "DELETE " +
                 "FROM networksdb.задания " +

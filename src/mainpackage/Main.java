@@ -6,7 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.donntu.databaseworker.DBConnector;
-import org.donntu.databaseworker.DBWorker;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -15,7 +14,7 @@ public class Main extends Application {
     public static Stage primaryStage;
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("../ui/main/forms.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/main/forms.fxml"));
         primaryStage.setTitle("Компьютерные сети");
         primaryStage.setScene(new Scene(root));
         Main.primaryStage = primaryStage;

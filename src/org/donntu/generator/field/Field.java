@@ -106,9 +106,7 @@ public class Field {
         if(maxX % 2 != 0) {
             maxX++;
         }
-        /*if(maxY % 2 != 0) {
-            maxY++;
-        }*/
+
         maxY = maxX;
 
         cellsCountX = maxX;

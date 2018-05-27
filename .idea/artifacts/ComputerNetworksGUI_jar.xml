@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ComputerNetworksGUI:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ComputerNetworksGUI_jar</output-path>
+    <root id="archive" name="ComputerNetworksGUI.jar">
+      <element id="module-output" name="ComputerNetworksGUI" />
+      <element id="extracted-dir" path="D:/Coding/Java/Libraries/MySQL ODBC/mysql-connector-java-5.1.46/mysql-connector-java-5.1.46.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

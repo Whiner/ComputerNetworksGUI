@@ -251,9 +251,10 @@ public class Controller implements Initializable {
                 try {
                     DBWorker.deleteGroup(groupListView.getSelectionModel().getSelectedItem());
                     refreshDataOnGroupTable();
+                    studentsTableView.getItems().clear();
                     refreshDataOnTaskTable();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    e.printStackTrace(); // messagebox
                 }
             }
         });
@@ -277,7 +278,7 @@ public class Controller implements Initializable {
                 try {
                     secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/preview/forms.fxml"));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    e.printStackTrace(); //messagebox
                     return;
                 }
                 Scene secondScene = new Scene(secondaryLayout);

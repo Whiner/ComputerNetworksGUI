@@ -11,17 +11,17 @@ import java.util.List;
 
 
 public class Network {
-    private int ID;
+    private long ID;
     private NetworkType type;
     private List<Node> nodes = new ArrayList<>();
     private IP ip = new IP();
     private List<NetworksConnection> networkConnections = new ArrayList<>();
 
-    public int getID() {
+    public long getID() {
         return ID;
     }
 
-    public void setID(int ID) {
+    public void setID(long ID) {
         this.ID = ID;
     }
     public void setNodes(List<Node> nodes) {

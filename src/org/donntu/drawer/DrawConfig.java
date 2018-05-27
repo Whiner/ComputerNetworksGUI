@@ -92,7 +92,7 @@ public class DrawConfig {
 
     private DrawConfig() {
         try {
-            setNodeImage(new File("images-fx/2.png"));
+            setNodeImage(new File("images/node.png"));
             calcNodeSize();
         } catch (Exception e) {
             e.printStackTrace();

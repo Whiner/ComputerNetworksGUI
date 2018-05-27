@@ -1,7 +1,5 @@
 package org.donntu.generator;
 
-import sun.nio.ch.Net;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +9,7 @@ public class Topology {
     private boolean isWANExist;
     private int LANQuantity;
 
-    public Network getNetworkByID(int ID) {
+    public Network getNetworkByID(long ID) {
         for (Network network : networks) {
             if (network.getID() == ID) {
                 return network;

@@ -2,11 +2,11 @@ package org.donntu.databaseworker;
 
 class NodeConnection {
     int idNode;
-    int idNetwork;
+    long idNetwork;
     int idConnectedNode;
-    int idConnectedNetwork;
+    long idConnectedNetwork;
 
-    public NodeConnection(int idNode, int idNetwork, int idConnectedNode, int idConnectedNetwork) {
+    public NodeConnection(int idNode, long idNetwork, int idConnectedNode, long idConnectedNetwork) {
         this.idNode = idNode;
         this.idNetwork = idNetwork;
         this.idConnectedNode = idConnectedNode;
