@@ -7,61 +7,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
-    private int RelationsCount;
-    private List<Node> ConnectedNodes;
-    private int CellNumber_X, CellNumber_Y;
-    private int MaxRelationsCount;
-    private int ID;
+    private int relationsCount;
+    private List<Node> connectedNodes;
+    private int cellNumberX, cellNumberY;
+    private int maxRelationsCount;
+    private int id;
 
-
-    public Node(int cellNumber_X, int cellNumber_Y, int ID) {
-        CellNumber_X = cellNumber_X;
-        CellNumber_Y = cellNumber_Y;
-        this.ID = ID;
-        ConnectedNodes = new ArrayList<>();
-        MaxRelationsCount = 88888888;
-        RelationsCount = 0;
+    public Node(int cellNumber_X, int cellNumber_Y, int id) {
+        cellNumberX = cellNumber_X;
+        cellNumberY = cellNumber_Y;
+        this.id = id;
+        connectedNodes = new ArrayList<>();
+        maxRelationsCount = 88888888;
+        relationsCount = 0;
     }
 
-
     public boolean deleteConnectedNode(int ID) {
-        RelationsCount--;
-        for(Node t: ConnectedNodes)
-            if(t.getID() == ID)
-                return ConnectedNodes.remove(t);
+        relationsCount--;
+        for(Node t: connectedNodes)
+            if(t.getId() == ID)
+                return connectedNodes.remove(t);
         return false;
     }
 
-
-    public int getID() {
-        return ID;
+    public int getId() {
+        return id;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setId(int id) {
+        this.id = id;
     }
 
 
     public List<Node> getConnectedNodes() {
-        return ConnectedNodes;
+        return connectedNodes;
     }
 
-
-
-    public int getCellNumber_X() {
-        return CellNumber_X;
+    public int getCellNumberX() {
+        return cellNumberX;
     }
 
-    public void setCellNumber_X(int cellNumber_X) {
-        CellNumber_X = cellNumber_X;
+    public void setCellNumberX(int cellNumberX) {
+        this.cellNumberX = cellNumberX;
     }
 
-    public int getCellNumber_Y() {
-        return CellNumber_Y;
+    public int getCellNumberY() {
+        return cellNumberY;
     }
 
-    public void setCellNumber_Y(int cellNumber_Y) {
-        CellNumber_Y = cellNumber_Y;
+    public void setCellNumberY(int cellNumberY) {
+        this.cellNumberY = cellNumberY;
     }
 
     @Override
@@ -73,8 +68,8 @@ public class Node {
         if (object == null || object.getClass() != this.getClass()) {
             return false;
         }
-        return this.CellNumber_X == ((Node)object).CellNumber_X
-            && this.CellNumber_Y == ((Node)object).CellNumber_Y && this.ID == ((Node)object).ID;
+        return this.cellNumberX == ((Node)object).cellNumberX
+            && this.cellNumberY == ((Node)object).cellNumberY && this.id == ((Node)object).id;
     }
 
     @Override
@@ -83,44 +78,43 @@ public class Node {
     }
 
     public int getRelationsCount() {
-        return RelationsCount;
+        return relationsCount;
     }
 
     public int getMaxRelationsCount() {
-        return MaxRelationsCount;
+        return maxRelationsCount;
     }
 
     public void setMaxRelationsCount(int maxRelationsCount) throws Exception {
         if(maxRelationsCount < 0)
             throw new NodeRelationsException("Максимальное количество связей не может быть меньше 0");
-        MaxRelationsCount = maxRelationsCount;
+        this.maxRelationsCount = maxRelationsCount;
     }
-
 
     public void connectNode(Node connectingNode, boolean forcibly) throws OneselfConnection, NodeRelationsException {
         if(connectingNode == null) {
-            System.out.println(this.ID + " / " + connectingNode.ID + " NULL");
+            System.out.println(this.id + " / " + connectingNode.id + " NULL");
             throw new NullPointerException("Соединяемый узел - null");
         }
         if(connectingNode.equals(this)) {
-            System.out.println(this.ID + " / " + connectingNode.ID + " Самосоединение");
+            System.out.println(this.id + " / " + connectingNode.id + " Самосоединение");
             throw new OneselfConnection("Соединение с самим собой");
         }
         if(!forcibly) {
-            if (this.MaxRelationsCount <= RelationsCount
-                    || connectingNode.MaxRelationsCount <= connectingNode.RelationsCount) {
+            if (this.maxRelationsCount <= relationsCount
+                    || connectingNode.maxRelationsCount <= connectingNode.relationsCount) {
                 throw new NodeRelationsException("Максимальное количество связей достигнуто");
             }
         }
 
-        if(this.ConnectedNodes.contains(connectingNode) || connectingNode.ConnectedNodes.contains(this)){
-            System.out.println(this.ID + " / " + connectingNode.ID + " Уже существует");
+        if(this.connectedNodes.contains(connectingNode) || connectingNode.connectedNodes.contains(this)){
+            System.out.println(this.id + " / " + connectingNode.id + " Уже существует");
             throw new NodeRelationsException("Связь уже существует");
         }
 
-        ConnectedNodes.add(connectingNode);
-        RelationsCount++;
-        connectingNode.ConnectedNodes.add(this);
-        connectingNode.RelationsCount++;
+        connectedNodes.add(connectingNode);
+        relationsCount++;
+        connectingNode.connectedNodes.add(this);
+        connectingNode.relationsCount++;
     }
 }

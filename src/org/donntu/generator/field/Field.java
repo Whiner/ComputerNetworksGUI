@@ -41,7 +41,6 @@ public class Field {
         if (wanSection != null)
             return false;
         wanSection = new Section("WAN",
-                NetworkType.WAN,
                 0,
                 0,
                 cellsCountX,
@@ -66,7 +65,6 @@ public class Field {
             }
             lanSections.add(new Section(
                     "LAN" + (i + 1),
-                    NetworkType.LAN,
                     beginCell_X,
                     beginCell_Y,
                     cells_Count_X,
@@ -93,11 +91,11 @@ public class Field {
         for (Network network: networks){
             final List<Node> nodes = network.getNodes();
             for (Node node : nodes){
-                if(node.getCellNumber_X() > maxX){
-                    maxX = node.getCellNumber_X();
+                if(node.getCellNumberX() > maxX){
+                    maxX = node.getCellNumberX();
                 }
-                if(node.getCellNumber_Y() > maxY){
-                    maxY = node.getCellNumber_Y();
+                if(node.getCellNumberY() > maxY){
+                    maxY = node.getCellNumberY();
                 }
             }
         }

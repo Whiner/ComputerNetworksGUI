@@ -69,8 +69,8 @@ public class Network {
 
     public Node getByCoord(int x, int y){
         for (Node t: nodes){
-            if(t.getCellNumber_X() == x)
-                if(t.getCellNumber_Y() == y)
+            if(t.getCellNumberX() == x)
+                if(t.getCellNumberY() == y)
                     return t;
         }
         return null;
@@ -78,7 +78,7 @@ public class Network {
 
     public Node getNodeByID(int ID){
         for(Node t: nodes)
-            if(t.getID() == ID)
+            if(t.getId() == ID)
                 return t;
          return null;
     }
@@ -95,33 +95,33 @@ public class Network {
 
 
     public boolean checkRelationIntersection(Node from, Node to){  //при соединении
-        int t_x = Math.abs(from.getCellNumber_X() - to.getCellNumber_X());
-        int t_y = Math.abs(from.getCellNumber_Y() - to.getCellNumber_Y());
+        int t_x = Math.abs(from.getCellNumberX() - to.getCellNumberX());
+        int t_y = Math.abs(from.getCellNumberY() - to.getCellNumberY());
         if(t_x == 0) {
-            int start = Math.min(from.getCellNumber_Y(), to.getCellNumber_Y());
+            int start = Math.min(from.getCellNumberY(), to.getCellNumberY());
             for (int i = 1; i < t_y; i++) {
-                if (getByCoord(from.getCellNumber_X(), start + i) != null) {
+                if (getByCoord(from.getCellNumberX(), start + i) != null) {
                     return true;
                 }
             }
         } else if(t_y == 0){
-            int start = Math.min(from.getCellNumber_X(), to.getCellNumber_X());
+            int start = Math.min(from.getCellNumberX(), to.getCellNumberX());
             for (int i = 1; i < t_x; i++){
-                if(getByCoord(start + i, from.getCellNumber_Y()) != null) {
+                if(getByCoord(start + i, from.getCellNumberY()) != null) {
                     return true;
                 }
             }
         } else if(t_x == t_y) {
-            int start_x = from.getCellNumber_X();
-            int start_y = from.getCellNumber_Y();
+            int start_x = from.getCellNumberX();
+            int start_y = from.getCellNumberY();
             int step_x;
             int step_y;
-            if(from.getCellNumber_X() > to.getCellNumber_X()){
+            if(from.getCellNumberX() > to.getCellNumberX()){
                 step_x = -1;
             } else {
                 step_x = 1;
             }
-            if(from.getCellNumber_Y() > to.getCellNumber_Y()){
+            if(from.getCellNumberY() > to.getCellNumberY()){
                 step_y = -1;
             } else {
                 step_y = 1;
@@ -139,35 +139,35 @@ public class Network {
         List<Pair<Node, Node>> uniqueRelations = getUniqueConnections();
 
         for (Pair<Node, Node> link: uniqueRelations){
-            int t_x = Math.abs(link.getValue().getCellNumber_X() - link.getKey().getCellNumber_X());
-            int t_y = Math.abs(link.getValue().getCellNumber_Y() - link.getKey().getCellNumber_Y());
+            int t_x = Math.abs(link.getValue().getCellNumberX() - link.getKey().getCellNumberX());
+            int t_y = Math.abs(link.getValue().getCellNumberY() - link.getKey().getCellNumberY());
             if (t_x == 0) {
-                int start = Math.min(link.getValue().getCellNumber_Y(), link.getKey().getCellNumber_Y());
+                int start = Math.min(link.getValue().getCellNumberY(), link.getKey().getCellNumberY());
                 for (int i = 1; i < t_y; i++) {
-                    if (link.getValue().getCellNumber_X() == x && (start + i) == y) {
+                    if (link.getValue().getCellNumberX() == x && (start + i) == y) {
                         return true;
                     }
                 }
             } else if (t_y == 0) {
-                int start = Math.min(link.getValue().getCellNumber_X(), link.getKey().getCellNumber_X());
+                int start = Math.min(link.getValue().getCellNumberX(), link.getKey().getCellNumberX());
                 for (int i = 1; i < t_x; i++) {
-                    if (link.getValue().getCellNumber_Y() == y && (start + i) == x) {
+                    if (link.getValue().getCellNumberY() == y && (start + i) == x) {
                         return true;
                     }
                 }
             } else if (t_x == t_y) {
                 Node first = link.getValue();
                 Node second = link.getKey();
-                int start_x = first.getCellNumber_X();
-                int start_y = first.getCellNumber_Y();
+                int start_x = first.getCellNumberX();
+                int start_y = first.getCellNumberY();
                 int step_x;
                 int step_y;
-                if(first.getCellNumber_X() > second.getCellNumber_X()){
+                if(first.getCellNumberX() > second.getCellNumberX()){
                     step_x = -1;
                 } else {
                     step_x = 1;
                 }
-                if(first.getCellNumber_Y() > second.getCellNumber_Y()){
+                if(first.getCellNumberY() > second.getCellNumberY()){
                     step_y = -1;
                 } else {
                     step_y = 1;
@@ -212,7 +212,7 @@ public class Network {
             ID = 0;
         }
         else {
-            ID = nodes.get(nodes.size() - 1).getID() + 1;
+            ID = nodes.get(nodes.size() - 1).getId() + 1;
         }
 
         nodes.add(new Node(x, y, ID));
@@ -248,7 +248,6 @@ public class Network {
 
     public Network() {
     }
-
 
     public NetworkType getType() {
         return type;

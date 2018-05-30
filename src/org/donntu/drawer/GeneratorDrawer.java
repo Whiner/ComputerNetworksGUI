@@ -143,7 +143,7 @@ public class GeneratorDrawer {
         text.setX(text.getX() - 20);
         tempGraphics2D.setColor(Color.BLACK);
         tempGraphics2D.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 40));
-        tempGraphics2D.drawString("R" + (node.getID() + 1),
+        tempGraphics2D.drawString("R" + (node.getId() + 1),
                 text.getX(), text.getY());
     }
 
@@ -192,7 +192,7 @@ public class GeneratorDrawer {
             int arc_angle;
 
 
-            if(from.getCellNumber_X() < to.getCellNumber_X()){
+            if(from.getCellNumberX() < to.getCellNumberX()){
                 from_c = NodeCoordinatesConvertor.getCenter(from);
                 to_c = NodeCoordinatesConvertor.getCenter(to);
             } else {
@@ -206,7 +206,7 @@ public class GeneratorDrawer {
             if(t_x == 0 || t_y == 0) {
                 arc_angle = 180;
                 if(t_x == 0) { // если вертикально
-                    if (from.getCellNumber_Y() < to.getCellNumber_Y()) {
+                    if (from.getCellNumberY() < to.getCellNumberY()) {
                         from_c = NodeCoordinatesConvertor.getCenter(from);
                         to_c = NodeCoordinatesConvertor.getCenter(to);
                     } else {

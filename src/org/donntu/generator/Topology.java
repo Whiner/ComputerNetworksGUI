@@ -23,9 +23,7 @@ public class Topology {
         LANQuantity = 0;
         for (Network network : networks) {
             if (network.getType() == NetworkType.WAN) {
-                if (isWANExist) {
-                    continue;
-                } else {
+                if (!isWANExist) {
                     isWANExist = true;
                 }
             } else {
@@ -117,37 +115,37 @@ public class Topology {
 
     public boolean checkRelationIntersection(NetworksConnection connection) {
 
-        int t_x = Math.abs(connection.getFromNetworkNode().getCellNumber_X() - connection.getToNetworkNode().getCellNumber_X());
-        int t_y = Math.abs(connection.getFromNetworkNode().getCellNumber_Y() - connection.getToNetworkNode().getCellNumber_Y());
+        int t_x = Math.abs(connection.getFromNetworkNode().getCellNumberX() - connection.getToNetworkNode().getCellNumberX());
+        int t_y = Math.abs(connection.getFromNetworkNode().getCellNumberY() - connection.getToNetworkNode().getCellNumberY());
         if (t_x == 0) {
-            int start = Math.min(connection.getFromNetworkNode().getCellNumber_Y(), connection.getToNetworkNode().getCellNumber_Y());
+            int start = Math.min(connection.getFromNetworkNode().getCellNumberY(), connection.getToNetworkNode().getCellNumberY());
             for (int i = 1; i < t_y; i++) {
                 for (Network network : networks) {
-                    if (network.getByCoord(connection.getFromNetworkNode().getCellNumber_X(), start + i) != null) {
+                    if (network.getByCoord(connection.getFromNetworkNode().getCellNumberX(), start + i) != null) {
                         return true;
                     }
                 }
             }
         } else if (t_y == 0) {
-            int start = Math.min(connection.getFromNetworkNode().getCellNumber_X(), connection.getToNetworkNode().getCellNumber_X());
+            int start = Math.min(connection.getFromNetworkNode().getCellNumberX(), connection.getToNetworkNode().getCellNumberX());
             for (int i = 1; i < t_x; i++) {
                 for (Network network : networks) {
-                    if (network.getByCoord(start + i, connection.getFromNetworkNode().getCellNumber_Y()) != null) {
+                    if (network.getByCoord(start + i, connection.getFromNetworkNode().getCellNumberY()) != null) {
                         return true;
                     }
                 }
             }
         } else if (t_x == t_y) {
-            int start_x = connection.getFromNetworkNode().getCellNumber_X();
-            int start_y = connection.getFromNetworkNode().getCellNumber_Y();
+            int start_x = connection.getFromNetworkNode().getCellNumberX();
+            int start_y = connection.getFromNetworkNode().getCellNumberY();
             int step_x;
             int step_y;
-            if (connection.getFromNetworkNode().getCellNumber_X() > connection.getToNetworkNode().getCellNumber_X()) {
+            if (connection.getFromNetworkNode().getCellNumberX() > connection.getToNetworkNode().getCellNumberX()) {
                 step_x = -1;
             } else {
                 step_x = 1;
             }
-            if (connection.getFromNetworkNode().getCellNumber_Y() > connection.getToNetworkNode().getCellNumber_Y()) {
+            if (connection.getFromNetworkNode().getCellNumberY() > connection.getToNetworkNode().getCellNumberY()) {
                 step_y = -1;
             } else {
                 step_y = 1;

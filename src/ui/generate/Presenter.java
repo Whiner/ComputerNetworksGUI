@@ -244,7 +244,7 @@ public class Presenter {
                         }
                         SaveThread thread = new SaveThread(tasks);
                         thread.start();
-                        view.successLabel.setText("Сохранение в фоновом \nрежиме");
+                        view.successLabel.setText("Сохранение в фоне");
                         view.successLabel.setVisible(true);
                         Animation.attenuation(view.successLabel);
                     } catch (SQLException e) {

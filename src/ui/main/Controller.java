@@ -129,7 +129,7 @@ public class Controller implements Initializable {
         GregorianCalendar tempCalendar;
         for (HashMap<String, String> record: students){
             try {
-                tempDate = dateFormat.parse(record.get("Дата"));
+                tempDate = dateFormat.parse(record.get("creation_date"));
             } catch (ParseException e) {
                 System.out.println("Date parse error");
                 continue;
@@ -138,10 +138,10 @@ public class Controller implements Initializable {
             tempCalendar.setTime(tempDate);
             StudentTask task = new StudentTask(
                     tempCalendar,
-                    record.get("Имя"),
-                    record.get("Фамилия"),
-                    record.get("Группа"));
-            task.setKey(Integer.valueOf(record.get("Ключ")));
+                    record.get("name"),
+                    record.get("surname"),
+                    record.get("group"));
+            task.setKey(Integer.valueOf(record.get("key")));
             tableTaskStruct.add(task);
         }
         taskTableView.setItems(tableTaskStruct);
@@ -183,7 +183,7 @@ public class Controller implements Initializable {
                             }
                         });
             } catch (IOException e) {
-                e.printStackTrace();
+                MessageBox.error(e.getMessage());
             }
         });
 
@@ -192,7 +192,7 @@ public class Controller implements Initializable {
             try {
                 secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/generate/forms.fxml"));
             } catch (IOException e) {
-                e.printStackTrace();
+                MessageBox.error(e.getMessage());
                 return;
             }
             Scene secondScene = new Scene(secondaryLayout, 1200, 560);
@@ -216,8 +216,8 @@ public class Controller implements Initializable {
             Parent secondaryLayout;
             try {
                 secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/aboutprogram/forms.fxml"));
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                MessageBox.error(e.getMessage());
                 return;
             }
             Scene secondScene = new Scene(secondaryLayout);
@@ -240,7 +240,7 @@ public class Controller implements Initializable {
                     refreshDataOnStudentsTable(groupListView.getSelectionModel().getSelectedItem());
                     refreshDataOnTaskTable();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    MessageBox.error(e.getMessage());
                 }
             }
         });
@@ -254,7 +254,7 @@ public class Controller implements Initializable {
                     studentsTableView.getItems().clear();
                     refreshDataOnTaskTable();
                 } catch (SQLException e) {
-                    e.printStackTrace(); // messagebox
+                    MessageBox.error(e.getMessage());
                 }
             }
         });
@@ -265,7 +265,7 @@ public class Controller implements Initializable {
                     DBWorker.deleteTaskByID(taskTableView.getSelectionModel().getSelectedItem().getKey());
                     refreshDataOnTaskTable();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    MessageBox.error(e.getMessage());
                 }
             }
         });
@@ -278,7 +278,7 @@ public class Controller implements Initializable {
                 try {
                     secondaryLayout = FXMLLoader.load(getClass().getResource("/ui/preview/forms.fxml"));
                 } catch (IOException e) {
-                    e.printStackTrace(); //messagebox
+                    MessageBox.error("Ошибка открытия окна. Текст ошибки: \n\t\"" + e.getMessage() + "\"");
                     return;
                 }
                 Scene secondScene = new Scene(secondaryLayout);
@@ -357,7 +357,7 @@ public class Controller implements Initializable {
             setOnTablesAction();
             setOnActionContextMenu();
         } catch (SQLException e) {
-            MessageBox.criticalError("Работа с базой данных завершена с ошибкой: \n\t \" " + e.getMessage() + "\"");
+            MessageBox.criticalError("Работа с базой данных завершена с ошибкой: \n\t\"" + e.getMessage() + "\"");
         }
     }
 

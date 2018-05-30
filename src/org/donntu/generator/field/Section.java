@@ -1,12 +1,11 @@
 package org.donntu.generator.field;
 
-import org.donntu.generator.NetworkType;
 
 public class Section {
 
-    private String Name;
+    private String name;
     private boolean fill;
-    private NetworkType Type;
+
     private int BeginCell_X, BeginCell_Y;
     private int Cells_Count_X;
     private int Cells_Count_Y;
@@ -43,9 +42,9 @@ public class Section {
         Cells_Count_Y = cells_Count_Y;
     }
 
-    public Section(String name, NetworkType type, int beginCell_X, int beginCell_Y, int cells_Count_X, int cells_Count_Y) {
-        Name = name;
-        Type = type;
+    public Section(String name,  int beginCell_X, int beginCell_Y, int cells_Count_X, int cells_Count_Y) {
+        this.name = name;
+
         BeginCell_X = beginCell_X;
         BeginCell_Y = beginCell_Y;
         Cells_Count_X = cells_Count_X;
@@ -53,11 +52,11 @@ public class Section {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
 

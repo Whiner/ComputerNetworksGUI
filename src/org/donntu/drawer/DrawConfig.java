@@ -1,6 +1,5 @@
 package org.donntu.drawer;
 
-
 import org.donntu.generator.field.Field;
 
 import javax.imageio.ImageIO;
@@ -64,8 +63,10 @@ public class DrawConfig {
         if(directory == null){
             throw new NullPointerException();
         }
+
         if(directory.isFile()) {
             try {
+
                 nodeImage = ImageIO.read(directory);
                 nodeHeight = nodeImage.getHeight(null);
                 nodeWidth = nodeImage.getWidth(null);
@@ -75,8 +76,7 @@ public class DrawConfig {
             } catch (IOException e) {
                 throw new Exception("Directory does not point to an image or image is corrupted");
             }
-        }
-        else {
+        } else {
             throw new Exception("Directory point to folder or is not exist");
         }
     }
@@ -92,7 +92,8 @@ public class DrawConfig {
 
     private DrawConfig() {
         try {
-            setNodeImage(new File("images/node.png"));
+            //setNodeImage(new File("node.PNG")); // для исполняемого файла
+            setNodeImage(new File("src/images/node.png")); // для кода
             calcNodeSize();
         } catch (Exception e) {
             e.printStackTrace();

@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class TopologyGenerator {
 
-
+    private TopologyGenerator(){}
     private static Network generateNodes(int nodeCount, int maxNodeRelationsCount, Section section) throws Exception {
         if (nodeCount <= 0) {
             throw new Exception("Количество узлов должно быть больше 0");
@@ -181,8 +181,8 @@ public class TopologyGenerator {
             int lastLength = 1000;
             for (Node f : firstNetwork.getNodes()) {
                 for (Node s : secondNetwork.getNodes()) {
-                    int length = (int) Math.sqrt(Math.pow(f.getCellNumber_X() - s.getCellNumber_X(), 2)
-                            + Math.pow(f.getCellNumber_Y() - s.getCellNumber_Y(), 2)); // расстояние между точками
+                    int length = (int) Math.sqrt(Math.pow(f.getCellNumberX() - s.getCellNumberX(), 2)
+                            + Math.pow(f.getCellNumberY() - s.getCellNumberY(), 2)); // расстояние между точками
                     if (length <= lastLength && !connectedNodes.contains(new Connected(f, s))) {
                         lastConnected.first = f;
                         lastConnected.second = s;

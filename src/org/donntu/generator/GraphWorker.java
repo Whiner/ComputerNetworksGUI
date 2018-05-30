@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GraphWorker {
-    private List<Node> viewedNodes = new ArrayList<>();
-    private List<Pair<Node, Node>> viewedConnections = new ArrayList<>();
+
+    List<Node> viewedNodes = new ArrayList<>();
+    List<Pair<Node, Node>> viewedConnections = new ArrayList<>();
 
     public boolean searchCycle(Node node) {
         if (viewedNodes.contains(node)) {

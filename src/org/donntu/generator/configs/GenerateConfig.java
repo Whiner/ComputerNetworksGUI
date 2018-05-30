@@ -10,8 +10,6 @@ public class GenerateConfig {
     private int cellsCountX;
     private int cellsCountY;
 
-    public GenerateConfig() {}
-
 
     public int getWanNodesQuantity() {
         return wanNodesQuantity;
