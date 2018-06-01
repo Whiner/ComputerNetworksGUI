@@ -321,13 +321,11 @@ public class GeneratorDrawer {
     }
 
     private static void drawTopology(Topology topology) throws Exception {
-        //drawCells();
         drawSections();
         tempGraphics2D.setColor(Color.BLACK);
         drawNetworksConnections(topology);
         for (Network n : topology.getNetworks()) {
             drawAllConnections(n);
-            //drawAllPointsOnConnection(n);
         }
         for (Network n : topology.getNetworks()) {
             drawAllNodes(n);
@@ -344,23 +342,6 @@ public class GeneratorDrawer {
             return false;
         }
 
-
-        /*String[] splited = directory.split("/");
-        String cur = "";
-
-        for (String folder : splited) {
-            cur = cur.concat("/" + folder);
-            Path path = Paths.get(cur);
-            if (!Files.exists(path)) {
-                try {
-                    Files.createDirectory(path);
-                } catch (IOException e) {
-                    return false;
-                }
-            }
-        }
-
-        return true;*/
     }
 
     public static Image drawStudentTask(StudentTask studentTask) throws Exception { //попробовать сделать под декоратор
@@ -406,5 +387,6 @@ public class GeneratorDrawer {
 
         ImageIO.write((RenderedImage) image, "png", new FileOutputStream(finallyPath));
         clear();
+        System.gc();
     }
 }
