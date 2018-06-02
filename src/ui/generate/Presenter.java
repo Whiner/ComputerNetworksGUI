@@ -17,14 +17,21 @@ import java.util.List;
 
 public class Presenter {
     private View view;
+    private Priority priority = Priority.NONE;
+    private enum Priority{LANCB, WANCB, NONE}
+
+    private final int minNodesQuantity = 3;
+
 
     public Presenter(View view) throws Exception {
         this.view = view;
         view.progressBar.setVisible(false);
         view.successLabel.setVisible(false);
+        view.cb_WAN_nodes_quantity.setDisable(true);
+        view.cb_LAN_nodes_quantity.setDisable(true);
         comboBoxesActions();
-        fillComboBoxes();
         fillSlider();
+        fillComboBoxes();
         buttonsSetOnAction();
         DBWorker.setDBConnector(DBConnector.getInstance());
         ComboBoxWorker.fillComboBox(view.groupComboBox, DBWorker.getGroups());
@@ -49,42 +56,65 @@ public class Presenter {
         });
     }
 
-    private void setMemoryToSlider(){
-        view.slider_RAM.setDisable(true);
-        int ram = RAMCalculator.getRAM(
-                config.getWanNodesQuantity()
-                        + config.getLanQuantity() * config.getLanNodesQuantity());
-        view.slider_RAM.setValue(ram);
-        view.textField_RAM.setText(String.valueOf(ram));
+    private void comboBoxesActions() {
 
-    }
+        view.cb_WAN_nodes_quantity.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if( view.cb_WAN_nodes_quantity.isDisabled()){
+                view.cb_WAN_nodes_quantity.setDisable(false);
+                return;
+            }
+            if(priority == Priority.LANCB){
+                return;
+            }
+            if(newValue!= null && !newValue.equals(oldValue)){
+                try {
+                    whenWanNodesQuantityChange();
+                } catch (Exception e) {
+                    MessageBox.error("Ошибка заполнения ComboBox");
+                }
+            }
+            priority = Priority.NONE;
+        });
 
-    private void comboBoxesActions(){
-
-        view.cb_WAN_nodes_quantity.setOnHidden(event ->
-                config.setWanNodesQuantity(view.cb_WAN_nodes_quantity.getValue())
-        );
+        view.cb_WAN_nodes_quantity.setOnHidden(event -> config.setWanNodesQuantity(view.cb_WAN_nodes_quantity.getValue()));
         view.cb_WAN_max_ports_quantity.setOnHidden(event ->
                 config.setWanPortsQuantity(view.cb_WAN_max_ports_quantity.getValue()));
         view.cb_WAN_ports_with_LAN_quantity.setOnHidden(event ->
                 config.setNetworksPortsQuantity(view.cb_WAN_ports_with_LAN_quantity.getValue()));
         view.cb_LAN_networks_quantity.setOnHidden(event -> {
-            config.setLanQuantity(view.cb_LAN_networks_quantity.getValue());
+            config.setLanNetworksQuantity(view.cb_LAN_networks_quantity.getValue());
             view.slider_RAM.setValue(view.slider_RAM.getValue() - 1);
             view.slider_RAM.setValue(view.slider_RAM.getValue() + 1);
         });
-        view.cb_LAN_max_ports_quantity.setOnHidden(event ->
-                config.setLanPortsQuantity(view.cb_LAN_max_ports_quantity.getValue()));
-        view.cb_LAN_nodes_quantity.setOnHidden(event ->
-                config.setLanNodesQuantity(view.cb_LAN_nodes_quantity.getValue()));
+        view.cb_LAN_max_ports_quantity.setOnHidden(event -> config.setLanPortsQuantity(view.cb_LAN_max_ports_quantity.getValue()));
+        view.cb_LAN_nodes_quantity.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(view.cb_LAN_nodes_quantity.isDisabled()){
+                view.cb_LAN_nodes_quantity.setDisable(false);
+                return;
+            }
+            if(priority == Priority.WANCB){
+                return;
+            }
+            if(newValue!= null && !newValue.equals(oldValue)) {
+                try {
+                    whenLanNodesQuantityChange();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            priority = Priority.NONE;
+        });
+        view.cb_LAN_nodes_quantity.setOnHidden(event -> {
+            config.setLanNodesQuantity(view.cb_LAN_nodes_quantity.getValue());
+        });
 
-        view. groupComboBox.setOnAction(event -> {
-            if(view.groupComboBox.getValue() != null){
+        view.groupComboBox.setOnAction(event -> {
+            if (view.groupComboBox.getValue() != null) {
                 view.studentComboBox.setDisable(false);
                 try {
                     final List<Student> studentsByGroup = DBWorker.getStudentsByGroup(view.groupComboBox.getValue());
                     List<String> students = new ArrayList<>();
-                    for (Student student: studentsByGroup){
+                    for (Student student : studentsByGroup) {
                         students.add(student.getSurname() + " " + student.getName());
                     }
                     ComboBoxWorker.fillComboBox(view.studentComboBox, students);
@@ -97,13 +127,74 @@ public class Presenter {
     }
 
     private void fillComboBoxes() throws Exception {
-        ComboBoxWorker.fillComboBox(3, 10, config.getWanNodesQuantity(), view.cb_WAN_nodes_quantity);
+        config.setWanNodesQuantity(RAMCalculator.getNodeQuantityInWAN(
+                (int) view.slider_RAM.getValue(),
+                (int) view.slider_RAM.getValue() / RAMCalculator.getNodeRAM() / 2 / config.getLanNetworksQuantity(),
+                config.getLanNetworksQuantity()));
+        ComboBoxWorker.fillComboBox(minNodesQuantity,
+                config.getWanNodesQuantity(),
+                config.getWanNodesQuantity(),
+                view.cb_WAN_nodes_quantity);
         ComboBoxWorker.fillComboBox(2, 5, config.getWanPortsQuantity(), view.cb_WAN_max_ports_quantity);
         ComboBoxWorker.fillComboBox(1, 3, config.getNetworksPortsQuantity(), view.cb_WAN_ports_with_LAN_quantity);
-        ComboBoxWorker.fillComboBox(3, 10, config.getLanNodesQuantity(), view.cb_LAN_nodes_quantity);
+
+        config.setLanNodesQuantity(RAMCalculator.getNodeQuantityInLAN(
+                (int) view.slider_RAM.getValue(),
+                config.getWanNodesQuantity(),
+                config.getLanNetworksQuantity()));
+
+        ComboBoxWorker.fillComboBox(minNodesQuantity,
+                config.getLanNodesQuantity(),
+                config.getLanNodesQuantity(),
+                view.cb_LAN_nodes_quantity);
         ComboBoxWorker.fillComboBox(2, 5, config.getLanPortsQuantity(), view.cb_LAN_max_ports_quantity);
-        ComboBoxWorker.fillComboBox(2, 3, config.getLanQuantity(), view.cb_LAN_networks_quantity);
+        ComboBoxWorker.fillComboBox(2, 3, config.getLanNetworksQuantity(), view.cb_LAN_networks_quantity);
     }
+
+    private void whenWanNodesQuantityChange() throws Exception {
+
+        int maxLanQuantity = RAMCalculator.getNodeQuantityInLAN(
+                (int) view.slider_RAM.getValue(),
+                view.cb_WAN_nodes_quantity.getValue(),
+                view.cb_LAN_networks_quantity.getValue());
+        int min = 3;
+        int value = view.cb_LAN_nodes_quantity.getValue();
+        if(value > maxLanQuantity){
+            value = maxLanQuantity;
+        }
+        if(maxLanQuantity < min){
+            min = maxLanQuantity;
+        }
+        priority = Priority.WANCB;
+        ComboBoxWorker.fillComboBox(
+                min,
+                maxLanQuantity,
+                value,
+                view.cb_LAN_nodes_quantity);
+    }
+
+    private void whenLanNodesQuantityChange() throws Exception {
+
+        int maxWanQuantity = RAMCalculator.getNodeQuantityInWAN(
+                (int) view.slider_RAM.getValue(),
+                view.cb_LAN_nodes_quantity.getValue(),
+                view.cb_LAN_networks_quantity.getValue());
+        int min = minNodesQuantity;
+        int value = view.cb_WAN_nodes_quantity.getValue();
+        if(maxWanQuantity < min){
+            min = maxWanQuantity;
+        }
+        if(value > maxWanQuantity){
+            value = maxWanQuantity;
+        }
+        priority = Priority.LANCB;
+        ComboBoxWorker.fillComboBox(
+                min,
+                maxWanQuantity,
+                value,
+                view.cb_WAN_nodes_quantity);
+    }
+
 
     private void fillSlider(){
         view.slider_RAM.setMin(1024);
@@ -112,8 +203,10 @@ public class Presenter {
         view.slider_RAM.setShowTickMarks(true);
         view.slider_RAM.setMajorTickUnit(1024);
         view.slider_RAM.setMinorTickCount(4);
-        view.textField_RAM.setText("Не задано");
-        setMemoryToSlider();
+
+        view.textField_RAM.setEditable(false);
+        view.slider_RAM.setValue(2048);
+        view.textField_RAM.setText("" + (int)view.slider_RAM.getValue());
         view.slider_RAM.setDisable(false);
         view.slider_RAM.valueProperty().addListener((ov, old_val, new_val) -> {
             if(view.slider_RAM.isDisabled()){
@@ -121,27 +214,30 @@ public class Presenter {
                 return;
             }
             view.textField_RAM.setText(String.valueOf(new_val.intValue()));
-            int quantity;
-            quantity = RAMCalculator.getNodeQuantityInWAN(new_val.intValue());//количество WAN узлов
 
-            config.setWanNodesQuantity(quantity);
+            int totalQuantity = RAMCalculator.getNodeQuantity(new_val.intValue());
+
+            int wanQuantity = totalQuantity / 2;
+
+            config.setWanNodesQuantity(wanQuantity);
+            if(wanQuantity < minNodesQuantity){
+                wanQuantity = minNodesQuantity;
+            }
+            priority = Priority.NONE;
             try {
-                ComboBoxWorker.fillComboBox(3, quantity, quantity, view.cb_WAN_nodes_quantity);
+                ComboBoxWorker.fillComboBox(minNodesQuantity, wanQuantity, wanQuantity, view.cb_WAN_nodes_quantity);
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
 
-            quantity = RAMCalculator.getNodeQuantityInLAN( //количество LAN узлов
-                    new_val.intValue(),
-                    RAMCalculator.getRAM(config.getWanNodesQuantity()),
-                    config.getLanQuantity());
-            config.setLanNodesQuantity(quantity);
+            int lanQuantity = (totalQuantity - wanQuantity) / config.getLanNetworksQuantity();
+            config.setLanNodesQuantity(lanQuantity);
             try {
-                if(quantity < 3){
-                    quantity = 3;
+                if(lanQuantity < minNodesQuantity){
+                    lanQuantity = minNodesQuantity;
                 }
-                ComboBoxWorker.fillComboBox(3, quantity, quantity, view.cb_LAN_nodes_quantity);
+                ComboBoxWorker.fillComboBox(minNodesQuantity, lanQuantity, lanQuantity, view.cb_LAN_nodes_quantity);
             } catch (Exception e) {
                 e.printStackTrace();
             }

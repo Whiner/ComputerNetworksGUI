@@ -27,11 +27,21 @@ public class RAMCalculator {
         }
     }
 
-    public static int getNodeQuantityInLAN(int memory, int wanRAM, int lanQuantity){
-        return (memory - wanRAM) / lanQuantity / nodeRAM;
+    public static int getNodeQuantityInWAN(int memory, int lanNodeQuantity, int lanNetworksQuantity){
+        int q = (memory / nodeRAM) - lanNodeQuantity * lanNetworksQuantity;
+        if(q < 0){
+            return 0;
+        } else {
+            return q;
+        }
     }
 
-    public static int getNodeQuantityInWAN(int memory){
-        return (memory / nodeRAM / 2);
+    public static int getNodeQuantityInLAN(int memory, int wanQuantity, int lanNetworksQuantity){
+        int q = ((memory / nodeRAM) - wanQuantity) / lanNetworksQuantity;
+        if(q < 0){
+            return 0;
+        } else {
+            return q;
+        }
     }
 }

@@ -15,11 +15,11 @@ public class Generator {
             Field.getInstance().setConfig(
                     generateConfig.getCellsCountX(),
                     generateConfig.getCellsCountY(),
-                    generateConfig.getLanQuantity()
+                    generateConfig.getLanNetworksQuantity()
             );
 
             return TopologyGenerator.generateTopology(
-                        generateConfig.getLanQuantity(),
+                        generateConfig.getLanNetworksQuantity(),
                         generateConfig.getWanNodesQuantity(),
                         generateConfig.getWanPortsQuantity(),
                         generateConfig.getLanNodesQuantity(),

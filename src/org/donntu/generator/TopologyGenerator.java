@@ -279,18 +279,34 @@ public class TopologyGenerator {
         int relationsCount = network.getCountRelations();
         int needAddresses = relationsCount * 4 + network.getNetworkConnections().size() * 4 + 2;
 
-        ip.setThird(ThreadLocalRandom.current().nextInt(0, 255));
-        int fourthOctet = ThreadLocalRandom.current().nextInt(0, 255 - needAddresses);
-
-        ip.setFourth(fourthOctet);
-
         for (int i = 32; i > 0; i--) {
             if (Math.pow(2, 32 - i) > needAddresses) {
                 ip.setMask(i);
                 break;
             }
         }
+        int total = 32;
 
+        if(ip.getMask() <= total - 8){
+           total = total - 8;
+        }
+
+        int notChangeableBites = total - ip.getMask();
+
+        int changeableBites = 8 - notChangeableBites;
+        int possibleOptionsQuantity = (int) Math.pow(2, changeableBites);
+
+        int step = 256 / possibleOptionsQuantity;
+
+        int octet = ThreadLocalRandom.current().nextInt(0, possibleOptionsQuantity) * step;
+
+        if(total == 32){
+            ip.setThird(ThreadLocalRandom.current().nextInt(0, 255));
+            ip.setFourth(octet);
+        } else {
+            ip.setThird(octet);
+            ip.setFourth(0);
+        }
     }
 
 

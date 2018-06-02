@@ -3,7 +3,7 @@ package org.donntu.generator.configs;
 public class GenerateConfig {
     private int wanNodesQuantity;
     private int wanPortsQuantity;
-    private int lanQuantity;
+    private int lanNetworksQuantity;
     private int lanNodesQuantity;
     private int lanPortsQuantity;
     private int networksPortsQuantity;
@@ -27,12 +27,12 @@ public class GenerateConfig {
         this.wanPortsQuantity = wanPortsQuantity;
     }
 
-    public int getLanQuantity() {
-        return lanQuantity;
+    public int getLanNetworksQuantity() {
+        return lanNetworksQuantity;
     }
 
-    public void setLanQuantity(int lanQuantity) {
-        this.lanQuantity = lanQuantity;
+    public void setLanNetworksQuantity(int lanNetworksQuantity) {
+        this.lanNetworksQuantity = lanNetworksQuantity;
     }
 
     public int getLanNodesQuantity() {

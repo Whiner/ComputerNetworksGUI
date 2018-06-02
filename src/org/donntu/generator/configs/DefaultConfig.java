@@ -21,7 +21,7 @@ public class DefaultConfig{
     }
 
     protected static void buildLANSettings() {
-        config.setLanQuantity(2);
+        config.setLanNetworksQuantity(2);
         config.setLanNodesQuantity(4);
         config.setLanPortsQuantity(3);
     }
