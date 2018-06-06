@@ -533,22 +533,28 @@ public class DBWorker {
             throw new SQLException("Нет соединений в базе данных");
         }
         topology.setNetworks(networks);
+
         for (NodeConnection connection : nodeConnections) {
             try {
                 if (connection.idConnectedNetwork == connection.idNetwork) {
                     Network network = topology.getNetworkByID(connection.idNetwork);
                     Network c_network = topology.getNetworkByID(connection.idConnectedNetwork);
-                    network.getNodeByID(connection.idNode).connectNode(
-                            c_network.getNodeByID(connection.idConnectedNode),
-                            false);
+
+                    Node nodeFrom = network.getNodeByID(connection.idNode);
+                    Node nodeTo = c_network.getNodeByID(connection.idConnectedNode);
+
+                    //System.out.println("FROM " + connection.idNode + "  TO " + connection.idConnectedNode);
+
+                    nodeFrom.connectNode(nodeTo, false);
+
                 } else {
                     Network network = topology.getNetworkByID(connection.idNetwork);
                     Network c_network = topology.getNetworkByID(connection.idConnectedNetwork);
-                    network.connectNetworks(
-                            network.getNodeByID(connection.idNode),
-                            c_network,
-                            c_network.getNodeByID(connection.idConnectedNode)
-                    );
+
+                    Node nodefrom = network.getNodeByID(connection.idNode);
+                    Node nodeto = c_network.getNodeByID(connection.idConnectedNode);
+
+                    network.connectNetworks(nodefrom, c_network, nodeto);
                 }
 
             } catch (OneselfConnection | NodeRelationsException e) {

@@ -281,12 +281,12 @@ public class TopologyGenerator {
 
         for (int i = 32; i > 0; i--) {
             if (Math.pow(2, 32 - i) > needAddresses) {
-                ip.setMask(i);
+                ip.setMask(ThreadLocalRandom.current().nextInt(i - 3, i));
                 break;
             }
         }
-        int total = 32;
 
+        int total = 32;
         if(ip.getMask() <= total - 8){
            total = total - 8;
         }

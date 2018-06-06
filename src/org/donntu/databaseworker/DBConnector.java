@@ -29,7 +29,7 @@ public class DBConnector {
             url = "jdbc:" + propertiesReader.getDBMS_Name() +
                     "://" + propertiesReader.getHostname() + ":"
                     + propertiesReader.getPort() + "/"
-                    + propertiesReader.getDbname() + "?autoReconnect=true&useSSL=false";
+                    + propertiesReader.getDbname() + "?autoReconnect=true&useSSL=false&characterEncoding=utf-8";
             login = propertiesReader.getLogin();
             password = propertiesReader.getPassword();
 

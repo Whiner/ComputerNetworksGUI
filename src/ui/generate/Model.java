@@ -8,6 +8,7 @@ import org.donntu.drawer.GeneratorDrawer;
 import org.donntu.generator.*;
 import org.donntu.generator.configs.GenerateConfig;
 import org.donntu.generator.field.Field;
+import ui.MessageBox;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -47,17 +48,26 @@ public class Model {
         }
         return tasks;
     }
-    public static void generateIndividual(String group, String name, String surname, GenerateConfig config) throws Exception {
+    public static void generateIndividual(String group, String name, String surname, GenerateConfig config) throws Exception { // проверка между собой еще
         StudentTask task = generateIndividualTask(name, surname, group, config);
         final List<StudentTask> allTasks = DBWorker.getAllTasks();
-
+        int error = 0;
         for (int i = 0; i < allTasks.size(); i++) {
+            System.out.println("Цикл Генерация индивидуальная");
+            error++;
+            if(error > 1000){
+                MessageBox.error("Зацикливание в проверке уникальности. Сорян");
+                break;
+            }
             if (allTasks.get(i).getCreationDate().get(Calendar.YEAR)
                     != task.getCreationDate().get(Calendar.YEAR)) {
                 continue;
             }
             final TopologyCompareCriteria criteria = task.getTopology().whatIsLike(allTasks.get(i).getTopology());
             if (criteria.isWan() && criteria.isLan()) {
+                if (!criteria.isIp()) {
+                    continue;
+                }
                 List<IP> ip = new ArrayList<>();
                 for (Network network : task.getTopology().getNetworks()) {
                     ip.add(network.getIp().getCopy());
@@ -68,14 +78,8 @@ public class Model {
                     network.setIp(ip.get(j++));
                 }
                 i = -1;
-                continue;
             }
-            if (criteria.isIp()) {
-                for (Network network : task.getTopology().getNetworks()) {
-                    TopologyGenerator.generateIPForNetwork(network);
-                }
-                i = -1;
-            }
+
         }
         GeneratorDrawer.saveImage(
                 "task/" + group + "/" + task.getSurname() + " " + task.getName(),
@@ -91,18 +95,19 @@ public class Model {
 
         for (StudentTask task : studentTasks) {
             for (int i = 0; i < allTasks.size(); i++) {
+                System.out.println("Цикл Генерация для группы");
                 final TopologyCompareCriteria criteria = task.getTopology().whatIsLike(allTasks.get(i).getTopology());
                 if (criteria.isWan() && criteria.isLan()) {
+                    if (!criteria.isIp()) {
+                       continue;
+                    }
                     task = generateIndividualTask(task.getName(), task.getSurname(), task.getGroup(), config);
-                    i = -1;
-                    continue;
-                }
-                if (criteria.isIp()) {
                     for (Network network : task.getTopology().getNetworks()) {
                         TopologyGenerator.generateIPForNetwork(network);
                     }
                     i = -1;
                 }
+
             }
         }
 

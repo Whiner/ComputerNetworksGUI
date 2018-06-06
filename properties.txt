@@ -1,6 +1,6 @@
 DBMS_Name: mysql
-hostname: localhost
-port: 3306
-login: root
-password: root
+hostname: 212.66.38.153
+port: 33306
+login: networksdb
+password: 5TX5N7D1y6FuSR4B
 dbname: networksdb
