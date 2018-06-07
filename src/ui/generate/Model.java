@@ -7,11 +7,8 @@ import org.donntu.databaseworker.StudentTask;
 import org.donntu.drawer.GeneratorDrawer;
 import org.donntu.generator.*;
 import org.donntu.generator.configs.GenerateConfig;
-import org.donntu.generator.field.Field;
 import ui.MessageBox;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -48,26 +45,28 @@ public class Model {
         }
         return tasks;
     }
-    public static void generateIndividual(String group, String name, String surname, GenerateConfig config) throws Exception { // проверка между собой еще
+
+    public static StudentTask generateIndividual(List<StudentTask> comparedTasks, String group, String name, String surname, GenerateConfig config, boolean save) throws Exception { // проверка между собой еще
+        if(comparedTasks == null){
+            throw new NullPointerException();
+        }
         StudentTask task = generateIndividualTask(name, surname, group, config);
-        final List<StudentTask> allTasks = DBWorker.getAllTasks();
+        int currentYear = new GregorianCalendar().get(Calendar.YEAR);
         int error = 0;
-        for (int i = 0; i < allTasks.size(); i++) {
-            System.out.println("Цикл Генерация индивидуальная");
+        for (int i = 0; i < comparedTasks.size(); i++) {
             error++;
-            if(error > 1000){
-                MessageBox.error("Зацикливание в проверке уникальности. Сорян");
+            if(error > 2000){
+                MessageBox.error("Зацикливание в проверке уникальности.");
                 break;
             }
-            if (allTasks.get(i).getCreationDate().get(Calendar.YEAR)
-                    != task.getCreationDate().get(Calendar.YEAR)) {
-                continue;
-            }
-            final TopologyCompareCriteria criteria = task.getTopology().whatIsLike(allTasks.get(i).getTopology());
+
+            final TopologyCompareCriteria criteria = task.getTopology().whatIsLike(comparedTasks.get(i).getTopology());
             if (criteria.isWan() && criteria.isLan()) {
-                if (!criteria.isIp()) {
+                if (!criteria.isIp() && comparedTasks.get(i).getCreationDate().get(GregorianCalendar.YEAR) != currentYear ) {
+                    System.out.println("Only networks");
                     continue;
                 }
+                System.out.println("Networks and ip");
                 List<IP> ip = new ArrayList<>();
                 for (Network network : task.getTopology().getNetworks()) {
                     ip.add(network.getIp().getCopy());
@@ -81,42 +80,35 @@ public class Model {
             }
 
         }
-        GeneratorDrawer.saveImage(
-                "task/" + group + "/" + task.getSurname() + " " + task.getName(),
-                task.toString(),
-                GeneratorDrawer.drawStudentTask(task));
+        if(save) {
+            GeneratorDrawer.saveImage(
+                    "task/" + group + "/" + task.getSurname() + " " + task.getName(),
+                    task.toString(),
+                    GeneratorDrawer.drawStudentTask(task));
+        }
         DBWorker.addStudentTask(task);
+        return task;
     }
 
-    public static void generateByGroup(String group, GenerateConfig config) throws Exception {
+    public static List<StudentTask> generateByGroup(String group, GenerateConfig config) throws Exception {
         final List<Student> students = DBWorker.getStudentsByGroup(group);
-        final List<StudentTask> studentTasks = generateTasksForGroup(students, group, config);
-        final List<StudentTask> allTasks = DBWorker.getAllTasks();
-
-        for (StudentTask task : studentTasks) {
-            for (int i = 0; i < allTasks.size(); i++) {
-                System.out.println("Цикл Генерация для группы");
-                final TopologyCompareCriteria criteria = task.getTopology().whatIsLike(allTasks.get(i).getTopology());
-                if (criteria.isWan() && criteria.isLan()) {
-                    if (!criteria.isIp()) {
-                       continue;
-                    }
-                    task = generateIndividualTask(task.getName(), task.getSurname(), task.getGroup(), config);
-                    for (Network network : task.getTopology().getNetworks()) {
-                        TopologyGenerator.generateIPForNetwork(network);
-                    }
-                    i = -1;
-                }
-
-            }
+        final List<StudentTask> studentTasks = new ArrayList<>();
+        int currentYear = new GregorianCalendar().get(Calendar.YEAR);
+        final List<StudentTask> allTasks = DBWorker.getAllTasksByYears(currentYear - 2, currentYear);
+        for (Student student : students) {
+            System.out.println("Цикл Генерация для группы");
+            StudentTask task = generateIndividual(allTasks, student.getGroup(), student.getName(), student.getSurname(), config, false);
+            studentTasks.add(task);
+            allTasks.add(task);
         }
 
 
-        for (StudentTask task : studentTasks) {
+        /*for (StudentTask task : studentTasks) {
             DBWorker.addStudentTask(task);
-        }
+        }*/
 
         SaveThread saveThread = new SaveThread(studentTasks);
         saveThread.start();
+        return studentTasks;
     }
 }

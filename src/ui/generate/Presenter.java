@@ -1,5 +1,6 @@
 package ui.generate;
 
+import org.donntu.GregorianCalendar;
 import org.donntu.databaseworker.DBConnector;
 import org.donntu.databaseworker.DBWorker;
 import org.donntu.databaseworker.Student;
@@ -13,6 +14,7 @@ import ui.MessageBox;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class Presenter {
@@ -261,7 +263,8 @@ public class Presenter {
                 if(!empty) {
                     try{
                         final String[] splited = view.studentComboBox.getValue().split(" ");
-                        Model.generateIndividual(view.groupComboBox.getValue(), splited[1], splited[0], config);
+                        int currentYear = new GregorianCalendar().get(Calendar.YEAR);
+                        Model.generateIndividual(DBWorker.getAllTasksByYears(currentYear - 2, currentYear), view.groupComboBox.getValue(), splited[1], splited[0], config, true);
                         view.successLabel.setText("Успешно сгенерировано");
                         view.successLabel.setVisible(true);
                         Animation.attenuation(view.successLabel);

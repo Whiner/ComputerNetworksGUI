@@ -543,8 +543,6 @@ public class DBWorker {
                     Node nodeFrom = network.getNodeByID(connection.idNode);
                     Node nodeTo = c_network.getNodeByID(connection.idConnectedNode);
 
-                    //System.out.println("FROM " + connection.idNode + "  TO " + connection.idConnectedNode);
-
                     nodeFrom.connectNode(nodeTo, false);
 
                 } else {
@@ -605,10 +603,17 @@ public class DBWorker {
 
     }
 
-    public static List<StudentTask> getAllTasks() throws SQLException {
+    public static List<StudentTask> getAllTasksByYears(int lowYear, int highYear) throws SQLException, Exception  {
+        if(lowYear < 2015 || lowYear > 3000 || highYear < 2015 || highYear > 3000){
+            throw new Exception("Некорректное значение года");
+        }
+        if(lowYear > highYear){
+            throw new Exception("low должно быть меньше или равно high");
+        }
         setDBConnector(dbConnector);
         query = "SELECT `idtask` " +
-                "FROM `tasks`";
+                "FROM `tasks` " +
+                "WHERE YEAR(tasks.creation_date) >= " + lowYear + " AND YEAR(tasks.creation_date) <= " + highYear;
 
         resultSet = statement.executeQuery(query);
         List<StudentTask> tasks = new ArrayList<>();
@@ -621,6 +626,7 @@ public class DBWorker {
         }
         return tasks;
     }
+
 
     public static void deleteGroup(String group) throws SQLException {
         setDBConnector(dbConnector);

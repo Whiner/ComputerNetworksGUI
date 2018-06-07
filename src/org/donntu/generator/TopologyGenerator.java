@@ -288,7 +288,7 @@ public class TopologyGenerator {
 
         int total = 32;
         if(ip.getMask() <= total - 8){
-           total = total - 8;
+           total -= 8;
         }
 
         int notChangeableBites = total - ip.getMask();
