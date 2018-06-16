@@ -1,5 +1,6 @@
 package org.donntu.generator.field;
 
+import org.donntu.databaseworker.StudentTask;
 import org.donntu.drawer.DrawConfig;
 import org.donntu.generator.Network;
 import org.donntu.generator.NetworkType;
@@ -74,7 +75,7 @@ public class Field {
 
     }
 
-    public void deleteLANSections() { //индикатор успеха надо
+    public void deleteLANSections() {
         lanSections.clear();
         lanSections = null;
     }
@@ -84,33 +85,11 @@ public class Field {
     }
 
 
-    public void autoFilling(Topology topology) throws Exception {
-        int maxX = 0;
-        int maxY = 0;
-        final List<Network> networks = topology.getNetworks();
-        for (Network network: networks){
-            final List<Node> nodes = network.getNodes();
-            for (Node node : nodes){
-                if(node.getCellNumberX() > maxX){
-                    maxX = node.getCellNumberX();
-                }
-                if(node.getCellNumberY() > maxY){
-                    maxY = node.getCellNumberY();
-                }
-            }
-        }
-
-        maxX = Math.max(maxX, maxY);
-        if(maxX % 2 != 0) {
-            maxX++;
-        }
-
-        maxY = maxX;
-
-        cellsCountX = maxX;
-        cellsCountY = maxY;
-        createLANSections(topology.getLANs().size());
-        if(topology.getWAN() != null) {
+    public void autoFilling(StudentTask task) throws Exception {
+        cellsCountX = task.getCells_x();
+        cellsCountY = task.getCells_y();
+        createLANSections(task.getTopology().get_LAN_Quantity());
+        if(task.getTopology().getWAN() != null) {
             addWANSection();
         }
         DrawConfig.getInstance().calcNodeSize();

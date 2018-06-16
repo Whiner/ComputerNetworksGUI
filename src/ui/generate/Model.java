@@ -7,6 +7,7 @@ import org.donntu.databaseworker.StudentTask;
 import org.donntu.drawer.GeneratorDrawer;
 import org.donntu.generator.*;
 import org.donntu.generator.configs.GenerateConfig;
+import org.donntu.generator.field.Field;
 import ui.MessageBox;
 
 import java.util.ArrayList;
@@ -18,7 +19,13 @@ public class Model {
     private static StudentTask generateIndividualTask(
             String name, String surname, String group, GenerateConfig generateConfig) throws Exception {
         try {
-            return new StudentTask(Generator.generateTask(generateConfig), name, surname, group, new GregorianCalendar());
+            return new StudentTask(Generator.generateTask(generateConfig),
+                    name,
+                    surname,
+                    group,
+                    new GregorianCalendar(),
+                    Field.getInstance().getCellsCountX(),
+                    Field.getInstance().getCellsCountY());
         } catch (Exception e) {
             throw new Exception("Генерация прервана с ошибкой: \n" + e.getMessage());
         }
@@ -56,7 +63,7 @@ public class Model {
         for (int i = 0; i < comparedTasks.size(); i++) {
             error++;
             if(error > 2000){
-                MessageBox.error("Зацикливание в проверке уникальности.");
+                MessageBox.error("Сгенерировано не уникальное задание. Измените параметры генерации, если уникальность необходима.");
                 break;
             }
 

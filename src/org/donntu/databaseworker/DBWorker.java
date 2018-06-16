@@ -139,7 +139,7 @@ public class DBWorker {
         return true;
     }
 
-    private static Long addTaskForStudent(String name, String surname, String group, GregorianCalendar date) throws SQLException {
+    private static Long addTaskForStudent(String name, String surname, String group, GregorianCalendar date, int cells_x, int cells_y) throws SQLException {
 
         Long idStudent = getStudentID(name, surname, group);
         if (idStudent == null) {
@@ -148,8 +148,8 @@ public class DBWorker {
         }
 
 
-        query = "INSERT INTO `tasks`(`idstudent`, `creation_date`) " +
-                "VALUE (\'" + idStudent + "\',\'" + new Date(date.getTimeInMillis()) + "\');";
+        query = "INSERT INTO `tasks`(`idstudent`, `creation_date`, `cells_x`, `cells_y`) " +
+                "VALUES (\'" + idStudent + "\',\'" + new Date(date.getTimeInMillis()) + "\', \'" +  cells_x + "\', \'" + cells_y + "\');";
         statement.execute(query);
         resultSet = statement.executeQuery("SELECT MAX(`idtask`) AS last_id FROM `tasks`");
         resultSet.next();
@@ -242,7 +242,9 @@ public class DBWorker {
                     studentTask.getName(),
                     studentTask.getSurname(),
                     studentTask.getGroup(),
-                    studentTask.getCreationDate());
+                    studentTask.getCreationDate(),
+                    studentTask.getCells_x(),
+                    studentTask.getCells_y());
             Topology topology = studentTask.getTopology();
             long idWAN = addNetwork(
                     idTask,
@@ -511,6 +513,32 @@ public class DBWorker {
         return studentTasks;
     }
 
+    private static int getCellsXByTaskID(long taskID) throws SQLException {
+        query = "SELECT `cells_x` " +
+                "FROM `tasks` " +
+                "WHERE `idtask` = \'" + taskID + "\';";
+
+        resultSet = statement.executeQuery(query);
+        if(resultSet.next()){
+            return resultSet.getInt(1);
+        } else {
+            return 0;
+        }
+    }
+
+    private static int getCellsYByTaskID(long taskID) throws SQLException {
+        query = "SELECT `cells_y` " +
+                "FROM `tasks` " +
+                "WHERE `idtask` = \'" + taskID + "\';";
+
+        resultSet = statement.executeQuery(query);
+        if(resultSet.next()){
+            return resultSet.getInt(1);
+        } else {
+            return 0;
+        }
+    }
+
     public static StudentTask getTaskByID(long taskID) throws SQLException {
         setDBConnector(dbConnector);
         final List<Long> networksID = getNetworksID(taskID);
@@ -573,6 +601,8 @@ public class DBWorker {
 
         try {
             task.setCreationDate(getCreationDate(taskID));
+            task.setCells_x(getCellsXByTaskID(taskID));
+            task.setCells_y(getCellsYByTaskID(taskID));
         } catch (ParseException e) {
             task.setCreationDate(null);
             e.printStackTrace();
@@ -626,7 +656,6 @@ public class DBWorker {
         }
         return tasks;
     }
-
 
     public static void deleteGroup(String group) throws SQLException {
         setDBConnector(dbConnector);

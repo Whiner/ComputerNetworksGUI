@@ -8,6 +8,8 @@ public class StudentTask extends Student{
     private int key;
     private Topology topology;
     private GregorianCalendar creationDate;
+    private int cells_x;
+    private int cells_y;
 
     public int getKey() {
         return key;
@@ -17,12 +19,14 @@ public class StudentTask extends Student{
         this.key = key;
     }
 
-    public StudentTask(Topology topology, String name, String surname, String group, GregorianCalendar creationDate) {
+    public StudentTask(Topology topology, String name, String surname, String group, GregorianCalendar creationDate, int cells_x, int cells_y) {
         this.topology = topology;
         this.name = name;
         this.surname = surname;
         this.group = group;
         this.creationDate = creationDate;
+        this.cells_x = cells_x;
+        this.cells_y = cells_y;
     }
     public StudentTask(){}
 
@@ -85,5 +89,21 @@ public class StudentTask extends Student{
                 + name + " "
                 + group + " "
                 + new GregorianCalendar().toString();
+    }
+
+    public int getCells_x() {
+        return cells_x;
+    }
+
+    public void setCells_x(int cells_x) {
+        this.cells_x = cells_x;
+    }
+
+    public int getCells_y() {
+        return cells_y;
+    }
+
+    public void setCells_y(int cells_y) {
+        this.cells_y = cells_y;
     }
 }

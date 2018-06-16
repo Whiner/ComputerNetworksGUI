@@ -256,24 +256,24 @@ public class TopologyGenerator {
                 case 1:
                     firstOctet = 10;
                     lowerSecondOctet = 0;
-                    upperSecondOctet = 255;
+                    upperSecondOctet = 256;
                     break;
                 case 2:
                     firstOctet = 172;
-                    lowerSecondOctet = 16;
-                    upperSecondOctet = 31;
+                    lowerSecondOctet = 17;
+                    upperSecondOctet = 32;
                     break;
                 case 3:
                     firstOctet = 192;
-                    lowerSecondOctet = 168;
-                    upperSecondOctet = 168;
+                    lowerSecondOctet = 167;
+                    upperSecondOctet = 167;
                     break;
             }
             ip.setFirst(firstOctet);
             ip.setSecond(ThreadLocalRandom.current().nextInt(lowerSecondOctet, upperSecondOctet));
         } else {
-            ip.setFirst(ThreadLocalRandom.current().nextInt(0, 255));
-            ip.setSecond(ThreadLocalRandom.current().nextInt(0, 255));
+            ip.setFirst(ThreadLocalRandom.current().nextInt(0, 256));
+            ip.setSecond(ThreadLocalRandom.current().nextInt(0, 256));
         }
 
         int relationsCount = network.getCountRelations();
@@ -281,7 +281,7 @@ public class TopologyGenerator {
 
         for (int i = 32; i > 0; i--) {
             if (Math.pow(2, 32 - i) > needAddresses) {
-                ip.setMask(ThreadLocalRandom.current().nextInt(i - 3, i));
+                ip.setMask(ThreadLocalRandom.current().nextInt(i - 3, i + 1));
                 break;
             }
         }
@@ -301,7 +301,7 @@ public class TopologyGenerator {
         int octet = ThreadLocalRandom.current().nextInt(0, possibleOptionsQuantity) * step;
 
         if(total == 32){
-            ip.setThird(ThreadLocalRandom.current().nextInt(0, 255));
+            ip.setThird(ThreadLocalRandom.current().nextInt(0, 256));
             ip.setFourth(octet);
         } else {
             ip.setThird(octet);

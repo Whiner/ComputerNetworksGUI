@@ -176,7 +176,7 @@ public class GeneratorDrawer {
             drawNodeName(node);
         }
     }
-    enum Direction {Up, Down}
+    enum Direction {Up, Down, Left, Right}
 
     private static void drawCurve(Direction direction, Node from, Node to) throws Exception {
         if (from != null && to != null) {
@@ -219,7 +219,7 @@ public class GeneratorDrawer {
                     arc_x = from_c.getX() - arc_width / 2;
                     arc_y = from_c.getY();
 
-                    if(direction == Direction.Up){
+                    if(direction == Direction.Up || direction == Direction.Right){
                         arc_startAngle = 270;
                     } else {
                         arc_startAngle = 90;
@@ -232,7 +232,7 @@ public class GeneratorDrawer {
                     arc_x = from_c.getX();
                     arc_y = from_c.getY() - arc_height / 2;
 
-                    if(direction == Direction.Up){
+                    if(direction == Direction.Up || direction == Direction.Left){
                         arc_startAngle = 0;
                     } else {
                         arc_startAngle = 180;
@@ -277,10 +277,30 @@ public class GeneratorDrawer {
         for (Pair<Node, Node> pair : pairList) {
             try {
                 if (network.checkRelationIntersection(pair.getKey(), pair.getValue())) {
-                    if(ThreadLocalRandom.current().nextInt(0, 1) == 0){
+
+                    if(pair.getKey().getCellNumberX() == pair.getValue().getCellNumberX() &&
+                            pair.getValue().getCellNumberX() < 2){
+                        drawCurve(Direction.Right, pair.getKey(), pair.getValue());
+                    } else
+                    if(pair.getKey().getCellNumberY() == pair.getValue().getCellNumberY() &&
+                            pair.getValue().getCellNumberY() < 2){
+                        drawCurve(Direction.Down, pair.getKey(), pair.getValue());
+                    } else
+                    if(pair.getKey().getCellNumberX() == pair.getValue().getCellNumberX() &&
+                            pair.getValue().getCellNumberX() > Field.getInstance().getWanSection().getBeginCell_X()
+                                    + Field.getInstance().getWanSection().getCells_Count_X() - 2){
+                        drawCurve(Direction.Left, pair.getKey(), pair.getValue());
+                    } else
+                    if(pair.getKey().getCellNumberY() == pair.getValue().getCellNumberY() &&
+                            pair.getValue().getCellNumberY() > Field.getInstance().getWanSection().getBeginCell_Y()
+                                    + Field.getInstance().getWanSection().getCells_Count_Y() - 2){
                         drawCurve(Direction.Up, pair.getKey(), pair.getValue());
                     } else {
-                        drawCurve(Direction.Down, pair.getKey(), pair.getValue());
+                        if(ThreadLocalRandom.current().nextInt(0, 2) == 0){
+                            drawCurve(Direction.Up, pair.getKey(), pair.getValue());
+                        } else {
+                            drawCurve(Direction.Down, pair.getKey(), pair.getValue());
+                        }
                     }
                     continue;
                 }
@@ -344,8 +364,8 @@ public class GeneratorDrawer {
 
     }
 
-    public static Image drawStudentTask(StudentTask studentTask) throws Exception { //попробовать сделать под декоратор
-        Field.getInstance().autoFilling(studentTask.getTopology());
+    public static Image drawStudentTask(StudentTask studentTask) throws Exception {
+        Field.getInstance().autoFilling(studentTask);
         refresh();
         BufferedImage studentTaskBufferedImage = new BufferedImage(config.getImageWidth(), config.getImageHeight() + 400, BufferedImage.TYPE_INT_ARGB);
         Graphics2D studentTaskGraphics2D = (Graphics2D) studentTaskBufferedImage.getGraphics();
