@@ -6,12 +6,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.donntu.databaseworker.StudentTask;
 import org.donntu.drawer.GeneratorDrawer;
 import org.donntu.drawer.ImageEditor;
-import org.donntu.databaseworker.StudentTask;
 import ui.MessageBox;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -52,7 +51,7 @@ public class Controller implements Initializable {
         saveButton.setOnAction(event -> {
             if(awtImage != null){
                 try {
-                    GeneratorDrawer.saveImage("task/" + studentTask.getGroup() + "/" + studentTask.getSurname() + " " + studentTask.getName(),
+                    GeneratorDrawer.saveImage("task/" + studentTask.getGroup(),
                             studentTask.toString(),
                             awtImage);
                     MessageBox.information("Сохранено!");

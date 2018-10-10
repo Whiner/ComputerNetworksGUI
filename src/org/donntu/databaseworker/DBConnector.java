@@ -36,6 +36,7 @@ public class DBConnector {
             connection = DriverManager.getConnection(url, login, password);
 
         } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
         return true;

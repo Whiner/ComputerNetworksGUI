@@ -93,7 +93,6 @@ public class Node {
 
     public void connectNode(Node connectingNode, boolean forcibly) throws OneselfConnection, NodeRelationsException {
         if(connectingNode == null) {
-            System.out.println(this.id + " / " + connectingNode.id + " NULL");
             throw new NullPointerException("Соединяемый узел - null");
         }
         if(connectingNode.equals(this)) {

@@ -1,5 +1,7 @@
 package org.donntu.generator;
 
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -162,8 +164,16 @@ public class Topology {
         return false;
     }
 
-    public TopologyCompareCriteria whatIsLike(Topology topology) {
-        int similar = 0;
+    public Pair<Network, Network> findSimilar(Topology topology) {
+
+        for (int i = 0; i < this.getNetworks().size(); i++) {
+            if (this.networks.get(i).isLike(topology.getNetworks().get(i))
+                    && this.networks.get(i).getIp().isLike(topology.getNetworks().get(i).getIp())) {
+                return new Pair<>(this.networks.get(i), topology.getNetworks().get(i));
+            }
+        }
+        return null;
+        /*int similar = 0;
         TopologyCompareCriteria criteria = new TopologyCompareCriteria();
         if (topology.LANQuantity == this.LANQuantity && topology.isWANExist && this.isWANExist) {
             for (int i = 0; i < this.getNetworks().size(); i++) {
@@ -182,6 +192,6 @@ public class Topology {
             }
         }
 
-        return criteria;
+        return criteria;*/
     }
 }

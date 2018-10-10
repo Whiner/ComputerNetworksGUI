@@ -35,7 +35,6 @@ public class RAMCalculator {
             return q;
         }
     }
-
     public static int getNodeQuantityInLAN(int memory, int wanQuantity, int lanNetworksQuantity){
         int q = ((memory / nodeRAM) - wanQuantity) / lanNetworksQuantity;
         if(q < 0){

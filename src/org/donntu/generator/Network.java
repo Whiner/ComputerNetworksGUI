@@ -67,6 +67,14 @@ public class Network {
         }
     }
 
+    public int getMaxNodeRelations() {
+        if (nodes.size() > 0) {
+            return nodes.get(0).getMaxRelationsCount();
+        } else {
+            return 0;
+        }
+    }
+
     public Node getByCoord(int x, int y){
         for (Node t: nodes){
             if(t.getCellNumberX() == x)
