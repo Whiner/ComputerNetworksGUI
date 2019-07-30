@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="891.0" prefWidth="672.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.donntu.knt.networks.ui.controller.PreviewController">
+   <children>
+      <Button fx:id="saveButton" layoutX="165.0" layoutY="848.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="127.0" text="Сохранить" textAlignment="CENTER" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="165.0" AnchorPane.rightAnchor="164.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <ImageView fx:id="imageView" fitHeight="800.0" fitWidth="640.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="77.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="14.0" />
+   </children>
+</AnchorPane>

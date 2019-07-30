@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane id="main-panel" prefHeight="588.0" prefWidth="1183.0" stylesheets="@../style/generate.css"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.donntu.knt.networks.ui.controller.GenerateController">
+   <children>
+      <Pane id="top-panel" prefHeight="60.0" prefWidth="700.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <HBox alignment="TOP_CENTER" layoutY="15.0" prefHeight="30.0" prefWidth="1183.0" spacing="20.0">
+               <children>
+                  <RadioButton fx:id="studentRadiobutton" mnemonicParsing="false" prefHeight="25.0" prefWidth="103.0" text="Студент" textAlignment="CENTER" textFill="WHITE">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <toggleGroup>
+                        <ToggleGroup fx:id="rb" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="groupRadiobutton" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Группа" textAlignment="CENTER" textFill="WHITE" toggleGroup="$rb">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </RadioButton>
+               </children></HBox>
+         </children>
+      </Pane>
+      <VBox layoutY="67.0" prefHeight="507.0" prefWidth="1183.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <HBox fx:id="groupPane" alignment="CENTER" prefHeight="50.0" prefWidth="1183.0" spacing="30.0">
+               <children>
+                  <Label prefHeight="27.0" prefWidth="65.0" text="Группа " textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <ComboBox id="custom-combo-box" fx:id="groupComboBox" prefHeight="35.0" prefWidth="400.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="52.0" prefWidth="1183.0" spacing="30.0">
+               <children>
+                  <Label fx:id="studentLabel" text="Студент" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <ComboBox id="custom-combo-box" fx:id="studentComboBox" prefHeight="35.0" prefWidth="400.0" />
+               </children>
+            </HBox>
+            <HBox id="parametersPanel" alignment="CENTER" prefHeight="268.0" prefWidth="1200.0" spacing="10.0">
+               <children>
+                  <AnchorPane>
+                     <children>
+                        <AnchorPane AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <children>
+                              <Pane id="parametersBG" prefHeight="218.0" prefWidth="350.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                 <children>
+                                    <Pane id="title-panels" layoutY="7.0" prefHeight="40.0" prefWidth="350.0">
+                                       <children>
+                                          <Label layoutX="28.0" layoutY="5.0" text="WAN" textFill="WHITE">
+                                             <font>
+                                                <Font size="20.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </Pane>
+                                    <Label id="parameters-label-names" layoutX="14.0" layoutY="63.0" text="Количество роутеров" />
+                                    <ComboBox fx:id="cb_WAN_nodes_quantity" layoutX="268.0" layoutY="59.0" prefHeight="25.0" prefWidth="68.0" visibleRowCount="5" />
+                                    <Label id="parameters-label-names" layoutX="14.0" layoutY="112.0" text="Максимальное количество портов" />
+                                    <ComboBox fx:id="cb_WAN_max_ports_quantity" layoutX="268.0" layoutY="109.0" prefHeight="25.0" prefWidth="68.0" visibleRowCount="5">
+                                       <tooltip>
+                                          <Tooltip text="При указании малого количества портов велика вероятность того, что сгенерируются не все роутеры">
+                                             <font>
+                                                <Font name="Raleway Regular" size="12.0" />
+                                             </font>
+                                          </Tooltip>
+                                       </tooltip>
+                                    </ComboBox>
+                                    <Label id="parameters-label-names" layoutX="14.0" layoutY="164.0" text="Количество связей с LAN" />
+                                    <ComboBox fx:id="cb_WAN_ports_with_LAN_quantity" layoutX="268.0" layoutY="161.0" prefHeight="25.0" prefWidth="68.0" visibleRowCount="5" />
+                                 </children>
+                              </Pane>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </AnchorPane>
+                  <AnchorPane>
+                     <children>
+                        <AnchorPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <children>
+                              <Pane id="parametersBG" prefHeight="218.0" prefWidth="350.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                 <children>
+                                    <Pane id="title-panels" layoutY="7.0" prefHeight="40.0" prefWidth="350.0">
+                                       <children>
+                                          <Label layoutX="28.0" layoutY="5.0" text="LAN" textFill="WHITE">
+                                             <font>
+                                                <Font size="20.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </Pane>
+                                    <Label id="parameters-label-names" layoutX="20.0" layoutY="165.0" text="Количество сетей LAN" />
+                                    <ComboBox fx:id="cb_LAN_networks_quantity" layoutX="268.0" layoutY="165.0" prefHeight="10.0" prefWidth="68.0" visibleRowCount="5" />
+                                    <Label id="parameters-label-names" layoutX="20.0" layoutY="60.0" text="Количество роутеров" />
+                                    <ComboBox fx:id="cb_LAN_nodes_quantity" layoutX="268.0" layoutY="62.0" prefHeight="10.0" prefWidth="68.0" visibleRowCount="5" />
+                                    <Label id="parameters-label-names" layoutX="20.0" layoutY="109.0" text="Максимальное количество портов" />
+                                    <ComboBox fx:id="cb_LAN_max_ports_quantity" layoutX="268.0" layoutY="110.0" prefHeight="10.0" prefWidth="68.0" visibleRowCount="5">
+                                       <tooltip>
+                                          <Tooltip text="При указании малого количества портов велика вероятность того, что сгенерируются не все узлы">
+                                             <font>
+                                                <Font name="Raleway Regular" size="12.0" />
+                                             </font>
+                                          </Tooltip>
+                                       </tooltip>
+                                    </ComboBox>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </AnchorPane>
+                        <Button id="default-button" fx:id="defaultButton" layoutX="82.0" layoutY="239.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="186.0" text="По умолчанию" AnchorPane.bottomAnchor="-2.0" AnchorPane.rightAnchor="82.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="268.0" prefWidth="350.0">
+                     <children>
+                        <Pane id="parametersBG" prefHeight="218.0" prefWidth="350.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <children>
+                              <Pane id="title-panels" layoutY="7.0" prefHeight="40.0" prefWidth="350.0">
+                                 <children>
+                                    <Label layoutX="28.0" layoutY="5.0" text="Оперативная память" textFill="WHITE">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </Pane>
+                              <Slider fx:id="slider_RAM" layoutX="33.0" layoutY="135.0" max="500.0" prefHeight="14.0" prefWidth="284.0" />
+                              <TextField fx:id="textField_RAM" layoutX="101.0" layoutY="161.0" text="Не указано" />
+                              <Label id="parameters-label-names" alignment="CENTER" layoutX="36.0" layoutY="69.0" prefHeight="40.0" prefWidth="278.0" text="Максимальное количество &#10;оперативной памяти" textAlignment="CENTER" />
+                           </children>
+                        </Pane>
+                     </children>
+                     <rotationAxis>
+                        <Point3D />
+                     </rotationAxis>
+                  </AnchorPane>
+               </children>
+            </HBox>
+            <AnchorPane id="footer" prefHeight="67.0" prefWidth="1183.0">
+               <children>
+                  <Button id="add-button" fx:id="generateButton" layoutX="482.0" layoutY="15.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="219.0" text="Сгенерировать" textFill="WHITE" AnchorPane.leftAnchor="482.0" AnchorPane.rightAnchor="482.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <Label fx:id="successLabel" layoutX="929.0" layoutY="20.0" text="Генерация завершена" textFill="#bfbfbf" AnchorPane.rightAnchor="61.0">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <ProgressIndicator id="indicator" fx:id="progressBar" layoutX="1122.0" layoutY="9.0" prefHeight="52.0" prefWidth="47.0" progress="0.0" style="-fx-text-fill: white;" visible="false" AnchorPane.rightAnchor="14.0" />
+                  <Button id="add-button" fx:id="saveButton" layoutX="14.0" layoutY="19.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="123.0" text="Сохранить все" textFill="WHITE" AnchorPane.leftAnchor="14.0">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Button>
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
