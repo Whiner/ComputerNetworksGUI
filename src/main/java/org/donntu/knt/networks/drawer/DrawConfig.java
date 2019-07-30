@@ -92,8 +92,7 @@ public class DrawConfig {
 
     private DrawConfig() {
         try {
-            //setNodeImage(new File("node.PNG")); // для исполняемого файла
-            setNodeImage(new File("src/images/node.png")); // для кода
+            setNodeImage(new File(DrawConfig.class.getResource("/images/node.png").getFile()));
             calcNodeSize();
         } catch (Exception e) {
             e.printStackTrace();
